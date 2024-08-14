@@ -52,10 +52,15 @@ app.use(jwt({
 //调用路由模块
 const userRouter = require('./router/user')
 const userInfo = require('./router/userInfo.js')
+const adminlogin = require('./router/adminlog.js')
+const admin = require('./router/admin.js')
 //api开头无需token认证
 app.use('/api',userRouter)
+app.use('/api/admin',adminlogin)
 //my开头需要token认证
 app.use('/my',userInfo)
+app.use('/my/admin',admin)
+
 
 
 //错误中间件

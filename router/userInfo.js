@@ -16,6 +16,8 @@ router.post('/userinfo',expressJoi(updata_userInfo_schema),userInfo.updataUserIn
 router.post('/updatepwd',expressJoi(update_userpwd_schema),userInfo.updataUserPWDService)
 //配置更新用户头像接口
 router.post('/update/avatar',expressJoi(updata_userPic_schema),userInfo.updateUserPicService)
+// 配置申请成为作者接口
+router.post('/author',userInfo.addAuthor)
 
 //导出路由模块
 module.exports = router

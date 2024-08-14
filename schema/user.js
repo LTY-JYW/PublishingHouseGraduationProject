@@ -1,0 +1,36 @@
+//导入验证模块
+const joi = require('joi')
+const username = joi.string().min(1).max(10).alphanum().required()
+const password = joi.string().pattern(/^[\S]{6,12}$/).required()
+const id = joi.number().integer().min(1).required()
+const nickname = joi.string().required()
+const email = joi.string().email().required()
+const avatar = joi.string().dataUri().required()
+
+//登录注册验证规则
+exports.reg_login_schema = {
+    body: {
+        username,
+        password
+    }
+}
+//更新用户信息验证规则
+exports.updata_userInfo_schema = {
+    body: {
+        nickname,
+        email
+    }
+}
+//更新用户密码验证规则
+exports.update_userpwd_schema = {
+    body:{
+        oldPwd:password,
+        newPwd:joi.not(joi.ref('oldPwd')).concat(password)
+    }
+}
+//更新用户头像验证规则
+exports.updata_userPic_schema = {
+    body:{
+        avatar
+    }
+}

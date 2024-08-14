@@ -17,6 +17,8 @@ app.use(cors())
 
 //配置解析application/x-www-form-urlencoded的中间件
 app.use(express.urlencoded({ extended: false }))
+//配置解析application/json的中间件
+app.use(express.json())
 
 //统一返回值的中间件
 app.use(function (req, res, next) {
@@ -48,6 +50,12 @@ app.use(jwt({
 }))
 
 //调用路由模块
+const userRouter = require('./router/user')
+const userInfo = require('./router/userInfo.js')
+//api开头无需token认证
+app.use('/api',userRouter)
+//my开头需要token认证
+app.use('/my',userInfo)
 
 
 //错误中间件

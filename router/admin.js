@@ -3,11 +3,14 @@ const router = express.Router()
 
 //获取路由逻辑模块
 const admin = require('../router_handler/admin')
-
+//导入验证模块中间件
+const  expressJoi = require('@escook/express-joi')
+//导入验证模块
+const { id } = require('../schema/id')
 //管理员封禁用户模块————post请求
-router.post('/disable',admin.disable)
+router.post('/disable',expressJoi(id),admin.disable)
 //管理员启用用户模块————post请求
-router.post('/enable',admin.enable)
+router.post('/enable',expressJoi(id),admin.enable)
 
 
 //导出路由模块

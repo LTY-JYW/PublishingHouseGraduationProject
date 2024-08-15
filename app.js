@@ -54,12 +54,16 @@ const userRouter = require('./router/user')
 const userInfo = require('./router/userInfo.js')
 const adminlogin = require('./router/adminlog.js')
 const admin = require('./router/admin.js')
+const auditLogin = require('./router/auditlog.js')
+const audit = require('./router/audit.js')
 //api开头无需token认证
 app.use('/api',userRouter)
 app.use('/api/admin',adminlogin)
+app.use('/api/audit',auditLogin)
 //my开头需要token认证
 app.use('/my',userInfo)
 app.use('/my/admin',admin)
+app.use('/my/audit',audit)
 
 
 

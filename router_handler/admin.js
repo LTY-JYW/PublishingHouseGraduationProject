@@ -7,17 +7,15 @@ const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 //导入全局配置文件（主页用于生成token）
 const config = require('../config')
+//导入同意错误返回信息
+const { isNoRes } = require('../utils/resNo')
 
 //添加管理员处理模块
 exports.reguser = async (req, res) => {
     const userInfo = req.body
     const sqlStr = 'select * from admin where username = :username'
     const result = await db.executeQuery(sqlStr, { username: userInfo.username })
-    if (result.status !== 0) {
-        return res.result(result.message)
-    }
-    if (result.status !== 0)
-        return res.result(result.message)
+    isNoRes(result)
     if (result.data.length > 0)
         return res.result('用户名被占用')
     //加密密码
@@ -28,8 +26,7 @@ exports.reguser = async (req, res) => {
     const nickname = '管理员' + v1()
     const regSql = 'INSERT INTO admin SET username = :username,password = :password,nickname = :nickname'
     const resultReg = await db.executeQuery(regSql, { username: userInfo.username, password: userInfo.password, nickname: nickname })
-    if (resultReg.status !== 0)
-        return res.result(resultReg.message)
+    isNoRes(resultReg)
     res.result('注册成功', 0, resultReg.data)
 }
 
@@ -38,9 +35,7 @@ exports.login = async (req, res) => {
     const formData = req.body
     const sqlSelectUserInfo = 'select * from admin where username = :username'
     const resultUserInfo = await db.executeQuery(sqlSelectUserInfo, { username: formData.username })
-    if (resultUserInfo.status !== 0) {
-        return res.result(resultUserInfo.message)
-    }
+    isNoRes(resultUserInfo)
     if (resultUserInfo.data.length !== 1)
         return res.result('没有该用户！')
     if (! await bcryptjs.compare(formData.password, resultUserInfo.data[0].password))
@@ -71,16 +66,13 @@ exports.disable = async (req, res) => {
     const uid = req.body.id
     const sqlSelect = 'select * from users where id = :id and disable = 0'
     const resSelect = await db.executeQuery(sqlSelect, { id: uid })
-    if (resSelect.status !== 0) {
-        return res.result(resSelect.message)
-    }
+    isNoRes(resSelect)
     if (resSelect.data.length != 1) {
         return res.result('该用户已是封禁状态！')
     }
     const sql = 'UPDATE users SET disable = 1 WHERE id = :id'
     const resultReg = await db.executeQuery(sql, { id: uid })
-    if (resultReg.status !== 0)
-        return res.result(resultReg.message)
+    isNoRes(resultReg)
     res.result('封禁成功！', 0)
 
 }
@@ -90,15 +82,13 @@ exports.enable = async (req, res) => {
     const uid = req.body.id
     const sqlSelect = 'select * from users where id = :id and disable = 1'
     const resSelect = await db.executeQuery(sqlSelect, { id: uid })
-    if (resSelect.status !== 0)
-        return res.result(resSelect.message)
+    isNoRes(resSelect)
     if (resSelect.data.length != 1) {
         return res.result('该用户已是正常状态！')
     }
     const sql = 'UPDATE users SET disable = 0 WHERE id = :id'
     const resultReg = await db.executeQuery(sql, { id: uid })
-    if (resultReg.status !== 0)
-        return res.result(resultReg.message)
+    isNoRes(resultReg)
     res.result('启用成功！', 0)
 
 }

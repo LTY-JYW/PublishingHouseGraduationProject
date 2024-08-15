@@ -7,14 +7,16 @@ const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 //导入全局配置文件（主页用于生成token）
 const config = require('../config')
+//导入同意错误返回信息
+const { isNoRes } = require('../utils/resNo')
+
 
 //用户注册处理模块
 exports.reguser = async (req, res) => {
     const userInfo = req.body
     const sqlStr = 'select * from users where username = :username'
     const result = await db.executeQuery(sqlStr, { username: userInfo.username })
-    if (result.status !== 0)
-        return res.result(result.message)
+    isNoRes(result)
     if (result.data.length > 0)
         return res.result('用户名被占用')
     //加密密码
@@ -25,8 +27,7 @@ exports.reguser = async (req, res) => {
     const nickname = '用户'+v1()
     const regSql = 'INSERT INTO users SET username = :username,password = :password,nickname = :nickname'
     const resultReg = await db.executeQuery(regSql, { username: userInfo.username, password: userInfo.password, nickname:nickname })
-    if (resultReg.status !== 0)
-        return res.result(resultReg.message)
+    isNoRes(resultReg)
     res.result('注册成功',0,resultReg.data)
 }
 
@@ -35,6 +36,7 @@ exports.login = async (req, res) => {
     const formData = req.body
     const sqlSelectUserInfo = 'select * from users where username = :username'
     const resultUserInfo = await db.executeQuery(sqlSelectUserInfo,{username:formData.username})
+    isNoRes(resultUserInfo)
     if(resultUserInfo.data.length !== 1)
         return res.result('没有该用户！')
     if(! await bcryptjs.compare(formData.password,resultUserInfo.data[0].password))

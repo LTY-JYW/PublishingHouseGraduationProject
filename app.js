@@ -57,6 +57,7 @@ const admin = require('./router/admin.js')
 const auditLogin = require('./router/auditlog.js')
 const audit = require('./router/audit.js')
 const information =require('./router/information.js')
+const category = require('./router/category.js')
 //api开头无需token认证
 app.use('/api',userRouter)
 app.use('/api/admin',adminlogin)
@@ -66,6 +67,7 @@ app.use('/my',userInfo)
 app.use('/my/admin',admin)
 app.use('/my/audit',audit)
 app.use('/my/news',information)
+app.use('/my/category',category)
 
 
 

@@ -6,7 +6,7 @@ const pool = mysql.createPool({
     user: 'root',
     password: '123456',
     database: 'books',
-    namedPlaceholders: true
+    namedPlaceholders: true,
 })
 
 // 定义执行SQL语句的异步函数

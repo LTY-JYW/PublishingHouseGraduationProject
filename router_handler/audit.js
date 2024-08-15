@@ -67,7 +67,7 @@ const isAuthorUser = async (id, isStatus,res) => {
     const resSel = await db.executeQuery(sqlSel, { id: id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
-        return res.result('该账户未申请作者', 1)
+        return res.result('该账户未申请作者')
     }
     const sql = 'UPDATE users SET isAuthor = :isAuthor WHERE id = :id'
     const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus })
@@ -77,7 +77,7 @@ const isAuthorUser = async (id, isStatus,res) => {
         return res.result('审核成功！', 0)
     }
     if( isStatus === 0){
-        return res.result('驳回成功！')
+        return res.result('驳回成功！',0)
     }
 
 }
@@ -98,7 +98,7 @@ const isAuthorBooks = async (id, isStatus,res) => {
     const resSel = await db.executeQuery(sqlSel, { id: id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
-        return res.result('未找到该图书审核信息', 1)
+        return res.result('未找到该图书审核信息')
     }
     const sql = 'UPDATE books SET disable = :disable WHERE id = :id'
     const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus })

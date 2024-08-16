@@ -62,15 +62,16 @@ exports.login = async (req, res) => {
 }
 
 //同意驳回成为作者函数
-const isAuthorUser = async (id, isStatus,res) => {
+const isAuthorUser = async (req, isStatus,res) => {
+    const id = req.body.id
     const sqlSel = 'select * from users where id = :id and isAuthor = 2'
     const resSel = await db.executeQuery(sqlSel, { id: id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('该账户未申请作者')
     }
-    const sql = 'UPDATE users SET isAuthor = :isAuthor WHERE id = :id'
-    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus })
+    const sql = 'UPDATE users SET isAuthor = :isAuthor,aid = :aid WHERE id = :id'
+    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus, aid:req.auth.id })
     isNoRes(resAuthor)
 
     if (isStatus === 1) {
@@ -83,25 +84,24 @@ const isAuthorUser = async (id, isStatus,res) => {
 }
 //同意成为作者
 exports.agreeOk = (req, res) => {
-    const uid = req.body.id
-    isAuthorUser(uid,1,res)
+    isAuthorUser(req,1,res)
 }
 //驳回成为作者
 exports.agreeNo = (req, res) => {
-    const uid = req.body.id
-    isAuthorUser(uid,0,res)
+    isAuthorUser(req,0,res)
 }
 
 //解禁与封禁图书
-const isAuthorBooks = async (id, isStatus,res) => {
+const isAuthorBooks = async (req, isStatus,res) => {
+    const id = req.body.id
     const sqlSel = 'select * from books where id = :id and disable = 2'
     const resSel = await db.executeQuery(sqlSel, { id: id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('未找到该图书审核信息')
     }
-    const sql = 'UPDATE books SET disable = :disable WHERE id = :id'
-    const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus })
+    const sql = 'UPDATE books SET disable = :disable,aid = :aid WHERE id = :id'
+    const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus,aid:req.auth.id })
     isNoRes(resAuthor)
 
     if (isStatus === 1) {
@@ -114,6 +114,6 @@ const isAuthorBooks = async (id, isStatus,res) => {
 }
 
 //图书审核通过
-exports.bookOk = (req, res) => {isAuthorBooks(req.body.id,0,res)}
+exports.bookOk = (req, res) => {isAuthorBooks(req,0,res)}
 //图书审核失败
-exports.bookNo = (req, res) => {isAuthorBooks(req.body.id,1,res)}
+exports.bookNo = (req, res) => {isAuthorBooks(req,1,res)}

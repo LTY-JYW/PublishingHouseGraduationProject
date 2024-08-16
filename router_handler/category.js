@@ -13,7 +13,7 @@ exports.add = async (req, res) => {
     if(resSel.data.length >= 1){
         return res.result('该分类名已存在')
     }
-    const sql = 'INSERT INTO category (name, profile) VALUES (:name, :profile)';
+    const sql = 'INSERT INTO category (name, profile) VALUES (:name, :profile)'
     const resAdd = await db.executeQuery(sql, { name: formData.name, profile: formData.profile })
     isNoRes(resAdd)
     return res.result('添加成功！', 0)

@@ -58,6 +58,7 @@ const auditLogin = require('./router/auditlog.js')
 const audit = require('./router/audit.js')
 const information =require('./router/information.js')
 const category = require('./router/category.js')
+const category2 = require('./router/category2.js')
 //api开头无需token认证
 app.use('/api',userRouter)
 app.use('/api/admin',adminlogin)
@@ -68,7 +69,7 @@ app.use('/my/admin',admin)
 app.use('/my/audit',audit)
 app.use('/my/news',information)
 app.use('/my/category',category)
-
+app.use('/my/category2',category2)
 
 
 //错误中间件

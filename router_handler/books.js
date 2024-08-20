@@ -1,17 +1,10 @@
 // 路由处理模块
 //导入数据库模块
 const db = require('../db/index')
-//导入加密模块
-const bcryptjs = require('bcryptjs')
-//导入生成Token的模块
-const jwt = require('jsonwebtoken')
-//导入全局配置文件（主页用于生成token）
-const config = require('../config')
 //导入同意错误返回信息
 const { isNoRes } = require('../utils/resNo')
 // 导入时间处理函数
 const { timeDate } = require('../utils/Time')
-const { id } = require('@hapi/joi/lib/base')
 
 //发布图书处理模块
 exports.addBooks = async (req, res) => {

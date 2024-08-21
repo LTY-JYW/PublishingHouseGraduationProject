@@ -15,7 +15,8 @@
 <img :src="imgs" alt="" style="width: 100px;height: 100px;">
 </template>
 
-<script lang="ts" setup>import { ref } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { UploadProps } from 'element-plus'

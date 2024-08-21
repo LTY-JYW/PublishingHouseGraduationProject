@@ -28,14 +28,6 @@ exports.uploadFile = async (req, res) => {
        const cdnPrefix = uploader.config.cdnPrefix;
        const fileUrl = `${cdnPrefix}/${uniqueFileName}`;
        console.log(fileUrl);
-      //  res.json({ success: true, message: 'File uploaded successfully.',  data: { url: fileUrl } });
-      //  res.send({
-      //   status:0,
-      //   message: 'File uploaded successfully.',
-      //   data:{
-      //     url:fileUrl
-      //   }
-    // })
     res.result('File uploaded successfully.',0,{url:fileUrl})
     })
     .catch(error => {

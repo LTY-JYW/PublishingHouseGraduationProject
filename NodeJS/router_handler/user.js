@@ -54,10 +54,5 @@ exports.login = async (req, res) => {
         algorithm: "HS256",
         expiresIn:'20h'
     })
-
-    res.send({
-        status:0,
-        message:'登录成功',
-        token: 'Bearer ' + token
-    })
+    res.result('登陆成功！',0,{token: 'Bearer ' + token})
 }

@@ -50,10 +50,10 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 //统一返回值的中间件
 app.use(function (req, res, next) {
-    res.result = async (err, status = 1, data = {}) => {
+    res.result = async (err, code = 1, data = {}) => {
         if (lodash.isEqual(data, {})) {
             await res.send({
-                status,
+                code,
                 message: err instanceof Error ? err.message : err,
             })
             next()
@@ -61,7 +61,7 @@ app.use(function (req, res, next) {
         }
 
         await res.send({
-            status,
+            code,
             message: err instanceof Error ? err.message : err,
             data
         })

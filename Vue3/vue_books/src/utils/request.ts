@@ -1,11 +1,11 @@
 import axios from 'axios'
-// import { useUserStore } from '@/stores/counter'
-// import { ElMessage } from 'element-plus'
-// import router from '@/router'
+import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
+import router from '@/router'
 
 const baseURL =
   'http://127.0.0.1'
-// const userStore = useUserStore()
+const userStore = useUserStore()
 
 const instance = axios.create({
   baseURL,
@@ -14,15 +14,15 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use(
-  // (config) => {
-  //   // TODO 2. 携带token
-  //   if (userStore.token) {
-  //     config.headers.Authorization =
-  //       userStore.token
-  //   }
-  //   return config
-  // },
-  // (err) => Promise.reject(err)
+  (config) => {
+    // TODO 2. 携带token
+    if (userStore.token) {
+      config.headers.Authorization =
+        userStore.token
+    }
+    return config
+  },
+  (err) => Promise.reject(err)
 )
 
 instance.interceptors.response.use(
@@ -31,22 +31,22 @@ instance.interceptors.response.use(
     // TODO 4. 摘取核心响应数据
     //请求成功
     if (res.data.code === 0) {
-      return res
+      return res.data
     }
-    // ElMessage.error(
-    //   res.data.message || '服务器响应异常'
-    // )
+    ElMessage.error(
+      res.data.message || '服务器响应异常'
+    )
     return Promise.reject(res.data)
   },
   (err) => {
-    // ElMessage.error(
-    //   err.response.data.message ||
-    //     '服务器响应异常'
-    // )
+    ElMessage.error(
+      err.response.data.message ||
+        '服务器响应异常'
+    )
     // TODO 5. 处理401错误
-    // if (err.response?.status === 401) {
-    //   router.push('/login')
-    // }
+    if (err.response?.status === 401) {
+      router.push('/login')
+    }
     return Promise.reject(err)
   }
 )

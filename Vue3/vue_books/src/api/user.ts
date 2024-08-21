@@ -8,6 +8,12 @@ type RegisteredData = {
     username:string,
     password:string
 }
-const a:number = 10
 
+// 登录返回类型
+export type UserLoginType = {
+        token:string
+}
+// 用户注册API
 export const userRegisterAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/reguser',data) 
+// 用户登录API
+export const userLoginAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/login',data) 

@@ -1,7 +1,8 @@
-// element-plus-icons.d.ts
 declare module '@element-plus/icons-vue' {
   const icons: Record<string, any>;
-  export default icons;
+  export default icons
 
-  export const Plus: any; // 替换为你需要的图标名称
+  export const Plus: any 
+  export const User: any
+  export const Lock: any
 }

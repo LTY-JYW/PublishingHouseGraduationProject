@@ -10,10 +10,10 @@ interface RegisteredData {
 }
 
 // 登录返回类型
-export type UserLoginType = {
+export type AdminLoginType = {
         token:string
 }
 // 用户注册API
-export const userRegisterAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/reguser',data) 
+export const adminRegisterAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/admin/login',data) 
 // 用户登录API
-export const userLoginAPI = (data:RegisteredData) => requeset.post<ResType<UserLoginType>>('/api/login',data) 
+export const adminLoginAPI = (data:RegisteredData) => requeset.post<ResType<AdminLoginType>>('/api/admin/login',data) 

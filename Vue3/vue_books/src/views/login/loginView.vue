@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
-const isRegister = ref(true)
 import { User, Lock } from '@element-plus/icons-vue'
 import type { FormRules, FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { userRegisterAPI,userLoginAPI } from '@/api/user'
+import { userRegisterAPI, userLoginAPI } from '@/api/user'
+import { adminLoginAPI } from '@/api/admin'
 import router from '@/router/index'
 import { useUserStore } from '@/stores/user'
-import type { UserLoginType } from '@/api/user'
-import type { ResType } from '@/api/results'
+// 是登录还是注册
+const isRegister = ref(false)
+// 是管理员还是用户
+const isAdmin = ref(false)
+// 是否记住用户
+const isRemember = ref(false)
+
 const userStore = useUserStore()
 // 表单类型
 type DateType = {
@@ -94,20 +99,45 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
-// 登录请求函数
-const Login = async () => {
-  const res:ResType<UserLoginType> = await userLoginAPI(formDate.value)
-  console.log(res.data);
-  userStore.setToken(res.data.token)
+// 记住我功能实现
+const remember = ( value:string) => {
+  localStorage.setItem('TOKEN_KEY', JSON.stringify(value));
+}
+
+
+
+// 用户登录请求函数
+const userLogin = async () => {
+  const res = await userLoginAPI(formDate.value)
+  userStore.setToken(res.data.data.token)
+  if (isRemember.value) {
+    remember(res.data.data.token)
+  }
   ElMessage.success('登录成功！')
   router.push('/user')
 }
+// 管理员登录请求函数
+const adminLogin = async () => {
+  const res = await adminLoginAPI(formDate.value)
+  userStore.setToken(res.data.data.token)
+  if (isRemember.value) {
+    remember(res.data.data.token)
+  }
+  ElMessage.success('登录成功！')
+  router.push('/admin')
+}
+
+// 
 // 登录按钮逻辑
 const submitLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid) => {
     if (valid) {
-      Login()
+      if (isAdmin.value) {
+        adminLogin()
+      } else {
+        userLogin()
+      }
     } else {
       ElMessage.error('出现异常错误请稍后再试')
     }
@@ -163,7 +193,7 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
         <!-- 表单按钮区域 -->
         <el-form-item class="flex">
           <div class="flex">
-            <el-checkbox>记住我</el-checkbox>
+            <el-checkbox v-model="isRemember">记住我</el-checkbox>
             <el-link type="primary" :underline="false">忘记密码？</el-link>
           </div>
         </el-form-item>
@@ -171,9 +201,11 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
           <el-button class="button" type="primary" auto-insert-space @click="submitLogin(ruleFormRef)">登录</el-button>
         </el-form-item>
         <el-form-item class="flex">
-          <el-link type="info" :underline="false" @click="isRegister = true">
-            注册 →
-          </el-link>
+
+          <div class="flex">
+            <el-link type="info" :underline="false" @click="isRegister = true">注册 →</el-link>
+            <el-checkbox v-model="isAdmin" label="我是管理员" size="large" class="isAdmin" />
+          </div>
         </el-form-item>
       </el-form>
     </el-col>

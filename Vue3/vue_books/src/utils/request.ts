@@ -31,7 +31,7 @@ instance.interceptors.response.use(
     // TODO 4. 摘取核心响应数据
     //请求成功
     if (res.data.code === 0) {
-      return res.data
+      return res
     }
     ElMessage.error(
       res.data.message || '服务器响应异常'

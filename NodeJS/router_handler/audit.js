@@ -104,13 +104,18 @@ const isAuthorBooks = async (req, isStatus,res) => {
     const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus,aid:req.auth.id })
     isNoRes(resAuthor)
 
-    if (isStatus === 1) {
-        return res.result('图书审核失败', 0)
-    }
-    if( isStatus === 0){
-        return res.result('图书审核成功',0)
-    }
+    return res.result('审核成功！',0)
 
+}
+
+//获取管理员信息处理模块
+exports.getAuditInfoService = async (req, res) => {
+    const sqlGetAuditInfo = 'select id,username,nickname,avatar from audit where id = :id'
+    const resultsAuditInfo = await db.executeQuery(sqlGetAuditInfo, { id: req.auth.id })
+    isNoRes(resultsAuditInfo)
+    if (resultsAuditInfo.status !== 0)
+        return res.result(resultsAuditInfo.message)
+    return res.result('信息获取成功', 0, resultsAuditInfo.data)
 }
 
 //图书审核通过

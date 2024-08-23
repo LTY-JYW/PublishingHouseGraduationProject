@@ -11,6 +11,8 @@ const { id } = require('../schema/id')
 router.post('/disable',expressJoi(id),admin.disable)
 //管理员启用用户模块————post请求
 router.post('/enable',expressJoi(id),admin.enable)
+// 获取管理员信息模块————get请求
+router.get('/getInfo',admin.getAdminInfoService)
 
 
 //导出路由模块

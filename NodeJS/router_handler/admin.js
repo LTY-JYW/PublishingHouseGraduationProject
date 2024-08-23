@@ -53,12 +53,6 @@ exports.login = async (req, res) => {
         algorithm: "HS256",
         expiresIn: '20h'
     })
-
-    // res.send({
-    //     status: 0,
-    //     message: '登录成功',
-    //     token: 'Bearer ' + token
-    // })
     res.result('登陆成功！',0,{token: 'Bearer ' + token})
 }
 
@@ -94,3 +88,12 @@ exports.enable = async (req, res) => {
 
 }
 
+//获取管理员信息处理模块
+exports.getAdminInfoService = async (req, res) => {
+    const sqlGetAdminInfo = 'select id,username,nickname,avatar from admin where id = :id'
+    const resultsAdminInfo = await db.executeQuery(sqlGetAdminInfo, { id: req.auth.id })
+    isNoRes(resultsAdminInfo)
+    if (resultsAdminInfo.status !== 0)
+        return res.result(resultsAdminInfo.message)
+    return res.result('信息获取成功', 0, resultsAdminInfo.data)
+}

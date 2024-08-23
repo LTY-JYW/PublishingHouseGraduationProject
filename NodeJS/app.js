@@ -103,17 +103,6 @@ app.use('/my/category', category)
 app.use('/my/category2', category2)
 app.use('/my/books', books)
 app.use('/my/cart', cart)
-//错误中间件
-// app.use((err, req, res, next) => {
-//     //token错误
-//     if (err.name === 'UnauthorizedError')
-//         return res.send('身份认证失败！')
-//     //验证错误
-//     if (err instanceof joi.ValidationError)
-//         return res.send(err)
-//     //未知错误
-//     return res.send(err)
-// })
 
 // 错误处理中间件
 app.use((err, req, res, next) => {

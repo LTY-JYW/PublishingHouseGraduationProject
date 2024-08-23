@@ -1,0 +1,1 @@
+export const URL:string = 'http://ltyjyw.site/1.jpg'

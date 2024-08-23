@@ -13,7 +13,18 @@ interface RegisteredData {
 export type AdminLoginType = {
         token:string
 }
-// 用户注册API
+
+// 获取管理员基本信息返回类型
+export type AdminGetInfoType = [{
+    id:number
+    username:string
+    nickname:string
+    avatar:string
+}]
+
+// 管理员注册API
 export const adminRegisterAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/admin/login',data) 
-// 用户登录API
+// 管理员登录API
 export const adminLoginAPI = (data:RegisteredData) => requeset.post<ResType<AdminLoginType>>('/api/admin/login',data) 
+// 获取管理员基本信息API
+export const adminGetInfoApi = () => requeset.get<ResType<AdminGetInfoType>>('/my/admin/getinfo')

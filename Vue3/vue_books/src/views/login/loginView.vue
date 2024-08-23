@@ -22,12 +22,33 @@ type DateType = {
   repassword: string
 }
 
+// 登录类型
+type LoginType = {
+  username: string
+  password: string
+}
+
 // 表单变量
 const formDate = ref<DateType>({
   username: '',
   password: '',
   repassword: ''
 })
+
+// 判断本地是否有用户名和密码
+const voucherString:string = localStorage.getItem('User_Login')||''
+console.log(voucherString);
+
+if(voucherString){
+  const voucher:LoginType = JSON.parse(voucherString) || ''
+
+if (voucher) {
+  formDate.value.username = voucher.username
+  formDate.value.password = voucher.password
+}
+}
+
+
 
 //注册确认密码校验函数
 const validateRepassword = (rule: any, value: any, callback: any) => {
@@ -99,9 +120,17 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
+// token存入本地
+const saveToken = (value: string) => {
+  localStorage.setItem('TOKEN_KEY', value);
+}
+
 // 记住我功能实现
-const remember = ( value:string) => {
-  localStorage.setItem('TOKEN_KEY', JSON.stringify(value));
+const remember = (username: string, password: string) => {
+  localStorage.setItem('User_Login', JSON.stringify({
+    username,
+    password
+  }))
 }
 
 
@@ -110,8 +139,9 @@ const remember = ( value:string) => {
 const userLogin = async () => {
   const res = await userLoginAPI(formDate.value)
   userStore.setToken(res.data.data.token)
+  saveToken(res.data.data.token)
   if (isRemember.value) {
-    remember(res.data.data.token)
+    remember(formDate.value.username, formDate.value.password)
   }
   ElMessage.success('登录成功！')
   router.push('/user')
@@ -120,8 +150,9 @@ const userLogin = async () => {
 const adminLogin = async () => {
   const res = await adminLoginAPI(formDate.value)
   userStore.setToken(res.data.data.token)
+  saveToken(res.data.data.token)
   if (isRemember.value) {
-    remember(res.data.data.token)
+    remember(formDate.value.username, formDate.value.password)
   }
   ElMessage.success('登录成功！')
   router.push('/admin')
@@ -132,6 +163,11 @@ const adminLogin = async () => {
 const submitLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid) => {
+
+    if (!isRemember.value) {
+      localStorage.removeItem('User_Login');
+    }
+
     if (valid) {
       if (isAdmin.value) {
         adminLogin()

@@ -39,13 +39,15 @@ instance.interceptors.response.use(
     return Promise.reject(res.data)
   },
   (err) => {
+    console.log(err);
+    
     ElMessage.error(
       err.response.data.message ||
         '服务器响应异常'
     )
     // TODO 5. 处理401错误
     if (err.response?.status === 401) {
-      router.push('/login')
+      router.push('/')
     }
     return Promise.reject(err)
   }

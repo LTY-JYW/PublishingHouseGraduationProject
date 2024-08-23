@@ -15,5 +15,7 @@ router.post('/isNoAuthor',expressJoi(id),audit.agreeNo)
 router.post('/isOkBook',expressJoi(id),audit.bookOk)
 //图书审核失败模块
 router.post('/isNoBook',expressJoi(id),audit.bookNo)
+// 获取审核员模块————get请求
+router.get('/getInfo',audit.getAuditInfoService)
 //导出路由
 module.exports = router

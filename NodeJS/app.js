@@ -59,7 +59,6 @@ app.use(function (req, res, next) {
             next()
             return
         }
-
         await res.send({
             code,
             message: err instanceof Error ? err.message : err,

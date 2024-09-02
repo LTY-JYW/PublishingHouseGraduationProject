@@ -2,11 +2,9 @@
 import { ref,onMounted } from 'vue'
 import {
   Management,
-  Promotion,
   UserFilled,
   User,
   Crop,
-  EditPen,
   SwitchButton,
   CaretBottom
 } from '@element-plus/icons-vue'
@@ -14,9 +12,12 @@ import { adminGetInfoApi } from '@/api/admin'
 import type { AdminGetInfoType } from '@/api/admin'
 import { URL } from '@/utils/defaultAvatar'
 
+// 管理员信息
 const adminInfo = ref<AdminGetInfoType>()
+// 管理员头像
 const avatar = ref<string>('')
 
+// 获取管理员信息函数
 const getInfo = async () => {
   const res = await adminGetInfoApi()
   adminInfo.value = res.data.data
@@ -26,11 +27,10 @@ const getInfo = async () => {
     avatar.value = URL
   }
 }
+
+
 onMounted(async () => {
   await getInfo()
-  console.log(adminInfo.value);
-  console.log(adminInfo.value?.[0].nickname);
-  
 })
 
 </script>
@@ -46,40 +46,50 @@ onMounted(async () => {
         text-color="#fff"
         router
       >
-        <el-menu-item index="/article/channel">
+        <el-menu-item index="/audit">
+          <el-icon><Stamp /></el-icon>
+          <span>审核员管理</span>
+        </el-menu-item>
+        <el-menu-item index="/books">
           <el-icon>
             <Management />
           </el-icon>
-          <span>文章分类</span>
-        </el-menu-item>
-        <el-menu-item index="/article/manage">
-          <el-icon>
-            <Promotion />
-          </el-icon>
           <span>文章管理</span>
         </el-menu-item>
-        <el-sub-menu index="/user">
+        <el-menu-item index="/information">
+          <el-icon><ChatLineRound /></el-icon>
+          <span>资讯管理</span>
+        </el-menu-item>
+        <el-sub-menu index="/category">
+          <template #title>
+            <el-icon><Menu /></el-icon>
+            <span>分类管理</span>
+          </template>
+          <el-menu-item index="/category/one">
+            <el-icon><Menu /></el-icon>
+            <span>一级分类</span>
+          </el-menu-item>
+          <el-menu-item index="/category/two">
+            <el-icon><Grid /></el-icon>
+            <span>二级分类</span>
+          </el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="/admin/user">
           <template #title>
             <el-icon>
               <UserFilled />
             </el-icon>
-            <span>个人中心</span>
+            <span>用户管理</span>
           </template>
-          <el-menu-item index="/user/profile">
+          <el-menu-item index="/admin/user/info">
             <el-icon>
               <User />
             </el-icon>
-            <span>基本资料</span>
+            <span>基本信息</span>
           </el-menu-item>
-          <el-menu-item index="/user/avatar">
+          <el-menu-item index="/admin/user/pwd">
             <el-icon>
               <Crop />
-            </el-icon>
-            <span>更换头像</span>
-          </el-menu-item>
-          <el-menu-item index="/user/password">
-            <el-icon>
-              <EditPen />
             </el-icon>
             <span>重置密码</span>
           </el-menu-item>
@@ -106,18 +116,13 @@ onMounted(async () => {
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item
-                command="profile"
+                command="/admin/user/info"
                 :icon="User"
                 >基本资料</el-dropdown-item
               >
               <el-dropdown-item
                 command="avatar"
                 :icon="Crop"
-                >更换头像</el-dropdown-item
-              >
-              <el-dropdown-item
-                command="password"
-                :icon="EditPen"
                 >重置密码</el-dropdown-item
               >
               <el-dropdown-item

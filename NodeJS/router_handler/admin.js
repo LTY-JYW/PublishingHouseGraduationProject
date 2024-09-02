@@ -97,3 +97,11 @@ exports.getAdminInfoService = async (req, res) => {
         return res.result(resultsAdminInfo.message)
     return res.result('信息获取成功', 0, resultsAdminInfo.data)
 }
+
+//更新审核员头像
+exports.updateAdminPicService = async (req, res) => {
+    const sql = 'UPDATE admin SET avatar = :avatar WHERE id = :id'
+    const results = await db.executeQuery(sql, { avatar: req.body.avatar, id: req.auth.id })
+    isNoRes(results)
+    return res.result('头像更新成功！', 0)
+}

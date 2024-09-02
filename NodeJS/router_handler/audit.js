@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
 }
 
 //同意驳回成为作者函数
-const isAuthorUser = async (req, isStatus,res) => {
+const isAuthorUser = async (req, isStatus, res) => {
     const id = req.body.id
     const sqlSel = 'select * from users where id = :id and isAuthor = 2'
     const resSel = await db.executeQuery(sqlSel, { id: id })
@@ -71,28 +71,28 @@ const isAuthorUser = async (req, isStatus,res) => {
         return res.result('该账户未申请作者')
     }
     const sql = 'UPDATE users SET isAuthor = :isAuthor,aid = :aid WHERE id = :id'
-    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus, aid:req.auth.id })
+    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus, aid: req.auth.id })
     isNoRes(resAuthor)
 
     if (isStatus === 1) {
         return res.result('审核成功！', 0)
     }
-    if( isStatus === 0){
-        return res.result('驳回成功！',0)
+    if (isStatus === 0) {
+        return res.result('驳回成功！', 0)
     }
 
 }
 //同意成为作者
 exports.agreeOk = (req, res) => {
-    isAuthorUser(req,1,res)
+    isAuthorUser(req, 1, res)
 }
 //驳回成为作者
 exports.agreeNo = (req, res) => {
-    isAuthorUser(req,0,res)
+    isAuthorUser(req, 0, res)
 }
 
 //解禁与封禁图书
-const isAuthorBooks = async (req, isStatus,res) => {
+const isAuthorBooks = async (req, isStatus, res) => {
     const id = req.body.id
     const sqlSel = 'select * from books where id = :id and disable = 2'
     const resSel = await db.executeQuery(sqlSel, { id: id })
@@ -101,10 +101,10 @@ const isAuthorBooks = async (req, isStatus,res) => {
         return res.result('未找到该图书审核信息')
     }
     const sql = 'UPDATE books SET disable = :disable,aid = :aid WHERE id = :id'
-    const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus,aid:req.auth.id })
+    const resAuthor = await db.executeQuery(sql, { id: id, disable: isStatus, aid: req.auth.id })
     isNoRes(resAuthor)
 
-    return res.result('审核成功！',0)
+    return res.result('审核成功！', 0)
 
 }
 
@@ -119,6 +119,61 @@ exports.getAuditInfoService = async (req, res) => {
 }
 
 //图书审核通过
-exports.bookOk = (req, res) => {isAuthorBooks(req,0,res)}
+exports.bookOk = (req, res) => { isAuthorBooks(req, 0, res) }
 //图书审核失败
-exports.bookNo = (req, res) => {isAuthorBooks(req,1,res)}
+exports.bookNo = (req, res) => { isAuthorBooks(req, 1, res) }
+
+// 获取审核员列表
+exports.selOveryAudit = async (req, res) => {
+    const formDate = req.body
+    // page 是当前页码。
+    // itemsPerPage 是每页显示的项目数量
+    // 计算 offset(从哪一行开始返回数据)
+    const offset = (formDate.page - 1) * formDate.itemsPerPage;
+    //LIMIT 用于限制查询结果的行数。
+    //OFFSET 用于指定从哪一行开始返回数据。
+    const sql = `SELECT * FROM audit LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const resSel = await db.executeQuery(sql);
+    if (resSel.data.length < 1) {
+        return res.result('暂无审核员员信息')
+    }
+    isNoRes(resSel)
+    return res.result('获取成功！', 0, resSel.data)
+}
+
+// 更新审核员信息
+exports.updataUserInfoService = async (req, res) => {
+    const sql = 'UPDATE audit SET nickname = :nickname WHERE id = :id'
+    const results = await db.executeQuery(sql, { nickname: req.body.nickname, id: req.auth.id})
+    isNoRes(results)
+    return res.result('更新成功！', 0)
+}
+
+// 更新审核员密码
+exports.updataAuditPWDService = async (req, res) => {
+    //看该用户是否存在
+    const sqlSelect = 'select * from audit where id = :id'
+    const results = await db.executeQuery(sqlSelect, { id: req.auth.id })
+    isNoRes(results)
+    if (results.data.length !== 1) {
+        res.result('用户不存在！')
+        return
+    }
+    if (! await bcryptjs.compare(req.body.oldPwd, results.data[0].password)) {
+        res.result('原密码错误！')
+        return
+    }
+    const sqlUpdate = 'UPDATE audit SET password = :password WHERE id = :id'
+    const newpassword = bcryptjs.hashSync(req.body.newPwd, 10)
+    const resultUp = await db.executeQuery(sqlUpdate, { password: newpassword, id: req.auth.id })
+    isNoRes(resultUp)
+    return res.result('密码更新成功', 0)
+}
+
+//更新审核员头像
+exports.updateAuditPicService = async (req, res) => {
+    const sql = 'UPDATE audit SET avatar = :avatar WHERE id = :id'
+    const results = await db.executeQuery(sql, { avatar: req.body.avatar, id: req.auth.id })
+    isNoRes(results)
+    return res.result('头像更新成功！', 0)
+}

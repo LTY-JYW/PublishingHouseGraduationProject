@@ -5,8 +5,10 @@ const router = express.Router()
 const audit = require('../router_handler/audit')
 //导入验证模块中间件
 const  expressJoi = require('@escook/express-joi')
+// 导入验证模块
+const { overyAudit,update_auditpwd_schema } = require('../schema/audit')
 //导入验证模块
-const { id } = require('../schema/id')
+const { id,updata_Pic_schema } = require('../schema/id')
 //审核员同意作者模块————post请求
 router.post('/isOkAuthor',expressJoi(id),audit.agreeOk)
 //审核员驳回作者模块————post请求
@@ -17,5 +19,13 @@ router.post('/isOkBook',expressJoi(id),audit.bookOk)
 router.post('/isNoBook',expressJoi(id),audit.bookNo)
 // 获取审核员模块————get请求
 router.get('/getInfo',audit.getAuditInfoService)
+// 获取审核员列表————get请求
+router.get('/overy',expressJoi(overyAudit),audit.selOveryAudit)
+// 更新审核员密码————post请求
+router.post('/upPWD',expressJoi(update_auditpwd_schema),audit.updataAuditPWDService)
+// 更新审核员头像————post请求
+router.post('/avatar',expressJoi(updata_Pic_schema),audit.updateAuditPicService)
+
+
 //导出路由
 module.exports = router

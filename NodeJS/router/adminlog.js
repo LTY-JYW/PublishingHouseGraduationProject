@@ -14,6 +14,5 @@ router.post('/reguser',expressJoi(reg_login_schema),admin.reguser)
 //管理员登录模块————post请求
 router.post('/login',expressJoi(reg_login_schema),admin.login)
 
-
 //导出路由模块
 module.exports = router

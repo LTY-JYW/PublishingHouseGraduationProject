@@ -1,4 +1,5 @@
 //导入验证模块
+const { query } = require('express')
 const joi = require('joi')
 const name = joi.string().required()
 const profile = joi.string().required()
@@ -15,7 +16,7 @@ exports.addCategory = {
 
 //查询分类校验规则
 exports.selCategory = {
-    body: {
+    query: {
         page,
         itemsPerPage
     }

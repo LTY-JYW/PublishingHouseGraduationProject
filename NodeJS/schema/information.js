@@ -16,7 +16,7 @@ exports.addInformation = {
 
 //查询资讯校验规则
 exports.selInformation = {
-    body: {
+    query: {
         page,
         itemsPerPage,
         by,

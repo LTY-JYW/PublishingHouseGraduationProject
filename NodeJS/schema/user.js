@@ -6,6 +6,8 @@ const id = joi.number().integer().min(1).required()
 const nickname = joi.string().required()
 const email = joi.string().email().required()
 const avatar = joi.string().dataUri().required()
+const page = joi.number().min(1).required()
+const itemsPerPage = joi.number().min(1).required()
 
 //登录注册验证规则
 exports.reg_login_schema = {
@@ -32,5 +34,13 @@ exports.update_userpwd_schema = {
 exports.updata_userPic_schema = {
     body:{
         avatar
+    }
+}
+
+// 获取所用用户验证规则
+exports.overy_sel_schema = {
+    query:{
+        page,
+        itemsPerPage
     }
 }

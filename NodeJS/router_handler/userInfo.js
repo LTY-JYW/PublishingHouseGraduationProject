@@ -52,3 +52,32 @@ exports.addAuthor = async (req, res) => {
     isNoRes(resultReg)
     return res.result('申请作者成功!', 0)
 }
+
+// 获取用户列表
+exports.overySel = async (req, res) => {
+    const formDate = req.query
+    // page 是当前页码。
+    // itemsPerPage 是每页显示的项目数量
+    // 计算 offset(从哪一行开始返回数据)
+    const offset = (formDate.page - 1) * formDate.itemsPerPage;
+    //LIMIT 用于限制查询结果的行数。
+    //OFFSET 用于指定从哪一行开始返回数据。
+    const sql = `SELECT id,username,nickname,avatar,email,briefly,disable,isAuthor,aid FROM users LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const resSel = await db.executeQuery(sql);
+    if (resSel.data.length < 1) {
+        return res.result('暂无审核员员信息')
+    }
+    isNoRes(resSel)
+
+    // 查询获取数据总数 
+    const sqlCount = 'SELECT COUNT(*) AS count FROM users'
+    const resCount = await db.executeQuery(sqlCount)
+    isNoRes(resCount)
+    const count = resCount.data[0].count
+
+    // 返回结果
+    return res.result('获取成功！', 0,{
+        value: resSel.data,
+        count
+    })
+}

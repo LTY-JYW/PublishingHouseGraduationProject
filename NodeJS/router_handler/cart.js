@@ -65,9 +65,28 @@ exports.upCart = async (req,res) => {
 // 查询该用户购物车信息
 exports.getCart = async (req,res) => {
     const uid = req.auth.id
-
-    const sqlSelCart = 'select * from cart where uid = :uid'
+    const formDate = req.query
+    // page 是当前页码。
+    // itemsPerPage 是每页显示的项目数量
+    // 计算 offset(从哪一行开始返回数据)
+    const offset = (formDate.page - 1) * formDate.itemsPerPage;
+    //LIMIT 用于限制查询结果的行数。
+    //OFFSET 用于指定从哪一行开始返回数据。
+    const sqlSelCart = `select * from cart where uid = :uid LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSelCart = await db.executeQuery(sqlSelCart,{uid})
     isNoRes(resSelCart)
-    return res.result('查询成功！',0,resSelCart.data)
+    if(resSelCart.data.length <1){
+        return res.result('暂无购物车信息')
+    }
+     // 查询获取数据总数 
+     const sqlCount = 'SELECT COUNT(*) AS count FROM cart where uid = :uid'
+     const resCount = await db.executeQuery(sqlCount,{uid})
+     isNoRes(resCount)
+     const count = resCount.data[0].count
+     console.log(count);
+ 
+     return res.result('获取成功！', 0,{
+         value: resSelCart.data,
+         count
+     })
 }

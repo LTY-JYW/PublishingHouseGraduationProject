@@ -138,7 +138,18 @@ exports.selOveryAudit = async (req, res) => {
         return res.result('暂无审核员员信息')
     }
     isNoRes(resSel)
-    return res.result('获取成功！', 0, resSel.data)
+
+    // 查询获取数据总数 
+    const sqlCount = 'SELECT COUNT(*) AS count FROM audit'
+    const resCount = await db.executeQuery(sqlCount)
+    isNoRes(resCount)
+    const count = resCount.data[0].count
+
+    // 返回结果
+    return res.result('获取成功！', 0,{
+        value: resSel.data,
+        count
+    })
 }
 
 // 更新审核员信息

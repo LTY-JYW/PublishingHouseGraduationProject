@@ -30,7 +30,6 @@ instance.interceptors.response.use(
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
-    console.log(res);
     if (res.data.code === 0) {
       return res
     }

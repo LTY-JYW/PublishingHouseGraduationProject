@@ -48,7 +48,7 @@ exports.upBooks = {
 
 // 查询所有图书校验规则
 exports.selOveryBooks = {
-    body: {
+    query: {
         page,
         itemsPerPage,
         by,

@@ -2,7 +2,6 @@
 import { ref,onMounted } from 'vue'
 import {
   Management,
-  UserFilled,
   User,
   Crop,
   SwitchButton,
@@ -32,6 +31,7 @@ const getInfo = async () => {
 onMounted(async () => {
   await getInfo()
 })
+
 
 </script>
 
@@ -74,23 +74,22 @@ onMounted(async () => {
             <span>二级分类</span>
           </el-menu-item>
         </el-sub-menu>
-        <el-sub-menu index="/admin/user">
+          <el-menu-item index="/admin/user">
+          <el-icon><Stamp /></el-icon>
+          <span>用户管理</span>
+        </el-menu-item>
+
+        <el-sub-menu index="/adminInfo">
           <template #title>
-            <el-icon>
-              <UserFilled />
-            </el-icon>
-            <span>用户管理</span>
+            <el-icon><HelpFilled /></el-icon>
+            <span>个人中心</span>
           </template>
-          <el-menu-item index="/admin/user/info">
-            <el-icon>
-              <User />
-            </el-icon>
-            <span>基本信息</span>
+          <el-menu-item index="/adminInfo/avatar">
+            <el-icon><FullScreen /></el-icon>
+            <span>更新头像</span>
           </el-menu-item>
-          <el-menu-item index="/admin/user/pwd">
-            <el-icon>
-              <Crop />
-            </el-icon>
+          <el-menu-item index="/adminInfo/password">
+            <el-icon><Unlock /></el-icon>
             <span>重置密码</span>
           </el-menu-item>
         </el-sub-menu>
@@ -99,7 +98,7 @@ onMounted(async () => {
     <el-container>
       <el-header>
         <div>
-          黑马程序员：<strong>{{ adminInfo?.[0].nickname}}</strong>
+          管理员：<strong>{{ adminInfo?.[0].nickname}}</strong>
         </div>
         <el-dropdown
           placement="bottom-end"
@@ -149,15 +148,16 @@ onMounted(async () => {
 .layout-container {
   height: 100vh;
 
+
   .el-aside {
     background-color: #232323;
 
     &__logo {
       height: 120px;
-      background: url('@/assets/logo.png')
+      background: url('@/assets/天依和阿绫.jpg')
         no-repeat center / 120px auto;
-    }
 
+    }
     .el-menu {
       border-right: none;
     }

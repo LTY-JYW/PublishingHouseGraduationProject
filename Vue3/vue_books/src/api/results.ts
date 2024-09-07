@@ -4,3 +4,10 @@ export type ResType <Type> = {
     message: string
     data: Type
 }
+
+
+// 查询数据页码类型
+export type PageType = {
+    page:number
+    itemsPerPage:number
+}

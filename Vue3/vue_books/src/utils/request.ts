@@ -30,6 +30,7 @@ instance.interceptors.response.use(
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
+    console.log(res);
     if (res.data.code === 0) {
       return res
     }
@@ -39,8 +40,6 @@ instance.interceptors.response.use(
     return Promise.reject(res.data)
   },
   (err) => {
-    console.log(err);
-    
     ElMessage.error(
       err.response.data.message ||
         '服务器响应异常'

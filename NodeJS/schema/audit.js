@@ -1,4 +1,5 @@
 //导入验证模块
+const { query } = require('express')
 const joi = require('joi')
 
 const page = joi.number().min(1).required()
@@ -9,7 +10,7 @@ const password = joi.string().pattern(/^[\S]{6,12}$/).required()
 
 //发布图书校验规则
 exports.overyAudit = {
-    body: {
+    query: {
         page,
         itemsPerPage
     }

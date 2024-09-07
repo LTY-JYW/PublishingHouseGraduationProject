@@ -125,14 +125,14 @@ exports.bookNo = (req, res) => { isAuthorBooks(req, 1, res) }
 
 // 获取审核员列表
 exports.selOveryAudit = async (req, res) => {
-    const formDate = req.body
+    const formDate = req.query
     // page 是当前页码。
     // itemsPerPage 是每页显示的项目数量
     // 计算 offset(从哪一行开始返回数据)
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sql = `SELECT * FROM audit LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const sql = `SELECT id,username,nickname,avatar FROM audit LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
         return res.result('暂无审核员员信息')

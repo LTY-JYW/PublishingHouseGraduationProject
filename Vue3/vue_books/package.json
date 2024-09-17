@@ -14,9 +14,11 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.7.4",
+    "dayjs": "^1.11.13",
     "element-plus": "^2.8.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
+    "vue-dayjs": "^1.0.2",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {

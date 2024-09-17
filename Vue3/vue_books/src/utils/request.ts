@@ -30,7 +30,7 @@ instance.interceptors.response.use(
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
-    if (res.data.code === 0) {
+    if (res.status === 200) {
       return res
     }
     ElMessage.error(

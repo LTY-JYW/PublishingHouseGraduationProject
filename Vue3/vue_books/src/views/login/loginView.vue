@@ -37,7 +37,6 @@ const formDate = ref<DateType>({
 
 // 判断本地是否有用户名和密码
 const voucherString:string = localStorage.getItem('User_Login')||''
-console.log(voucherString);
 
 if(voucherString){
   const voucher:LoginType = JSON.parse(voucherString) || ''
@@ -163,11 +162,9 @@ const adminLogin = async () => {
 const submitLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid) => {
-
     if (!isRemember.value) {
       localStorage.removeItem('User_Login');
     }
-
     if (valid) {
       if (isAdmin.value) {
         adminLogin()

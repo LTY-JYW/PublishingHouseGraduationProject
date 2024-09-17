@@ -35,8 +35,13 @@ export default defineConfig({
       plugins: [
         postcss(),
         pxToViewport({
-          viewportWidth: 1920, // 设计稿的视口宽度
-          // ... 其他配置项
+          // 设计稿的视口宽度
+          viewportWidth: 1920,
+          // landscape 视口宽度
+          landscape: false,
+          // 替换包含 px 的规则，而不是添加备用规则
+          replace: true,
+
         }),
       ],
     },

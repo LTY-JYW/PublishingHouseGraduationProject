@@ -46,30 +46,30 @@ onMounted(async () => {
         text-color="#fff"
         router
       >
-        <el-menu-item index="/audit">
+        <el-menu-item index="/admin/audit">
           <el-icon><Stamp /></el-icon>
           <span>审核员管理</span>
         </el-menu-item>
-        <el-menu-item index="/books">
+        <el-menu-item index="/admin/books">
           <el-icon>
             <Management />
           </el-icon>
-          <span>文章管理</span>
+          <span>图书管理</span>
         </el-menu-item>
-        <el-menu-item index="/information">
+        <el-menu-item index="/admin/information">
           <el-icon><ChatLineRound /></el-icon>
           <span>资讯管理</span>
         </el-menu-item>
-        <el-sub-menu index="/category">
+        <el-sub-menu index="/admin/category">
           <template #title>
             <el-icon><Menu /></el-icon>
             <span>分类管理</span>
           </template>
-          <el-menu-item index="/category/one">
+          <el-menu-item index="/admin/category/one">
             <el-icon><Menu /></el-icon>
             <span>一级分类</span>
           </el-menu-item>
-          <el-menu-item index="/category/two">
+          <el-menu-item index="/admin/category/two">
             <el-icon><Grid /></el-icon>
             <span>二级分类</span>
           </el-menu-item>
@@ -137,8 +137,7 @@ onMounted(async () => {
         <router-view></router-view>
       </el-main>
       <el-footer
-        >大事件 ©2023 Created by
-        黑马程序员</el-footer
+        >天翼图书 ©2024 </el-footer
       >
     </el-container>
   </el-container>

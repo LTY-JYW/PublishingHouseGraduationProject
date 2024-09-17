@@ -54,7 +54,7 @@ exports.addBooks = async (req, res) => {
 
 // 删除图书(图书为重要数据为保证数据完整性使用标记删除)
 exports.deleteBooks = async (req, res) => {
-    const formDate = req.body
+    const formDate = req.query
     const sqlSel = 'select * from books where id = :id'
     const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
     isNoRes(resSel)
@@ -68,11 +68,30 @@ exports.deleteBooks = async (req, res) => {
         return res.result('该图书已被删除！')
     }
 
-
     const sqlDel = 'UPDATE books SET isdelete = :isdelete WHERE id = :id'
     const resDel = await db.executeQuery(sqlDel, { isdelete: 1, id: formDate.id })
     isNoRes(resDel)
     return res.result('删除成功！', 0)
+}
+// 恢复图书
+exports.restoreBooks = async (req, res) => {
+    const formDate = req.body
+    const sqlSel = 'select * from books where id = :id'
+    const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
+    isNoRes(resSel)
+    if (resSel.data.length !== 1) {
+        return res.result('没有该图书！')
+    }
+    const sqlSelDel = 'select * from books where id = :id and isdelete = 0'
+    const resSelDel = await db.executeQuery(sqlSelDel, { id: formDate.id })
+    isNoRes(resSelDel)
+    if (resSelDel.data.length === 1) {
+        return res.result('该图书未被删除！')
+    }
+    const sqlDel = 'UPDATE books SET isdelete = :isdelete WHERE id = :id'
+    const resDel = await db.executeQuery(sqlDel, { isdelete: 0, id: formDate.id })
+    isNoRes(resDel)
+    return res.result('恢复成功！', 0)
 }
 
 // 更新图书信息
@@ -112,8 +131,37 @@ exports.updateBooks = async (req, res) => {
     return res.result('修改成功！', 0)
 }
 
-// 查询所有图书信息
+
+// 查询所有未删除的图书信息
 exports.selOveryBooks = async (req, res) => {
+    const formDate = req.query
+    // page 是当前页码。
+    // itemsPerPage 是每页显示的项目数量
+    // by 是按照什么来进行排序
+    // des 是升序还是降序
+    // 计算 offset(从哪一行开始返回数据)
+    const offset = (formDate.page - 1) * formDate.itemsPerPage;
+    //LIMIT 用于限制查询结果的行数。
+    //OFFSET 用于指定从哪一行开始返回数据。
+    const sql = `SELECT * FROM books WHERE isdelete = 0 ORDER BY ${formDate.by} ${formDate.des} LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const resSel = await db.executeQuery(sql);
+    if (resSel.data.length < 1) {
+        return res.result('暂无图书信息')
+    }
+    isNoRes(resSel)
+
+    // 查询获取数据总数 
+    const sqlCount = 'SELECT COUNT(*) AS count FROM books WHERE isdelete = 0'
+    const resCount = await db.executeQuery(sqlCount)
+    isNoRes(resCount)
+    const count = resCount.data[0].count
+    return res.result('获取成功！', 0, {
+        value: resSel.data,
+        count
+    })
+}
+// 查询所有图书信息
+exports.selOveryEveryBooks = async (req, res) => {
     const formDate = req.query
     // page 是当前页码。
     // itemsPerPage 是每页显示的项目数量
@@ -135,13 +183,10 @@ exports.selOveryBooks = async (req, res) => {
     const resCount = await db.executeQuery(sqlCount)
     isNoRes(resCount)
     const count = resCount.data[0].count
-    console.log(count);
-
     return res.result('获取成功！', 0, {
         value: resSel.data,
         count
     })
-
 }
 
 // 查询对应分类图书信息
@@ -161,7 +206,7 @@ exports.selCatergoryBooks = async (req, res) => {
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sql = `SELECT * FROM books where cid = ${formDate.cid} LIMIT ${formDate.itemsPerPage} OFFSET ${offset} `
+    const sql = `SELECT * FROM books where cid = ${formDate.cid} and isdelete = 0 LIMIT ${formDate.itemsPerPage} OFFSET ${offset} `
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
         return res.result('暂无图书信息')
@@ -170,7 +215,7 @@ exports.selCatergoryBooks = async (req, res) => {
 
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books where cid = :cid'
-    const resCount = await db.executeQuery(sqlCount,{cid:formDate.cid})
+    const resCount = await db.executeQuery(sqlCount, { cid: formDate.cid })
     isNoRes(resCount)
     const count = resCount.data[0].count
 

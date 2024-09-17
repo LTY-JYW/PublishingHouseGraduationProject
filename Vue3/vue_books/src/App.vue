@@ -4,9 +4,12 @@ import { RouterView } from 'vue-router'
 
 <template>
   <Suspense>
-  <RouterView />
-</Suspense>
+    <RouterView />
+  </Suspense>
 </template>
 
 <style scoped>
+* {
+  user-select: none;
+}
 </style>

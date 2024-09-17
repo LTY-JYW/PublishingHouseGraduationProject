@@ -3,15 +3,27 @@ const db = require('../db/index')
 const bcryptjs = require('bcryptjs')
 //导入同意错误返回信息
 const { isNoRes } = require('../utils/resNo')
-//获取用户基本信息
-exports.getUserInfoService = async (req, res) => {
+
+//获取用户基本信息模块
+exports.getUserInfo = async (req, res,id) => {
     const sqlGetUserInfo = 'select id,username,nickname,email,avatar,disable,isAuthor from users where id = :id'
-    const resultsUserInfo = await db.executeQuery(sqlGetUserInfo, { id: req.auth.id })
+    const resultsUserInfo = await db.executeQuery(sqlGetUserInfo, { id })
     isNoRes(resultsUserInfo)
     if (resultsUserInfo.status !== 0)
         return res.result(resultsUserInfo.message)
     return res.result('信息获取成功', 0, resultsUserInfo.data)
 }
+
+//获取用户基本信息
+exports.getUserInfoService = async (req, res) => {
+    return this.getUserInfo(req,res,req.auth.id)
+}
+
+// 管理员获取用户信息
+exports.getUserInfoAdminService = async (req, res) => {
+    return this.getUserInfo(req,res,req.query.id)
+}
+
 //更新用户信息
 exports.updataUserInfoService = async (req, res) => {
     const sql = 'UPDATE users SET nickname = :nickname,email = :email,briefly = :briefly WHERE id = :id'

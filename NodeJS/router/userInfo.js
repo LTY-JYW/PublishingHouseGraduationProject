@@ -5,11 +5,14 @@ const router = express.Router()
 const  expressJoi = require('@escook/express-joi')
 //导入创建好的验证模块
 const { updata_userInfo_schema,update_userpwd_schema,updata_userPic_schema,overy_sel_schema } = require('../schema/user')
+const { id_query } = require('../schema/id')
 
 //获取路由逻辑模块
 const userInfo = require('../router_handler/userInfo')
 //配置获取用户信息接口————get请求
 router.get('/userinfo',userInfo.getUserInfoService)
+// 配置管理员获取用户信息接口————get请求
+router.get('/userinfoadmin',expressJoi(id_query),userInfo.getUserInfoAdminService)
 //配置更新用户信息接口————post请求
 router.post('/userinfo',expressJoi(updata_userInfo_schema),userInfo.updataUserInfoService)
 //配置更新用户密码接口————post请求

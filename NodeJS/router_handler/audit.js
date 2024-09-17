@@ -27,7 +27,7 @@ exports.reguser = async (req, res) => {
     const regSql = 'INSERT INTO audit SET username = :username,password = :password,nickname = :nickname'
     const resultReg = await db.executeQuery(regSql, { username: userInfo.username, password: userInfo.password, nickname: nickname })
     isNoRes(resultReg)
-    res.result('注册成功', 0, resultReg.data)
+    res.result('注册成功', 0)
 }
 
 //审核员登录处理模块
@@ -108,14 +108,22 @@ const isAuthorBooks = async (req, isStatus, res) => {
 
 }
 
-//获取管理员信息处理模块
-exports.getAuditInfoService = async (req, res) => {
+// 获取管理员信息处理函数
+exports.getAuditInfo = async (req, res,id) => {
     const sqlGetAuditInfo = 'select id,username,nickname,avatar from audit where id = :id'
-    const resultsAuditInfo = await db.executeQuery(sqlGetAuditInfo, { id: req.auth.id })
+    const resultsAuditInfo = await db.executeQuery(sqlGetAuditInfo, { id })
     isNoRes(resultsAuditInfo)
     if (resultsAuditInfo.status !== 0)
         return res.result(resultsAuditInfo.message)
     return res.result('信息获取成功', 0, resultsAuditInfo.data)
+}
+//审核员获取自身信息处理模块
+exports.getAuditInfoService = async (req, res) => {
+    return this.getAuditInfo(req,res,req.auth.id)
+}
+// 管理员获取审核员信息处理模块
+exports.getAuditInfoAdminService = async (req, res) => {
+    return this.getAuditInfo(req,res,req.query.id)
 }
 
 //图书审核通过

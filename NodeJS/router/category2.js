@@ -9,7 +9,7 @@ const  expressJoi = require('@escook/express-joi')
 //导入验证模块
 const { addCategory,selCategory,upCategory,overySelCategory } = require('../schema/category2')
 // 导入id验证模块
-const { id } = require('../schema/id')
+const { id,id_query } = require('../schema/id')
 
 //发布分类————post请求
 router.post('/add',expressJoi(addCategory),category2.add)
@@ -21,6 +21,9 @@ router.get('/sel',expressJoi(selCategory),category2.sel)
 router.post('/updata',expressJoi(upCategory),category2.upData)
 // 获取所有分类————get请求
 router.get('/overy',expressJoi(overySelCategory),category2.overySel)
+// 获取分类详细信息————get请求
+router.get('/info',expressJoi(id_query),category2.getInfo)
+
 
 
 //导出路由

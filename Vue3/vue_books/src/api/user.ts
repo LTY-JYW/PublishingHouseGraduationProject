@@ -13,7 +13,23 @@ interface RegisteredData {
 export type UserLoginType = {
         token:string
 }
+
+// 用户详细信息返回类型
+export type UserInfoType = [
+    {
+        id: number,
+        username: string,
+        nickname: string,
+        email: string,
+        avatar: string,
+        disable: number,
+        isAuthor: number
+    }
+]
+
 // 用户注册API
 export const userRegisterAPI = (data:RegisteredData) => requeset.post<ResType<string>>('/api/reguser',data) 
 // 用户登录API
 export const userLoginAPI = (data:RegisteredData) => requeset.post<ResType<UserLoginType>>('/api/login',data) 
+
+// 

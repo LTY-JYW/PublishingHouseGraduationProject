@@ -116,3 +116,14 @@ exports.upData = async (req, res) => {
     isNoRes(resUp)
     return res.result('更新成功！', 0)
 }
+// 获取二级分类详细信息
+exports.getInfo = async (req,res) => {
+    const formData = req.query
+    const sqlSel = 'select * from category2 where id = :id'
+    const resSel = await db.executeQuery(sqlSel, { id: formData.id })
+    isNoRes(resSel)
+    if (resSel.data.length !== 1) {
+        return res.result('未找到该分类！')
+    }
+    return res.result('查询成功！', 0,resSel.data)
+}

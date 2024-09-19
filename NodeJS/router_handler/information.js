@@ -12,8 +12,16 @@ exports.add = async (req, res) => {
     const uid = req.auth.id
     const formData = req.body
     const time = new Date()
-    const sql = 'INSERT INTO information (title, main, time, author_id, disable) VALUES (:title, :main, :time, :author_id, 2)';
-    const resAdd = await db.executeQuery(sql, { title: formData.title, main: formData.main, time: timeDate(time), author_id: uid })
+
+    const sqlSel = 'select * from information where title = :title'
+    const resSel = await db.executeQuery(sqlSel,{title:formData.title})
+    isNoRes(resSel)
+    if(resSel.data.length >= 1){
+        return res.result('标题重复！请更换标题后重试！')
+    }
+
+    const sql = 'INSERT INTO information (title, main, time, disable,count) VALUES (:title, :main, :time, 2,0)';
+    const resAdd = await db.executeQuery(sql, { title: formData.title, main: formData.main, time: timeDate(time)})
     isNoRes(resAdd)
     return res.result('发表成功！', 0)
 }
@@ -21,13 +29,13 @@ exports.add = async (req, res) => {
 //删除资讯（资讯认为非重要数据实现删除操作）
 exports.delete = async (req, res) => {
     const sqlSel = 'select * from information where id = :id'
-    const resSel = await db.executeQuery(sqlSel, { id: req.body.id })
+    const resSel = await db.executeQuery(sqlSel, { id: req.query.id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('未找到该资讯！')
     }
     const sql = 'DELETE FROM information WHERE id = :id'
-    const resDel = await db.executeQuery(sql, { id: req.body.id })
+    const resDel = await db.executeQuery(sql, { id: req.query.id })
     isNoRes(resDel)
     return res.result('删除成功!', 0)
 }

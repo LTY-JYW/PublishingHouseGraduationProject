@@ -1,7 +1,7 @@
 //接口定义
 import requeset from '@/utils/request'
 //获取泛型类型
-import type { ResType, PageType } from "./results";
+import type { ResType, ResListTpye } from "./results";
 
 //注册接口
 //提交后端数据类型
@@ -30,15 +30,10 @@ export type BooksResListType = {
     disable: number,
     isdelete: number
 }[]
-// 获取图书列表返回类型
-export type BooksOveryType = {
-    value: BooksResListType
-    count: number
-}
 // 获取未删除图书列表
-export const booksGetListAPI = (params: BooksGetListType) => requeset.get<ResType<BooksOveryType>>('/my/books/overy', { params })
+export const booksGetListAPI = (params: BooksGetListType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/my/books/overy', { params })
 // 获取所有图书列表
-export const booksGetListOveryAPI = (params: BooksGetListType) => requeset.get<ResType<BooksOveryType>>('/my/books/overyevery', { params })
+export const booksGetListOveryAPI = (params: BooksGetListType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/my/books/overyevery', { params })
 
 // 修改图书信息类型
 export type BooksInfoType = {

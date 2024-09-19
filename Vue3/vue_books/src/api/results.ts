@@ -11,3 +11,18 @@ export type PageType = {
     page:number
     itemsPerPage:number
 }
+
+
+// 查询数据页面排序类型
+export interface PageByType {
+    page: number
+    itemsPerPage: number
+    by: string
+    des: string
+}
+
+// 列表查询返回泛型
+export type ResListTpye<Type> = {
+    value: Type
+    count: number
+}

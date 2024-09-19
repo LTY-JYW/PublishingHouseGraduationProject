@@ -1,5 +1,19 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from "vue";
+
+// 导入el组件
+import { ElMessageBox,ElMessage } from 'element-plus'
+import type { FormRules, FormInstance } from 'element-plus'
+// 导入el图标
+import { Edit, Delete, Search, DocumentAdd } from '@element-plus/icons-vue'
+// 导入统一错误处理函数
+import { isOk } from '@/utils/funtion'
+// 导入时间处理函数
+import { formDate } from '@/utils/dayjs'
+// 导入默认封面地址
+import { URL } from '@/utils/defaultAvatar'
+// 导入类型
+import type { BooksInfoType } from '@/api/books'
 // 导入后端数据类型
 import type { BooksResListType } from '@/api/books'
 // 导入后端接口函数
@@ -7,28 +21,6 @@ import { booksGetListAPI, booksGetListOveryAPI, booksUpInfoAPI, booksDelAPI, boo
 import { categoryInfoAPI } from '@/api/category2'
 import { adminGetUserInfoAPI } from '@/api/admin'
 import { auditAdminGetInfo } from '@/api/audit'
-// 导入el组件
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormRules, FormInstance } from 'element-plus'
-
-// 导入el图标
-import { Edit, Delete, Search, DocumentAdd } from '@element-plus/icons-vue'
-// 导入统一错误处理函数
-import { isOk } from '@/utils/funtion'
-// 导入默认封面地址
-import { URL } from '@/utils/defaultAvatar'
-// 导入类型
-import type { BooksInfoType } from '@/api/books'
-
-import dayjs from 'dayjs';
-import 'dayjs/locale/zh-cn'; // 引入中文语言包
-
-// 格式化时间函数
-const formDate = (time: string) => {
-  const formTime = dayjs(new Date(time)).format('YYYY-MM-DD');
-  return formTime
-}
-
 // 当前页码
 const page = ref(1)
 // 每页显示条数
@@ -68,7 +60,6 @@ const getCategoryInfo = async (id: number) => {
   name.value[id] = data.data[0].name
 }
 
-
 // 作者名集合类型
 type UserNameListType = {
   [key: number]: string
@@ -89,7 +80,6 @@ const getUserInfo = async (id: number) => {
   userName.value[id] = data.data[0].nickname
 }
 
-
 // 审核员名称集合类型
 type AuditNameListType = {
   [key: number]: string
@@ -108,8 +98,6 @@ const getAuditInfo = async (id: number) => {
   const { data } = await auditAdminGetInfo(id)
   auditName.value[id] = data.data[0].nickname
 }
-
-
 
 // 获取图书列表函数
 const getList = async () => {
@@ -130,8 +118,6 @@ const getList = async () => {
       getAuditInfo(row.aid)
     });
     total.value = data.data.count
-
-
     loading.value = false
   } else {
     const { data } = await booksGetListAPI({
@@ -155,9 +141,6 @@ const getList = async () => {
       total.value = data.data.count
 
     }
-
-
-
     loading.value = false
   }
 }
@@ -292,6 +275,7 @@ const headDelete = async (id: number) => {
     // 用户点击确定后的操作
     const res = await booksDelAPI(id)
     isOk(res.data)
+    ElMessage.success('删除成功')
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -446,11 +430,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         </template>
       </el-table-column>
     </el-table>
+
     <!-- 分页部分 -->
     <div class="pagination">
       <el-pagination v-model:current-page="page" v-model:page-size="itemsPerPage" :page-sizes="[1, 5, 10, 15]"
         :background="true" layout="jumper, total, sizes, prev, pager, next" :total="total" @change="onChange" />
     </div>
+
     <!-- 修改图书信息抽屉 -->
     <el-drawer v-model="isDrawer" title="更新图书" direction="rtl">
       <!-- 更新图书模块 -->

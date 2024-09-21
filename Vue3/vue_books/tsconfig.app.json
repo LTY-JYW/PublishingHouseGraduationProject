@@ -1,12 +1,11 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","types/**/*","src/**/*.ts"],
+  "include": ["env.d.ts", "src/**/*","node_modules/postcss-px-to-viewport-ts/types/*.d.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "noImplicitAny": true, // 启用 --noImplicitAny
-    // "types":["element-plus", "@element-plus/icons-vue"],
     "types": ["element-plus"],
     "baseUrl": ".",
     "paths": {

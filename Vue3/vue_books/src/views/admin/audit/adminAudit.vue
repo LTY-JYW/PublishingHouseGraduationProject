@@ -90,6 +90,11 @@ const rules = {
 const getList = async () => {
   loading.value = true
   const res = await auditGetOveryApi(page.value, itemsPerPage.value)
+  if (res.data.data === undefined) {
+    tableDate.value = undefined
+    loading.value = false
+    return
+  }
   tableDate.value = res.data.data.value
   total.value = res.data.data.count
   loading.value = false

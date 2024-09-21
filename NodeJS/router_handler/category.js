@@ -22,14 +22,18 @@ exports.add = async (req, res) => {
 
 //删除分类（分类认为非重要数据实现删除操作）
 exports.delete = async (req, res) => {
+    const formDate = req.query
     const sqlSel = 'select * from category where id = :id'
-    const resSel = await db.executeQuery(sqlSel, { id: req.body.id })
+    const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
+    const sql2Del = 'UPDATE category2 SET cid=NULL WHERE cid = :cid'
+    const res2Del = await db.executeQuery(sql2Del, { cid: formDate.id })
+    isNoRes(res2Del)
     const sql = 'DELETE FROM category WHERE id = :id'
-    const resDel = await db.executeQuery(sql, { id: req.body.id })
+    const resDel = await db.executeQuery(sql, { id: formDate.id })
     isNoRes(resDel)
     return res.result('删除成功!', 0)
 }

@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 
 // 导入el组件
-import { ElMessageBox,ElMessage } from 'element-plus'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import type { FormRules, FormInstance } from 'element-plus'
 // 导入el图标
 import { Edit, Delete, Search, DocumentAdd } from '@element-plus/icons-vue'
@@ -110,6 +110,11 @@ const getList = async () => {
       des: des.value
     })
     isOk(data)
+    if (data.data === undefined) {
+      tableData.value = undefined
+      loading.value = false
+      return
+    }
     tableData.value = data.data.value
     // 在组件初始化时，预先获取所有分类信息
     tableData.value.forEach((row) => {
@@ -127,6 +132,11 @@ const getList = async () => {
       des: des.value
     })
     isOk(data)
+    if (data.data === undefined) {
+      tableData.value = undefined
+      loading.value = false
+      return
+    }
     if (data.code !== 0) {
       tableData.value = undefined
 
@@ -139,7 +149,6 @@ const getList = async () => {
         getAuditInfo(row.aid)
       });
       total.value = data.data.count
-
     }
     loading.value = false
   }

@@ -55,6 +55,11 @@ const getList = async () => {
   loading.value = true
   const { data } = await informationGetListAPI(selData.value)
   isOk(data)
+  if (data.data === undefined) {
+    tableData.value = undefined
+    loading.value = false
+    return
+  }
   tableData.value = data.data.value
   total.value = data.data.count
   // 在组件初始化时，预先获取所有分类信息

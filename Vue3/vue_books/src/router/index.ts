@@ -43,6 +43,11 @@ const router = createRouter({
           component: () => import('@/views/admin/category/adminCategory.vue')
         },
         {
+          path: 'category2',
+          name: 'category2',
+          component: () => import('@/views/admin/category/adminCategoryTwo.vue')
+        },
+        {
           path: 'information',
           name: 'information',
           component: () => import('@/views/admin/information/adminInformation.vue')
@@ -77,8 +82,6 @@ const router = createRouter({
 //路由守卫
 router.beforeEach((to) => {
   const userStore = useUserStore()
-  console.log(to.path);
-  
   //没有登录的用户只能访问登陆页面
   if (!userStore.token && to.path != '/') {
     ElMessage.error('请先登录')

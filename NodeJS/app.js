@@ -74,6 +74,7 @@ app.use(jwt({
 }).unless({
     path: [/^\/api\//]
 }))
+
 //调用路由模块
 const userRouter = require('./router/user')
 const userInfo = require('./router/userInfo.js')

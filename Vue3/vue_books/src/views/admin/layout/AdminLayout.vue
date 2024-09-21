@@ -60,16 +60,16 @@ onMounted(async () => {
           <el-icon><ChatLineRound /></el-icon>
           <span>资讯管理</span>
         </el-menu-item>
-        <el-sub-menu index="/admin/category">
+        <el-sub-menu index="">
           <template #title>
             <el-icon><Menu /></el-icon>
             <span>分类管理</span>
           </template>
-          <el-menu-item index="/admin/category/one">
+          <el-menu-item index="/admin/category">
             <el-icon><Menu /></el-icon>
             <span>一级分类</span>
           </el-menu-item>
-          <el-menu-item index="/admin/category/two">
+          <el-menu-item index="/admin/category2">
             <el-icon><Grid /></el-icon>
             <span>二级分类</span>
           </el-menu-item>
@@ -137,7 +137,7 @@ onMounted(async () => {
         <router-view></router-view>
       </el-main>
       <el-footer
-        >天翼图书 ©2024 </el-footer
+        >天翼图书 ©2024 <br> 互联网ICP备案：鄂ICP备2024073345号-1</el-footer
       >
     </el-container>
   </el-container>

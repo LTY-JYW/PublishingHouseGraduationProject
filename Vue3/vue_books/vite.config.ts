@@ -10,14 +10,21 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // postCss
-import postcss from 'postcss';
-import pxToViewport from 'postcss-px-to-viewport';
+import pxToViewport from 'postcss-px-to-viewport-ts';
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    pxToViewport({
+      viewportWidth: 750, // 视窗的宽度，对应的是我们设计稿的宽度，一般是750
+      unitPrecision: 3, // 指定`px`转换为视窗单位值的小数位数
+      viewportUnit: 'vw', // 指定需要转换成的视窗单位，建议使用vw
+      selectorBlackList: ['.ignore', '.hairlines'], // 指定不转换为视窗单位的类，可以自定义，可以无限添加
+      minPixelValue: 1, // 小于或等于`1px`不转换为视窗单位，你也可以设置为你想要的值
+      mediaQuery: false // 允许在媒体查询中转换`px`
+    }),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
@@ -29,21 +36,5 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
-  css: {
-    postcss: {
-      plugins: [
-        postcss(),
-        pxToViewport({
-          // 设计稿的视口宽度
-          viewportWidth: 1920,
-          // landscape 视口宽度
-          landscape: false,
-          // 替换包含 px 的规则，而不是添加备用规则
-          replace: true,
-
-        }),
-      ],
-    },
   },
 })

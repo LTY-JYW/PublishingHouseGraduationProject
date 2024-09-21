@@ -9,16 +9,16 @@ const  expressJoi = require('@escook/express-joi')
 //导入验证模块
 const { addCategory,selCategory,upCategory } = require('../schema/category')
 // 导入id验证模块
-const { id } = require('../schema/id')
+const { id,id_query } = require('../schema/id')
 
 //发布分类————post请求
-router.post('/add',expressJoi(addCategory),category.add)
+router.post('',expressJoi(addCategory),category.add)
 // 删除分类————delete请求
-router.delete('/delete',expressJoi(id),category.delete)
+router.delete('',expressJoi(id_query),category.delete)
 // 查询分类————get请求
-router.get('/sel',expressJoi(selCategory),category.sel)
+router.get('',expressJoi(selCategory),category.sel)
 //更新分类————post请求
-router.post('/updata',expressJoi(upCategory),category.upData)
+router.put('',expressJoi(upCategory),category.upData)
 
 
 //导出路由

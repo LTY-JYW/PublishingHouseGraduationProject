@@ -6,14 +6,14 @@ import type { ResType, PageByType, ResListTpye } from "./results";
 //查询资讯列表 
 // 查询资讯列表返回类型
 export type InformationType = {
-    'id': number,
-    'title':string,
-    'main': string,
-    'time':string,
-    'audit_id': number,
-    'author_id': number,
-    'count': number,
-    'disable': number
+    id: number,
+    title:string,
+    main: string,
+    time:string,
+    audit_id: number,
+    author_id: number,
+    count: number,
+    disable: number
 }[]
 // 查询资讯列表API
 export const informationGetListAPI = (params: PageByType) => requeset.get<ResType<ResListTpye<InformationType>>>('/my/news/sel', { params })

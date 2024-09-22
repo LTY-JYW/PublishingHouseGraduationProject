@@ -12,13 +12,13 @@ const { id } = require('../schema/id')
 const { addCart,upCart,overycart } = require('../schema/cart')
 
 //添加购物车模块————post请求
-router.post('/add',expressJoi(addCart),cart.addCart)
+router.post('',expressJoi(addCart),cart.addCart)
 //删除购物车模块————delete请求
-router.delete('/delete',expressJoi(id),cart.delCart)
+router.delete('',expressJoi(id),cart.delCart)
 // 修改购物车数量————post请求
-router.post('/upcount',expressJoi(upCart),cart.upCart)
+router.put('',expressJoi(upCart),cart.upCart)
 // 查询用户的购物车————get请求
-router.get('/get',expressJoi(overycart),cart.getCart)
+router.get('',expressJoi(overycart),cart.getCart)
 
 
 //导出路由

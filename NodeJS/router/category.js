@@ -17,6 +17,8 @@ router.post('',expressJoi(addCategory),category.add)
 router.delete('',expressJoi(id_query),category.delete)
 // 查询分类————get请求
 router.get('',expressJoi(selCategory),category.sel)
+// 查询分类信息————get请求
+router.get('/info',expressJoi(id_query),category.selinfo)
 //更新分类————post请求
 router.put('',expressJoi(upCategory),category.upData)
 

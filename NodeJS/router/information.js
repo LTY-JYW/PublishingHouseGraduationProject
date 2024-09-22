@@ -12,11 +12,11 @@ const { addInformation,selInformation } = require('../schema/information')
 const { id,id_query } = require('../schema/id')
 
 //发布资讯————post请求
-router.post('/add',expressJoi(addInformation),information.add)
+router.post('',expressJoi(addInformation),information.add)
 // 删除资讯————delete请求
-router.delete('/delete',expressJoi(id_query),information.delete)
+router.delete('',expressJoi(id_query),information.delete)
 // 查询资讯————get请求
-router.get('/sel',expressJoi(selInformation),information.sel)
+router.get('',expressJoi(selInformation),information.sel)
 
 
 //导出路由

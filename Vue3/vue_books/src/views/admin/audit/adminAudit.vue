@@ -12,6 +12,8 @@ import { ElMessage } from 'element-plus'
 import type { FormProps } from 'element-plus'
 // 导入后端数据类型
 import type { AuditOveryValueType } from '@/api/audit'
+// 导入公共函数
+import { lastPage } from '@/utils/funtion'
 
 // 当前页码
 const page = ref(1)
@@ -103,7 +105,6 @@ const getList = async () => {
 // 一开始便调用函数获取表格数据
 await getList()
 
-
 // 改变页码和每页条数的函数 
 const onChange = async (currentPage: number, pageSize: number) => {
   if (itemsPerPage.value === pageSize) {
@@ -131,6 +132,7 @@ const onConfirm = async () => {
     }
     isDialog.value = false
     ElMessage.success("添加成功")
+    page.value = lastPage(total.value,itemsPerPage.value)
     await getList()
   }
 }
@@ -139,9 +141,11 @@ const onConfirm = async () => {
 
 <template>
   <pageComponent title="审核员管理">
+    <!-- 卡片按钮部分 -->
     <template #button>
       <el-button plain type="primary" round @click="isDialog = true">添加审核员</el-button>
     </template>
+    <!-- 表格部分 -->
     <el-table stripe style="width: 100%" :data="tableDate" v-loading="loading" height="680">
       <el-table-column label="头像" width="180">
         <template #default="scope">
@@ -159,10 +163,8 @@ const onConfirm = async () => {
       <el-pagination v-model:current-page="page" v-model:page-size="itemsPerPage" :page-sizes="[1, 5, 10, 15]"
         :background="true" layout="jumper, total, sizes, prev, pager, next" :total="total" @change="onChange" />
     </div>
-
     <!-- 添加审核员弹窗 -->
     <el-dialog v-model="isDialog" title="添加审核员" width="500" draggable overflow>
-
       <!-- 表单部分 -->
       <el-form inline :model="formData" :rules="rules" ref="form" size="large" autocomplete="off" :label-position="labelPosition">
         <el-form-item prop="username" label="账号" label-position="left">

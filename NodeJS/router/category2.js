@@ -12,13 +12,13 @@ const { addCategory,selCategory,upCategory,overySelCategory } = require('../sche
 const { id,id_query } = require('../schema/id')
 
 //发布分类————post请求
-router.post('/add',expressJoi(addCategory),category2.add)
+router.post('',expressJoi(addCategory),category2.add)
 // 删除分类————delete请求
-router.delete('/delete',expressJoi(id),category2.delete)
+router.delete('',expressJoi(id_query),category2.delete)
 // 查询分类————get请求
 router.get('/sel',expressJoi(selCategory),category2.sel)
 //更新分类————post请求
-router.post('/updata',expressJoi(upCategory),category2.upData)
+router.put('',expressJoi(upCategory),category2.upData)
 // 获取所有分类————get请求
 router.get('/overy',expressJoi(overySelCategory),category2.overySel)
 // 获取分类详细信息————get请求

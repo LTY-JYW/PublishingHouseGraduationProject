@@ -38,7 +38,7 @@ exports.delete = async (req, res) => {
     return res.result('删除成功!', 0)
 }
 
-// 查询资讯
+// 查询一级分类列表
 exports.sel = async (req, res) => {
     const formDate = req.query
     // page 是当前页码。
@@ -66,6 +66,18 @@ exports.sel = async (req, res) => {
         value: resSel.data,
         count
     })
+}
+// 查询一级分类列表
+exports.selinfo = async (req, res) => {
+    const {id} = req.query
+    const sql = `SELECT * FROM category WHERE id = ${id}`
+    const resSel = await db.executeQuery(sql);
+    isNoRes(resSel)
+    if (resSel.data.length < 1) {
+        return res.result('暂无分类信息')
+    }
+    // 返回结果
+    return res.result('获取成功！', 0, resSel.data)
 }
 
 //更新分类

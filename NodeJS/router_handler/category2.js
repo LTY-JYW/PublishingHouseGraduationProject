@@ -21,8 +21,8 @@ exports.add = async (req, res) => {
         return res.result('该分类名已存在')
     }
 
-    const sql = 'INSERT INTO category2 (name, profile,cid) VALUES (:name, :profile,:cid)';
-    const resAdd = await db.executeQuery(sql, { name: formData.name, profile: formData.profile, cid: formData.cid })
+    const sql = 'INSERT INTO category2 (name, profile,cid,cover) VALUES (:name, :profile,:cid,:cover)';
+    const resAdd = await db.executeQuery(sql, { name: formData.name, profile: formData.profile, cid: formData.cid,cover:formData.cover })
     isNoRes(resAdd)
     return res.result('添加成功！', 0)
 }
@@ -31,14 +31,19 @@ exports.add = async (req, res) => {
 //删除二级分类（分类认为非重要数据实现删除操作）
 exports.delete = async (req, res) => {
     const sqlSel = 'select * from category2 where id = :id'
-    const resSel = await db.executeQuery(sqlSel, { id: req.body.id })
+    const resSel = await db.executeQuery(sqlSel, { id: req.query.id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
     const sql = 'DELETE FROM category2 WHERE id = :id'
-    const resDel = await db.executeQuery(sql, { id: req.body.id })
+    const resDel = await db.executeQuery(sql, { id: req.query.id })
     isNoRes(resDel)
+
+    const sqlBookSel = 'UPDATE books SET cid=NULL WHERE cid = :cid'
+    const resBookSel = await db.executeQuery(sqlBookSel, { cid: req.query.id })
+    isNoRes(resBookSel)
+
     return res.result('删除成功!', 0)
 }
 
@@ -104,15 +109,15 @@ exports.overySel = async (req, res) => {
 
 //更新二级分类
 exports.upData = async (req, res) => {
-    const forData = req.body
+    const {name,profile,cid,cover,id} = req.body
     const sqlSel = 'select * from category2 where id = :id'
-    const resSel = await db.executeQuery(sqlSel, { id: forData.id })
+    const resSel = await db.executeQuery(sqlSel, { id })
     isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
-    const sqlUp = 'UPDATE category2 SET name = :name,profile = :profile WHERE id = :id'
-    const resUp = await db.executeQuery(sqlUp, { name: forData.name, profile: forData.profile, id: forData.id })
+    const sqlUp = 'UPDATE category2 SET name = :name,profile = :profile,cid = :cid,cover = :cover WHERE id = :id'
+    const resUp = await db.executeQuery(sqlUp, { name, profile, cid, cover,id })
     isNoRes(resUp)
     return res.result('更新成功！', 0)
 }

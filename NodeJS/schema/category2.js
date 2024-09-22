@@ -4,6 +4,7 @@ const name = joi.string().required()
 const profile = joi.string().required()
 const id = joi.number().integer().min(1).required()
 const cid = joi.number().integer().min(1).required()
+const cover = joi.string().required()
 const page = joi.number().min(1).required()
 const itemsPerPage = joi.number().min(1).required()
 //发布分类校验规则
@@ -12,6 +13,7 @@ exports.addCategory = {
         cid,
         name,
         profile,
+        cover
     }
 }
 
@@ -36,7 +38,9 @@ exports.overySelCategory = {
 exports.upCategory = {
     body:{
         id,
+        cid,
         name,
-        profile
+        profile,
+        cover
     }
 }

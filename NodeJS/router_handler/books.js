@@ -104,6 +104,12 @@ exports.updateBooks = async (req, res) => {
         return res.result('没有该图书！')
     }
 
+    const sqlName = 'select * from books where name = :name'
+    const resName = await db.executeQuery(sqlName, { name: formDate.name })
+    isNoRes(resName)
+    if (resName.data.length >= 1) {
+        return res.result('图书名重复！')
+    }
 
     const sqlCategorySel = 'select * from category2 where id = :id'
     const resCategorySel = await db.executeQuery(sqlCategorySel, { id: formDate.cid })

@@ -1,12 +1,12 @@
 const qiniu = require('qiniu');
 
-// 替换为你的七牛云 Access Key 和 Secret Key
-const ACCESS_KEY = 'xSLGlmIAZWi-YwnII7RsZItiOFFGJ7YrLbvJVbn2';
-const SECRET_KEY = 'qGUrALu5eUUims0QBVr6Dl3sVpMKyw4-Ejh2V1EX';
-// 替换为你的存储空间名称
-const BUCKET_NAME = 'books2';
-
-
+// 七牛云 Access Key 和 Secret Key
+const ACCESS_KEY = 'xSLGlmIAZWi-YwnII7RsZItiOFFGJ7YrLbvJVbn2'
+const SECRET_KEY = 'qGUrALu5eUUims0QBVr6Dl3sVpMKyw4-Ejh2V1EX'
+// 存储空间名称
+const BUCKET_NAME = 'graduation-project-publishing-house'
+// 七牛云自定义域名
+// const URL = 'http://qiniuy.ltyjyw.site'
 /**
  * 创建一个七牛云文件上传器类
  */
@@ -15,6 +15,8 @@ class QiNiuUploader {
    * 构造函数
    */
   constructor() {
+    this.BUCKET_NAME = 'graduation-project-publishing-house'
+    this.URL = 'http://qiniuy.ltyjyw.site'
     // 初始化配置
     this.config = new qiniu.conf.Config();
     // 设置使用http域名
@@ -22,7 +24,7 @@ class QiNiuUploader {
     // 设置使用自定义域名
     this.config.useCdnDomains = true;
     // 设置自定义域名
-    this.config.cdnPrefix = `http://ltyjyw.site`;
+    this.config.cdnPrefix = URL;
 
     // 创建鉴权对象
     this.mac = new qiniu.auth.digest.Mac(ACCESS_KEY, SECRET_KEY);

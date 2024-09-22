@@ -59,10 +59,10 @@ export type BooksInfoType = {
     cover: string,
 }
 // 更新图书信息
-export const booksUpInfoAPI = (data:BooksInfoType) => requeset.post<ResType<undefined>>('/my/books/update',data)
+export const booksUpInfoAPI = (data:BooksInfoType) => requeset.put<ResType<undefined>>('/my/books',data)
 
 // 删除图书
-export const booksDelAPI = (id:number) => requeset.delete<ResType<undefined>>('/my/books/delete',{params:{id}})
+export const booksDelAPI = (id:number) => requeset.delete<ResType<undefined>>('/my/books',{params:{id}})
 
 // 恢复图书
 export const booksRestoreAPI = (id:number) => requeset.post<ResType<undefined>>('/my/books/restore',{id})

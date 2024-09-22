@@ -16,7 +16,7 @@ export type InformationType = {
     disable: number
 }[]
 // 查询资讯列表API
-export const informationGetListAPI = (params: PageByType) => requeset.get<ResType<ResListTpye<InformationType>>>('/my/news/sel', { params })
+export const informationGetListAPI = (params: PageByType) => requeset.get<ResType<ResListTpye<InformationType>>>('/my/news', { params })
 
 // 添加资讯
 // 添加资讯提交类型
@@ -25,8 +25,8 @@ export type InformationAddType = {
     main:string
 }
 // 添加资讯API
-export const informationAddAPI = (data:InformationAddType) => requeset.post<ResType<undefined>>('/my/news/add', data)
+export const informationAddAPI = (data:InformationAddType) => requeset.post<ResType<undefined>>('/my/news', data)
 
 // 删除资讯
 // 删除资讯API
-export const informationDeleteAPI = (id:number) => requeset.delete<ResType<undefined>>('/my/news/delete',{params:{id}})
+export const informationDeleteAPI = (id:number) => requeset.delete<ResType<undefined>>('/my/news',{params:{id}})

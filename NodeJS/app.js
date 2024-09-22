@@ -37,15 +37,15 @@ const upload = multer({ storage: storage });
 app.use(cors())
 
 // 配置 Multer 中间件
-app.use('/api/uploads/upload', upload.single('file'), (req, res, next) => {
+app.use('/api/upload', upload.single('file'), (req, res, next) => {
     if (!req.file) {
-        return res.status(400).send('No files were uploaded.');
+        return res.status(400).send('中间件报错，未找到文件！');
     }
     next();
 });
 
 //配置解析application/x-www-form-urlencoded的中间件
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false, limit: '50mb' }))
 //配置解析application/json的中间件
 app.use(express.json())
 //统一返回值的中间件
@@ -93,7 +93,7 @@ app.use('/api', userRouter)
 app.use('/api', uploads)
 app.use('/api/admin', adminlogin)
 app.use('/api/audit', auditLogin)
-app.use('/api/uploads', uploads)
+// app.use('/api/uploads', uploads)
 //my开头需要token认证
 app.use('/my', userInfo)
 app.use('/my/admin', admin)
@@ -108,16 +108,16 @@ app.use('/my/cart', cart)
 app.use((err, req, res, next) => {
     console.error(err.stack);
     if (err.name === 'UnauthorizedError') {
-      return res.status(401).send('身份认证失败！');
+        return res.status(401).send('身份认证失败！');
     } else if (err instanceof joi.ValidationError) {
-      return res.status(400).send(err);
+        return res.status(400).send(err);
     } else {
-      return res.status(500).send({
-        message: 'Internal server error',
-        error: err.toString()
-      });
+        return res.status(500).send({
+            message: 'Internal server error',
+            error: err.toString()
+        });
     }
-  });
+});
 
 // 启动服务器
 app.listen(80, () => {

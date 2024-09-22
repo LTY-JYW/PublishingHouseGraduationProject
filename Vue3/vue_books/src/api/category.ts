@@ -13,6 +13,17 @@ export type CategoryType = {
 // 查询一级分类列表API
 export const categoryGetListAPI = (params: PageType) => requeset.get<ResType<ResListTpye<CategoryType>>>('/my/category', { params })
 
+// 查询一级分类详细信息提交类型
+export type CategoryInfoType = {
+    id: number
+    name:string
+    profile:string
+    cid:number
+    cover:string
+}[]
+// 查询一级分类详细信息
+export const categoryInfoAPI = (id:number) => requeset.get<ResType<CategoryInfoType>>('/my/category/info', { params:{id} })
+
 // 添加一级分类
 // 添加一级分类提交数据类型
 export type CategoryAddType = {

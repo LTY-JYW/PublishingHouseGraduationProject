@@ -12,13 +12,13 @@ const { id,id_query } = require('../schema/id')
 const { addBooks,upBooks,selOveryBooks,selCategoryBooks } = require('../schema/books')
 
 //发布图书模块————post请求
-router.post('/add',expressJoi(addBooks),books.addBooks)
+router.post('',expressJoi(addBooks),books.addBooks)
 //删除图书模块————delete请求
-router.delete('/delete',expressJoi(id_query),books.deleteBooks)
-// 恢复图书弄块————post请求
+router.delete('',expressJoi(id_query),books.deleteBooks)
+// 恢复图书模块————post请求
 router.post('/restore',expressJoi(id),books.restoreBooks)
 // 更新图书模块————post请求
-router.post('/update',expressJoi(upBooks),books.updateBooks)
+router.put('',expressJoi(upBooks),books.updateBooks)
 // 查询所有未删除图书模块————get请求
 router.get('/overy',expressJoi(selOveryBooks),books.selOveryBooks)
 // 查询所有图书模块

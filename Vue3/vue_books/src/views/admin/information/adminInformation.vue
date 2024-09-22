@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 // 导入API
 import { informationGetListAPI, informationDeleteAPI, informationAddAPI } from '@/api/information'
+import { uploadsFileAPI, getHtmlAPI } from '@/api/uploads'
 import { auditAdminGetInfo } from '@/api/audit'
 // 导入API类型
 import type { InformationType } from '@/api/information'
@@ -12,11 +13,11 @@ import { isOk } from '@/utils/funtion'
 // 导入时间处理函数
 import { formDate } from '@/utils/dayjs'
 // 导入el图标
-import { Delete, Search } from '@element-plus/icons-vue'
+import { Delete, Search, View } from '@element-plus/icons-vue'
 // 导入el类型
-import type { FormRules, FormInstance } from 'element-plus'
+import type { FormRules, FormInstance, UploadInstance, UploadProps, UploadFile, UploadUserFile, UploadRawFile } from 'element-plus'
 // 导入el组件
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessageBox, ElMessage, genFileId } from 'element-plus'
 
 //控制加载状态变量
 const loading = ref(false)
@@ -142,6 +143,8 @@ const onDataSearch = async () => {
 }
 // 搜索框清除图标事件函数
 const onClear = async () => {
+  searchData.value = ''
+  searchStatus.value = undefined
   await getList()
 }
 
@@ -162,6 +165,17 @@ const headDelete = async (id: number) => {
     // 用户点击取消后的操作
   });
 }
+// 查看内容事件函数
+// 存储查看内容的HTML变量
+const html = ref('')
+// 控制查看内容抽屉显示隐藏变量
+const isDrawerHtml = ref(false)
+const headView = async (main: string) => {
+  isDrawerHtml.value = true
+  const { data } = await getHtmlAPI(main)
+  html.value = data.data
+}
+
 // 分页部分
 // 页码改变事件函数
 const onChange = async (currentPage: number, pageSize: number) => {
@@ -190,34 +204,81 @@ const informationRules: FormRules<InformationAddType> = {
       message: '请输入标题',
       trigger: 'blur'
     }
-  ],
-  main: [
-    {
-      required: true,
-      message: '请输入内容',
-      trigger: 'blur'
-    }
-  ],
+  ]
 }
 // 获取表单数据变量
 const ruleFormRef = ref<FormInstance>()
+// 请求头
+const headers = {
+  'Content-Type': 'multipart/form-data',
+}
+// 上传文件变量
+const uploadRef = ref<UploadInstance>()
+// 创建一个空的 File 对象作为初始值
+const emptyFileBlob = new Blob([''], { type: 'text/plain' });
+const emptyFileName = 'empty.txt';
+const initialFile = new File([emptyFileBlob], emptyFileName);
+// 保存要上传的文件的变量
+const file = ref<File>(initialFile)
+// 文件列表图标常量
+const url = 'https://element-plus.org/images/element-plus-logo.svg'
+// 上传文件列变量
+const fileList = ref<UploadUserFile[]>()
+// 校验类型变量
+const isOkType = ref(false)
+// 上传文件改变时的事件函数
+const onUploadChange = (uploadFile: UploadFile) => {
+  fileList.value = [{ name: uploadFile.name, url }]
+  file.value = uploadFile.raw ? uploadFile.raw : initialFile
+}
+// 重复选择文件时的事件函数
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  uploadRef.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  uploadRef.value!.handleStart(file)
+}
+// 上传文件前的校验事件函数
+const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  // 修改文件类型检查逻辑
+  // 允许的文件类型
+  const allowedTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  if (!allowedTypes.includes(rawFile.type)) {
+    ElMessage.error('文件类型不匹配！')
+  } else if (rawFile.size / 1024 / 1024 > 1024) {
+    ElMessage.error('文件大小不能超过1G')
+  } else {
+    isOkType.value = true
+  }
+  return false
+}
 // 确认添加图书事件函数
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const res = await informationAddAPI(addInforData.value)
-      isOk(res.data)
-      ElMessage.success('添加成功！')
+      // 触发上传验证文件
+      uploadRef.value!.submit()
+      if (isOkType.value) {
+        // 将文件封装到formData中
+        const formData = new FormData();
+        formData.append('file', file.value);
+        // 调用上传接口
+        const resFile = await uploadsFileAPI(formData)
+        isOk(resFile.data)
+        // 调用添加接口
+        addInforData.value.main = resFile.data.data.url
+        const res = await informationAddAPI(addInforData.value)
+        isOk(res.data)
+        ElMessage.success('添加成功！')
+      }
     } else {
-      console.log('error submit!', fields)
+      ElMessage.error(fields)
     }
   })
   await getList()
   isDrawer.value = false
 }
-
-
 </script>
 <template>
   <pageComponent title="资讯管理">
@@ -249,11 +310,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         <el-button @click="onClear">重置</el-button>
       </el-form-item>
     </el-form>
-
     <!-- 表格部分 -->
     <el-table stripe style="width: 100%" :data="tableData" v-loading="loading" height="680" table-layout="auto">
       <el-table-column prop="title" label="标题" />
-      <el-table-column prop="main" label="内容" />
       <el-table-column prop="time" label="时间">
         <template #default="scope">
           <span>{{ formDate(scope.row.time) }}</span>
@@ -279,8 +338,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       <!-- 表格操作部分 -->
       <el-table-column label="操作" class="table_operation" width="50px">
         <template #default="scope">
-          <el-button type="danger" :icon="Delete" circle plain @click="headDelete(scope.row.id)"
-            class="table_operation_button" size="large" />
+          <el-button-group>
+            <el-button type="danger" :icon="Delete" circle plain @click="headDelete(scope.row.id)"
+              class="table_operation_button" size="large" />
+            <el-button type="danger" :icon="View" circle plain @click="headView(scope.row.main)"
+              class="table_operation_button" size="large" />
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -291,15 +354,28 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         @change="onChange" />
     </div>
     <!-- 添加资讯抽屉 -->
-    <el-drawer v-model="isDrawer" title="更新图书" direction="rtl">
+    <el-drawer v-model="isDrawer" title="添加咨询" direction="rtl">
       <!-- 更新图书模块 -->
       <el-form size="large" autocomplete="off" :model="addInforData" :rules="informationRules" ref="ruleFormRef">
         <!-- 表单数据区域 -->
-        <el-form-item prop="title" label="书名" label-position="top">
-          <el-input placeholder="请输入书名" v-model="addInforData.title"></el-input>
+        <el-form-item prop="title" label="标题" label-position="top">
+          <el-input placeholder="请输入标题" v-model="addInforData.title"></el-input>
         </el-form-item>
-        <el-form-item prop="main" label="主题词" label-position="top">
-          <el-input placeholder="请输入主题词" v-model="addInforData.main"></el-input>
+        <!-- 上传区域 -->
+        <el-form-item prop="main" label="内容" label-position="top">
+          <el-upload class="upload-demo" drag ref="uploadRef" :headers="headers" :auto-upload="false"
+            :before-upload="beforeUpload" :on-change="onUploadChange" multiple v-model:file-list="fileList" :limit="1"
+            :on-exceed="handleExceed">
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text">
+              拖拽或者 <em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                请上传word文档文件,并且文件大小不超过1G
+              </div>
+            </template>
+          </el-upload>
         </el-form-item>
         <!-- 表单按钮区域 -->
         <el-form-item>
@@ -308,6 +384,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           </el-button>
         </el-form-item>
       </el-form>
+    </el-drawer>
+    <!-- 查看资讯内容抽屉 -->
+    <el-drawer v-model="isDrawerHtml" title="资讯内容" direction="rtl" size="50%">
+      <div v-if="html" v-html="html"></div>
+      <div v-else>暂无内容信息</div>
     </el-drawer>
   </pageComponent>
 </template>

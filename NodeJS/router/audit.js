@@ -25,9 +25,9 @@ router.get('/getinfoadmin',expressJoi(id_query),audit.getAuditInfoAdminService)
 // 获取审核员列表————get请求
 router.get('/overy',expressJoi(overyAudit),audit.selOveryAudit)
 // 更新审核员密码————post请求
-router.post('/upPWD',expressJoi(update_auditpwd_schema),audit.updataAuditPWDService)
+router.put('/pwd',expressJoi(update_auditpwd_schema),audit.updataAuditPWDService)
 // 更新审核员头像————post请求
-router.post('/avatar',expressJoi(updata_Pic_schema),audit.updateAuditPicService)
+router.put('/avatar',expressJoi(updata_Pic_schema),audit.updateAuditPicService)
 
 
 //导出路由

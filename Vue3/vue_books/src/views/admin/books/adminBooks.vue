@@ -18,7 +18,7 @@ import type { BooksInfoType } from '@/api/books'
 import type { BooksResListType } from '@/api/books'
 // 导入后端接口函数
 import { booksGetListAPI, booksGetListOveryAPI, booksUpInfoAPI, booksDelAPI, booksRestoreAPI } from '@/api/books'
-import { categoryInfoAPI } from '@/api/category2'
+import { category2InfoAPI } from '@/api/category2'
 import { adminGetUserInfoAPI } from '@/api/admin'
 import { auditAdminGetInfo } from '@/api/audit'
 // 当前页码
@@ -56,7 +56,7 @@ const getCategoryInfo = async (id: number) => {
   if (id === undefined || !id) {
     return
   }
-  const { data } = await categoryInfoAPI(id)
+  const { data } = await category2InfoAPI(id)
   name.value[id] = data.data[0].name
 }
 
@@ -109,6 +109,11 @@ const getList = async () => {
       by: by.value,
       des: des.value
     })
+    if (data.data === undefined) {
+      tableData.value = undefined
+      loading.value = false
+      return
+    }
     isOk(data)
     if (data.data === undefined) {
       tableData.value = undefined
@@ -321,6 +326,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+
 </script>
 
 <template>
@@ -457,8 +463,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         <el-form-item prop="topic" label="主题词">
           <el-input placeholder="请输入主题词" v-model="booksDate.topic"></el-input>
         </el-form-item>
-        <el-form-item prop="cid" label="分类">
-          <el-select style="width: 200px" v-model="booksDate.cid">
+        <el-form-item  label="分类">
+          <el-select style="width: 200px" v-model="booksDate.cid" prop="cid">
             <el-option v-for="(value, key) in name" :key="key" :value="key" :label="value"></el-option>
           </el-select>
         </el-form-item>

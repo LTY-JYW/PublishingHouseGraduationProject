@@ -18,10 +18,10 @@
     "element-plus": "^2.8.0",
     "pinia": "^2.1.7",
     "postcss": "^8.4.47",
+    "postcss-px-to-viewport-ts": "^1.0.0",
     "vue": "^3.4.29",
     "vue-dayjs": "^1.0.2",
-    "vue-router": "^4.3.3",
-    "postcss-px-to-viewport-ts": "^1.0.0"
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

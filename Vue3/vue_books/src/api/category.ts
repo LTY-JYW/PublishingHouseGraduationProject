@@ -44,3 +44,12 @@ export const categoryUpdataAPI = (data:CategoryUpdataType) => requeset.put<ResTy
 
 // 删除一级分类API
 export const categoryDeleteAPI = (id:number) => requeset.delete<ResType<undefined>>('/my/category',{params:{id}})
+
+// 查询一级分类名列表返回类型
+export type CategoryNameType = {
+    id:number
+    name:string
+}[]
+// 获取一级分类名API
+export const categoryNameAPI = () => requeset.get<ResType<CategoryNameType>>('/my/category/name')
+

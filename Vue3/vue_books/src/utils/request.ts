@@ -17,8 +17,7 @@ instance.interceptors.request.use(
   (config) => {
     // TODO 2. 携带token
     if (userStore.token) {
-      config.headers.Authorization =
-        userStore.token
+      config.headers.Authorization = userStore.token
     }
     return config
   },
@@ -30,8 +29,23 @@ instance.interceptors.response.use(
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
-    if (res.status === 200) {
-      return res
+    if (res.data.code === 0) {
+      if ('data' in res.data) {
+        if ('value' in res.data.data || res.config.method == 'get') {
+          return res
+        }
+        ElMessage.success(res.data.message)
+        return res
+      } else {
+        ElMessage.success(res.data.message)
+        return res
+      }
+    }
+    if (res.status !== 200) {
+      ElMessage.error(
+        res.data.message || '服务器响应异常'
+      )
+      return Promise.reject(res.data)
     }
     ElMessage.error(
       res.data.message || '服务器响应异常'
@@ -39,17 +53,15 @@ instance.interceptors.response.use(
     return Promise.reject(res.data)
   },
   (err) => {
-    ElMessage.error(
-      err.response.data.message ||
-        '服务器响应异常'
-    )
     // TODO 5. 处理401错误
     if (err.response?.status === 401) {
-      router.push('/')
+      ElMessage.error('请登录！')
+      router.push('/login')
+      return Promise.reject(err)
     }
+    ElMessage.error(err.message || '服务器响应异常')
     return Promise.reject(err)
   }
 )
-
 export default instance
 export { baseURL }

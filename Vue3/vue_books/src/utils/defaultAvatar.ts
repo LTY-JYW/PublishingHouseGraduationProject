@@ -1,1 +1,1 @@
-export const URL:string = 'http://ltyjyw.site/1.jpg'
+export const URL:string = 'http://qiniuy.ltyjyw.site/1.jpg'

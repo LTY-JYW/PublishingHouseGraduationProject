@@ -51,11 +51,24 @@ exports.selOveryBooks = {
     query: {
         page,
         itemsPerPage,
+    }
+}
+// 查询未删除图书校验规则
+exports.selNoDelBooks = {
+    query: {
+        page,
+        itemsPerPage,
         by,
         des
     }
-}
-
+} 
+// 查询未删除图书(不分页)校验规则
+exports.selNoDelNoPageBooks = {
+    query: {
+        by,
+        des
+    }
+} 
 // 查询分类对应图书校验规则
 exports.selCategoryBooks = {
     body: {

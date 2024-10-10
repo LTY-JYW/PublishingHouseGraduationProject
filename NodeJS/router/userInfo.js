@@ -14,11 +14,11 @@ router.get('/userinfo',userInfo.getUserInfoService)
 // 配置管理员获取用户信息接口————get请求
 router.get('/userinfoadmin',expressJoi(id_query),userInfo.getUserInfoAdminService)
 //配置更新用户信息接口————post请求
-router.post('/userinfo',expressJoi(updata_userInfo_schema),userInfo.updataUserInfoService)
+router.put('/userinfo',expressJoi(updata_userInfo_schema),userInfo.updataUserInfoService)
 //配置更新用户密码接口————post请求
-router.post('/updatepwd',expressJoi(update_userpwd_schema),userInfo.updataUserPWDService)
+router.put('/pwd',expressJoi(update_userpwd_schema),userInfo.updataUserPWDService)
 //配置更新用户头像接口————post请求
-router.post('/update/avatar',expressJoi(updata_userPic_schema),userInfo.updateUserPicService)
+router.put('/avatar',expressJoi(updata_userPic_schema),userInfo.updateUserPicService)
 // 配置申请成为作者接口————post请求
 router.post('/author',userInfo.addAuthor)
 // 配置获取用户列表接口————get请求

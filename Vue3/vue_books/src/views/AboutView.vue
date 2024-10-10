@@ -21,10 +21,7 @@ const headers = {
 
 // 上传成功回调
 const handleSuccess: UploadProps['onSuccess'] = (response:imgRes, uploadFile) => {
-  // imgs.value = response.data.url
   isLoading.value = false
-  // imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  ElMessage.success('上传成功')
 }
 
 // 失败的回调

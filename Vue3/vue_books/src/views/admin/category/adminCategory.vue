@@ -6,15 +6,14 @@ import { categoryGetListAPI, categoryDeleteAPI, categoryAddAPI,categoryUpdataAPI
 import type { CategoryType, CategoryAddType,CategoryUpdataType } from '@/api/category'
 import type { PageType } from '@/api/results'
 
-// 导入公共函数
-import { isOk,lastPage } from '@/utils/funtion'
-
 // 导入el图标
 import { Delete, Edit } from '@element-plus/icons-vue'
 // 导入el类型
 import type { FormRules, FormInstance } from 'element-plus'
 // 导入el组件
 import { ElMessageBox, ElMessage } from 'element-plus'
+// 导入公共函数
+import { lastPage } from '@/utils/funtion'
 
 //控制加载状态变量
 const loading = ref(false)
@@ -32,7 +31,6 @@ const selData = ref<PageType>({
 const getList = async () => {
   loading.value = true
   const { data } = await categoryGetListAPI(selData.value)
-  isOk(data)
   if (data.data === undefined) {
     tableData.value = undefined
     loading.value = false
@@ -103,10 +101,8 @@ const headDelete = async (id: number) => {
   }).then(async () => {
     // 用户点击确定后的操作
     loading.value = true
-    const { data } = await categoryDeleteAPI(id)
-    isOk(data)
+    await categoryDeleteAPI(id)
     loading.value = false
-    ElMessage.success('删除成功！')
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -130,18 +126,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       // isAdd 为true代表是添加操作
       if (isAdd.value) {
-        const res = await categoryAddAPI(addCategoryData.value)
-        isOk(res.data)
-        ElMessage.success('添加成功！')
+        await categoryAddAPI(addCategoryData.value)
         selData.value.page = lastPage(total.value,selData.value.itemsPerPage)
         isDrawer.value = false
       }else if (!isAdd.value) {
-        const res = await categoryUpdataAPI({
+        await categoryUpdataAPI({
           id:UpdataId.value,
           ...addCategoryData.value
         })
-        isOk(res.data)
-        ElMessage.success('修改成功！')
         isDrawer.value = false
       }
     } else {

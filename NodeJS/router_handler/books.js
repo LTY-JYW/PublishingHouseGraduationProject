@@ -2,7 +2,6 @@
 //导入数据库模块
 const db = require('../db/index')
 //导入同意错误返回信息
-const { isNoRes } = require('../utils/resNo')
 // 导入时间处理函数
 const { timeDate } = require('../utils/Time')
 
@@ -13,26 +12,23 @@ exports.addBooks = async (req, res) => {
     const time = new Date
     const sqlUserSel = 'select * from users where id = :id and isAuthor = 1'
     const resUserSel = await db.executeQuery(sqlUserSel, { id: uid, })
-    isNoRes(resUserSel)
     if (resUserSel.data.length !== 1) {
         return res.result('该用户非作者！')
     }
 
     const sqlCategorySel = 'select * from category2 where id = :id'
     const resCategorySel = await db.executeQuery(sqlCategorySel, { id: formDate.cid })
-    isNoRes(resCategorySel)
     if (resCategorySel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
 
     const sqlBooksSel = 'select * from books where name = :name'
     const resBooksSel = await db.executeQuery(sqlBooksSel, { name: formDate.name })
-    isNoRes(resBooksSel)
     if (resBooksSel.data.length >= 1) {
         return res.result('已有该书籍名称')
     }
 
-    const sqlBooksAdd = 'INSERT INTO books (cid,uid,name,profile,time,edition,price,pages,number,topic,popularity,cover,disable,isdelete) VALUES (:cid,:uid,:name,:profile,:time,:edition,:price,:pages,:number,:topic,:popularity,:cover,2,0)'
+    const sqlBooksAdd = 'INSERT INTO books (cid,uid,name,profile,time,edition,price,pages,number,topic,popularity,cover,disable,isdelete,preview) VALUES (:cid,:uid,:name,:profile,:time,:edition,:price,:pages,:number,:topic,:popularity,:cover,2,0,:preview)'
     const resBooksAdd = await db.executeQuery(sqlBooksAdd, {
         cid: formDate.cid,
         uid,
@@ -46,8 +42,8 @@ exports.addBooks = async (req, res) => {
         topic: formDate.topic,
         popularity: 0,
         cover: formDate.cover,
+        preview:formDate.preview
     })
-    isNoRes(resBooksAdd)
 
     return res.result('发布图书成功！', 0)
 }
@@ -57,40 +53,35 @@ exports.deleteBooks = async (req, res) => {
     const formDate = req.query
     const sqlSel = 'select * from books where id = :id'
     const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
-    isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('没有该图书！')
     }
     const sqlSelDel = 'select * from books where id = :id and isdelete = 1'
     const resSelDel = await db.executeQuery(sqlSelDel, { id: formDate.id })
-    isNoRes(resSelDel)
     if (resSelDel.data.length === 1) {
         return res.result('该图书已被删除！')
     }
 
     const sqlDel = 'UPDATE books SET isdelete = :isdelete WHERE id = :id'
     const resDel = await db.executeQuery(sqlDel, { isdelete: 1, id: formDate.id })
-    isNoRes(resDel)
     return res.result('删除成功！', 0)
 }
+
 // 恢复图书
 exports.restoreBooks = async (req, res) => {
     const formDate = req.body
     const sqlSel = 'select * from books where id = :id'
     const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
-    isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('没有该图书！')
     }
     const sqlSelDel = 'select * from books where id = :id and isdelete = 0'
     const resSelDel = await db.executeQuery(sqlSelDel, { id: formDate.id })
-    isNoRes(resSelDel)
     if (resSelDel.data.length === 1) {
         return res.result('该图书未被删除！')
     }
     const sqlDel = 'UPDATE books SET isdelete = :isdelete WHERE id = :id'
     const resDel = await db.executeQuery(sqlDel, { isdelete: 0, id: formDate.id })
-    isNoRes(resDel)
     return res.result('恢复成功！', 0)
 }
 
@@ -99,25 +90,15 @@ exports.updateBooks = async (req, res) => {
     const formDate = req.body
     const sqlSel = 'select * from books where id = :id'
     const resSel = await db.executeQuery(sqlSel, { id: formDate.id })
-    isNoRes(resSel)
     if (resSel.data.length !== 1) {
         return res.result('没有该图书！')
     }
 
-    const sqlName = 'select * from books where name = :name'
-    const resName = await db.executeQuery(sqlName, { name: formDate.name })
-    isNoRes(resName)
-    if (resName.data.length >= 1) {
-        return res.result('图书名重复！')
-    }
-
     const sqlCategorySel = 'select * from category2 where id = :id'
     const resCategorySel = await db.executeQuery(sqlCategorySel, { id: formDate.cid })
-    isNoRes(resCategorySel)
     if (resCategorySel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
-
 
     const { cid, name, profile, edition, price, pages, number, topic, cover, id } = formDate
     const sqlUp = 'UPDATE books SET cid = :cid,name = :name,profile = :profile,edition = :edition,price = :price,pages = :pages,number = :number,topic = :topic,cover = :cover WHERE id = :id'
@@ -133,61 +114,161 @@ exports.updateBooks = async (req, res) => {
         cover,
         id
     })
-    isNoRes(resUp)
     return res.result('修改成功！', 0)
 }
-
 
 // 查询所有未删除的图书信息
 exports.selOveryBooks = async (req, res) => {
     const formDate = req.query
     // page 是当前页码。
     // itemsPerPage 是每页显示的项目数量
-    // by 是按照什么来进行排序
-    // des 是升序还是降序
     // 计算 offset(从哪一行开始返回数据)
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sql = `SELECT * FROM books WHERE isdelete = 0 ORDER BY ${formDate.by} ${formDate.des} LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE isdelete = 0
+                    ORDER BY 
+                        ${formDate.by} ${formDate.des}
+		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
         return res.result('暂无图书信息')
     }
-    isNoRes(resSel)
-
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books WHERE isdelete = 0'
     const resCount = await db.executeQuery(sqlCount)
-    isNoRes(resCount)
     const count = resCount.data[0].count
-    return res.result('获取成功！', 0, {
+    return res.result('图书获取成功！', 0, {
         value: resSel.data,
         count
     })
 }
+
+// 查询所有未删除的图书信息不分页
+exports.selOveryNoPageBooks = async (req, res) => {
+    const formDate = req.query
+    // page 是当前页码。
+    // itemsPerPage 是每页显示的项目数量
+    // 计算 offset(从哪一行开始返回数据)
+    const offset = (formDate.page - 1) * formDate.itemsPerPage;
+    //LIMIT 用于限制查询结果的行数。
+    //OFFSET 用于指定从哪一行开始返回数据。
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE isdelete = 0
+                    ORDER BY 
+                        ${formDate.by} ${formDate.des}`
+    const resSel = await db.executeQuery(sql);
+    if (resSel.data.length < 1) {
+        return res.result('暂无图书信息')
+    }
+    // 查询获取数据总数 
+    const sqlCount = 'SELECT COUNT(*) AS count FROM books WHERE isdelete = 0'
+    const resCount = await db.executeQuery(sqlCount)
+    const count = resCount.data[0].count
+    return res.result('图书信息获取成功！', 0, {
+        value: resSel.data,
+        count
+    })
+}
+
 // 查询所有图书信息
 exports.selOveryEveryBooks = async (req, res) => {
     const formDate = req.query
     // page 是当前页码。
     // itemsPerPage 是每页显示的项目数量
-    // by 是按照什么来进行排序
-    // des 是升序还是降序
     // 计算 offset(从哪一行开始返回数据)
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sql = `SELECT * FROM books ORDER BY ${formDate.by} ${formDate.des} LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const sql = `SELECT 
+                    books.id,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cid,
+		            users.nickname AS uid,
+		            audit.nickname AS aid
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
         return res.result('暂无图书信息')
     }
-    isNoRes(resSel)
 
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books'
     const resCount = await db.executeQuery(sqlCount)
-    isNoRes(resCount)
     const count = resCount.data[0].count
     return res.result('获取成功！', 0, {
         value: resSel.data,
@@ -198,14 +279,11 @@ exports.selOveryEveryBooks = async (req, res) => {
 // 查询对应分类图书信息
 exports.selCatergoryBooks = async (req, res) => {
     const formDate = req.body
-
     const sqlCategorySel = 'select * from category2 where id = :id'
     const resCategorySel = await db.executeQuery(sqlCategorySel, { id: formDate.cid })
-    isNoRes(resCategorySel)
     if (resCategorySel.data.length !== 1) {
         return res.result('未找到该分类！')
     }
-
     // page 是当前页码。
     // itemsPerPage 是每页显示的项目数量
     // 计算 offset(从哪一行开始返回数据)
@@ -217,12 +295,10 @@ exports.selCatergoryBooks = async (req, res) => {
     if (resSel.data.length < 1) {
         return res.result('暂无图书信息')
     }
-    isNoRes(resSel)
 
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books where cid = :cid'
     const resCount = await db.executeQuery(sqlCount, { cid: formDate.cid })
-    isNoRes(resCount)
     const count = resCount.data[0].count
 
     return res.result('获取成功！', 0, {
@@ -230,14 +306,44 @@ exports.selCatergoryBooks = async (req, res) => {
         count
     })
 }
+
 // 查询对应图书详情信息
 exports.selInfoBooks = async (req, res) => {
-    const formDate = req.body
-    const sql = 'SELECT * FROM books where id = :id'
-    const resSel = await db.executeQuery(sql, { id: formDate.id });
+    const formDate = req.query
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.preview,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE books.isdelete = 0 AND books.id = ${formDate.id}`
+    const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
         return res.result('暂无图书信息')
     }
-    isNoRes(resSel)
-    return res.result('获取成功！', 0, resSel.data)
+    return res.result('图书详细信息获取成功！', 0, resSel.data)
 }

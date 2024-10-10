@@ -4,8 +4,6 @@ const title = joi.string().required()
 const main = joi.string().required()
 const page = joi.number().min(1).required()
 const itemsPerPage = joi.number().min(1).required()
-const by = joi.string().required()
-const des = joi.string().required()
 //发布资讯校验规则
 exports.addInformation = {
     body: {
@@ -19,7 +17,5 @@ exports.selInformation = {
     query: {
         page,
         itemsPerPage,
-        by,
-        des
     }
 }

@@ -1,34 +1,41 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 
 // 导入el组件
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import type { FormRules, FormInstance } from 'element-plus'
 // 导入el图标
-import { Edit, Delete, Search, DocumentAdd } from '@element-plus/icons-vue'
-// 导入统一错误处理函数
-import { isOk } from '@/utils/funtion'
+import { Edit, Delete, Search, DocumentAdd, SuccessFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
 // 导入时间处理函数
 import { formDate } from '@/utils/dayjs'
 // 导入默认封面地址
 import { URL } from '@/utils/defaultAvatar'
 // 导入类型
 import type { BooksInfoType } from '@/api/books'
-// 导入后端数据类型
-import type { BooksResListType } from '@/api/books'
 // 导入后端接口函数
 import { booksGetListAPI, booksGetListOveryAPI, booksUpInfoAPI, booksDelAPI, booksRestoreAPI } from '@/api/books'
-import { category2InfoAPI } from '@/api/category2'
-import { adminGetUserInfoAPI } from '@/api/admin'
-import { auditAdminGetInfo } from '@/api/audit'
+import { category2NameAPI } from '@/api/category2'
+import { auditIsOkBookAPI,auditIsNoBookAPI} from '@/api/audit'
+
+// 导入后端数据类型
+import type { BooksResListType } from '@/api/books'
+import type { CategoryNameType } from '@/api/category'
+// 导入pinia
+import { useUserStore } from '@/stores/user'
+
+// 使用pinan
+const userStore = useUserStore()
+// 判断管理员和审核员变量
+const isAdmin = ref<boolean>()
+if (userStore.permissions === 0) {
+  isAdmin.value = true
+} else if (userStore.permissions === 1) {
+  isAdmin.value = false
+}
 // 当前页码
 const page = ref(1)
 // 每页显示条数
 const itemsPerPage = ref(5)
-// 排序字段
-const by = ref('id')
-// 升序或降序------升序（ASC）/降序（DESC）
-const des = ref('asc')
 // 表格数据
 const tableData = ref<BooksResListType>()
 // 获取表单数据变量
@@ -40,64 +47,16 @@ const loading = ref<boolean>(false)
 // 是否显示删除图书
 const isDel = ref(false)
 
-// 二级分类名集合类型
-type Category2NameListType = {
-  [key: number]: string
+// 获取文章分类名
+// 获取文章分类名变量
+const category2Name = ref<CategoryNameType>()
+// 文章分类列表函数
+const getCategoryName = async () => {
+  const { data } = await category2NameAPI()
+  category2Name.value = data.data
 }
-// 二级分类名集合
-const name = ref<Category2NameListType>({});
-// 计算属性，用于根据 id 获取分类名称
-const getCategoryName = computed(() => {
-  return (id: number) => name.value[id] || 'Loading...';
-});
-
-// 根据cid查询二级分类详细信息
-const getCategoryInfo = async (id: number) => {
-  if (id === undefined || !id) {
-    return
-  }
-  const { data } = await category2InfoAPI(id)
-  name.value[id] = data.data[0].name
-}
-
-// 作者名集合类型
-type UserNameListType = {
-  [key: number]: string
-}
-// 作者名集合
-const userName = ref<UserNameListType>({});
-// 计算属性，用于根据 id 获取审核员名称
-const getUserName = computed(() => {
-  return (id: number) => userName.value[id] || 'Loading...';
-});
-
-// 根据uid查询作者名信息
-const getUserInfo = async (id: number) => {
-  if (id === undefined || !id) {
-    return
-  }
-  const { data } = await adminGetUserInfoAPI(id)
-  userName.value[id] = data.data[0].nickname
-}
-
-// 审核员名称集合类型
-type AuditNameListType = {
-  [key: number]: string
-}
-// 审核员名称集合
-const auditName = ref<AuditNameListType>({});
-// 计算属性，用于根据 id 获取审核员名称
-const getAuditName = computed(() => {
-  return (id: number) => auditName.value[id] || '暂无审核员';
-});
-// 根据aid查询审核员名称信息
-const getAuditInfo = async (id: number) => {
-  if (id === undefined || !id) {
-    return
-  }
-  const { data } = await auditAdminGetInfo(id)
-  auditName.value[id] = data.data[0].nickname
-}
+// 一开始调用函数获取分类名
+await getCategoryName()
 
 // 获取图书列表函数
 const getList = async () => {
@@ -105,38 +64,28 @@ const getList = async () => {
   if (isDel.value) {
     const { data } = await booksGetListOveryAPI({
       page: page.value,
-      itemsPerPage: itemsPerPage.value,
-      by: by.value,
-      des: des.value
+      itemsPerPage: itemsPerPage.value
     })
     if (data.data === undefined) {
       tableData.value = undefined
       loading.value = false
       return
     }
-    isOk(data)
     if (data.data === undefined) {
       tableData.value = undefined
       loading.value = false
       return
     }
     tableData.value = data.data.value
-    // 在组件初始化时，预先获取所有分类信息
-    tableData.value.forEach((row) => {
-      getCategoryInfo(row.cid);
-      getUserInfo(row.uid)
-      getAuditInfo(row.aid)
-    });
     total.value = data.data.count
     loading.value = false
   } else {
     const { data } = await booksGetListAPI({
       page: page.value,
       itemsPerPage: itemsPerPage.value,
-      by: by.value,
-      des: des.value
+      by:'id',
+      des:'DESC'
     })
-    isOk(data)
     if (data.data === undefined) {
       tableData.value = undefined
       loading.value = false
@@ -147,12 +96,6 @@ const getList = async () => {
 
     } else {
       tableData.value = data.data.value
-      // 在组件初始化时，预先获取所有分类信息
-      tableData.value.forEach((row) => {
-        getCategoryInfo(row.cid);
-        getUserInfo(row.uid)
-        getAuditInfo(row.aid)
-      });
       total.value = data.data.count
     }
     loading.value = false
@@ -181,32 +124,55 @@ const onChange = async (currentPage: number, pageSize: number) => {
 // 搜索分类cid
 const searchCid = ref<number>()
 // 搜索状态变量
-const searchStatus = ref<number>()
-// 搜索确认函数
-const search = async () => {
+const searchDisable = ref<number>()
+// 书名、作者搜索
+const searchName = ref()
+// 搜索事件函数
+const onSearchChange = async () => {
   await getList()
-  if (!searchCid.value || !searchStatus.value) {
-    tableData.value = tableData.value?.filter((item) => item.cid == searchCid.value || item.disable == searchStatus.value)
-  } else {
-    tableData.value = tableData.value?.filter((item) => item.cid == searchCid.value && item.disable == searchStatus.value)
-
+  if (searchCid.value && searchDisable.value && searchName.value) {
+    return tableData.value = tableData.value?.filter((item) => (item.name.includes(searchName.value) || item.uValue.includes(searchName.value)) && item.cid === searchCid.value && item.disable === searchDisable.value)
   }
+  if (searchCid.value && searchDisable.value) {
+    return tableData.value = tableData.value?.filter((item) => item.cid === searchCid.value && item.disable === searchDisable.value)
+  }
+  if (searchCid.value && searchName.value) {
+    return tableData.value = tableData.value?.filter((item) => (item.name.includes(searchName.value) || item.uValue.includes(searchName.value)) && item.cid === searchCid.value)
+  }
+  if (searchDisable.value && searchName.value) {
+    return tableData.value = tableData.value?.filter((item) => (item.name.includes(searchName.value) || item.uValue.includes(searchName.value)) && item.disable === searchDisable.value)
+  }
+  if (searchCid.value) {
+    return tableData.value = tableData.value?.filter((item) => item.cid === searchCid.value)
+  }
+  if (searchDisable.value) {
+    return tableData.value = tableData.value?.filter((item) => item.disable === searchDisable.value)
+  }
+  if (searchName.value) {
+    return tableData.value = tableData.value?.filter((item) => (item.name.includes(searchName.value) || item.uValue.includes(searchName.value)))
+  }
+}
+// 文章分类清除事件函数
+const onCidClear = async () => {
+  searchCid.value = undefined
+  await onSearchChange()
+}
+// 搜索状态清除事件函数
+const onDisableClear = async () => {
+  searchDisable.value = undefined
+  await onSearchChange()
 }
 // 重置函数
 const reset = async () => {
+  searchCid.value = undefined
+  searchDisable.value = undefined
+  searchName.value = ''
   await getList()
-}
-
-// 书名、作者搜索
-const searchName = ref('')
-// 搜索函数
-const onNameSearch = async () => {
-  await getList()
-  tableData.value = tableData.value?.filter((item) => item.name.includes(searchName.value) || userName.value[item.uid].includes(searchName.value))
 }
 
 // 搜索框取消图标触发函数
 const onClear = async () => {
+  searchName.value = ''
   await getList()
 }
 
@@ -287,9 +253,7 @@ const headDelete = async (id: number) => {
     type: 'warning',
   }).then(async () => {
     // 用户点击确定后的操作
-    const res = await booksDelAPI(id)
-    isOk(res.data)
-    ElMessage.success('删除成功')
+    await booksDelAPI(id)
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -304,8 +268,7 @@ const headRestore = async (id: number) => {
     type: 'warning',
   }).then(async () => {
     // 用户点击确定后的操作
-    const res = await booksRestoreAPI(id)
-    isOk(res.data)
+    await booksRestoreAPI(id)
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -316,15 +279,22 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const res = await booksUpInfoAPI(booksDate.value)
-      isOk(res.data)
+      await booksUpInfoAPI(booksDate.value)
       isDrawer.value = false
       await getList()
-
     } else {
       console.log('error submit!', fields)
     }
   })
+}
+// 同意图书事件函数
+const headAgree = async (id:number) => {
+  await auditIsOkBookAPI(id)
+  await getList()
+}
+// 驳回图书事件函数
+const headReject = async (id:number) => {
+  await auditIsNoBookAPI(id)
 }
 
 </script>
@@ -335,29 +305,27 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <el-form :inline="true">
       <!-- 右边搜索部分 -->
       <el-form-item label="文章分类">
-        <el-select style="width: 200px" v-model="searchCid">
-          <el-option v-for="(value, key) in name" :key="key" :value="key" :label="value"></el-option>
+        <el-select style="width: 200px" v-model="searchCid" @change="onSearchChange" clearable @clear="onCidClear">
+          <el-option v-for="item in category2Name" :key="item.id" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="发布状态">
-        <el-select style="width: 200px" v-model="searchStatus">
+        <el-select style="width: 200px" v-model="searchDisable" @change="onSearchChange" clearable
+          @clear="onDisableClear">
           <el-option label="审核通过" value="0"></el-option>
           <el-option label="审核失败" value="1"></el-option>
           <el-option label="审核中" value="2"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button @click="search" type="primary">搜索</el-button>
-        <el-button @click="reset">重置</el-button>
-      </el-form-item>
       <!-- 书名和作者搜索 -->
       <el-form-item>
         <el-input v-model="searchName" style="width: 250px" placeholder="请输入想搜索的书名或作者" clearable :suffix-icon="Search"
           @clear="onClear" />
-        <el-button type="primary" :icon="Search" @click="onNameSearch">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="onSearchChange">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="reset">重置</el-button>
       </el-form-item>
       <!-- 是否显示删除部分 -->
-      <el-form-item label="是否显示删除图书">
+      <el-form-item label="是否显示删除图书" v-if="isAdmin">
         <el-switch v-model="isDel" />
       </el-form-item>
     </el-form>
@@ -382,32 +350,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="分类">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ getCategoryName(scope.row.cid) }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="作者">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ getUserName(scope.row.uid) }}</span>
-          </div>
-        </template>
-      </el-table-column>
+      <el-table-column prop="cValue" label="分类" />
+      <el-table-column prop="uValue" label="作者" />
       <el-table-column prop="edition" label="版次" />
       <el-table-column prop="price" label="单价" />
       <el-table-column prop="pages" label="页数" />
       <el-table-column prop="number" label="卷数" />
       <el-table-column prop="popularity" label="人气" />
-      <el-table-column label="审核员">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ getAuditName(scope.row.aid) }}</span>
-          </div>
-        </template>
-      </el-table-column>
+      <el-table-column prop="aValue" label="审核员" />
       <el-table-column label="审核状态" width="120px">
         <template #default="scope">
           <div style="display: flex; align-items: center">
@@ -434,12 +384,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       <!-- 表格操作部分 -->
       <el-table-column label="操作" class="table_operation" width="50px">
         <template #default="scope">
-          <el-button-group>
+          <el-button-group v-if="isAdmin">
             <el-button type="primary" :icon="Edit" circle plain @click="headEdit(scope.row.id)"
               class="table_operation_button" size="large" />
             <el-button type="danger" :icon="Delete" circle plain @click="headDelete(scope.row.id)"
               class="table_operation_button" size="large" />
             <el-button v-show="isDel" type="danger" :icon="DocumentAdd" circle plain @click="headRestore(scope.row.id)"
+              class="table_operation_button" size="large" />
+          </el-button-group>
+          <el-button-group v-else>
+            <el-button type="primary" :icon="SuccessFilled" circle plain @click="headAgree(scope.row.id)"
+              class="table_operation_button" size="large" />
+            <el-button type="danger" :icon="WarnTriangleFilled" circle plain @click="headReject(scope.row.id)"
               class="table_operation_button" size="large" />
           </el-button-group>
         </template>
@@ -463,9 +419,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         <el-form-item prop="topic" label="主题词">
           <el-input placeholder="请输入主题词" v-model="booksDate.topic"></el-input>
         </el-form-item>
-        <el-form-item  label="分类">
+        <el-form-item label="分类">
           <el-select style="width: 200px" v-model="booksDate.cid" prop="cid">
-            <el-option v-for="(value, key) in name" :key="key" :value="key" :label="value"></el-option>
+            <el-option v-for="item in category2Name" :key="item.id" :value="item.id" :label="item.name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="price" label="单价">

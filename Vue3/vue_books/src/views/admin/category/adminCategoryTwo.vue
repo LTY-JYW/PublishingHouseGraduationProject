@@ -1,23 +1,22 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 // 导入API
-import { categoryInfoAPI } from '@/api/category'
 import { category2ListAPI, category2DeleteAPI, category2AddAPI, category2UpdataAPI } from '@/api/category2'
+import { categoryNameAPI } from '@/api/category'
 import { uploadsFileAPI } from '@/api/uploads'
 // 导入API类型
-import type { CategoryType, CategoryAddType } from '@/api/category'
 import type { Category2ListType, Category2AddType } from '@/api/category2'
+import type { CategoryNameType } from '@/api/category'
 import type { PageType } from '@/api/results'
 
-// 导入统一错误处理函数
-import { isOk } from '@/utils/funtion'
+
 // 导入公共函数
 import { lastPage } from '@/utils/funtion'
 
 // 导入el图标
-import { Delete, Search, Edit, DocumentAdd, Picture } from '@element-plus/icons-vue'
+import { Delete, Search, Edit, Picture } from '@element-plus/icons-vue'
 // 导入el类型
-import type { FormRules, FormInstance, UploadInstance, UploadProps, UploadFile, UploadUserFile, UploadRawFile } from 'element-plus'
+import type { FormRules, FormInstance, UploadInstance, UploadProps, UploadFile, UploadRawFile } from 'element-plus'
 // 导入el组件
 import { ElMessageBox, ElMessage, genFileId } from 'element-plus'
 
@@ -33,26 +32,15 @@ const selData = ref<PageType>({
   page: 1,
   itemsPerPage: 5
 })
-
-// 一级分类名集合类型
-type CategoryNameListType = {
-  [key: number]: string
+// 一级分类名变量
+const categoryName = ref<CategoryNameType>()
+// 获取一级分类名函数
+const getCategoryName = async () => {
+  const { data } = await categoryNameAPI()
+  categoryName.value = data.data
 }
-// 一级分类名集合
-const name = ref<CategoryNameListType>({});
-// 计算属性，用于根据 id 获取分类名称
-const getCategoryName = computed(() => {
-  return (id: number) => name.value[id] || 'Loading...';
-});
-
-// 根据cid查询一级分类详细信息
-const getCategoryInfo = async (id: number) => {
-  if (id === undefined || !id) {
-    return
-  }
-  const { data } = await categoryInfoAPI(id)
-  name.value[id] = data.data[0].name
-}
+// 一开始便调用函数获取一级分类名
+await getCategoryName()
 
 // 获取资讯列表函数
 const getList = async () => {
@@ -63,11 +51,7 @@ const getList = async () => {
     loading.value = false
     return
   }
-  isOk(data)
   tableData.value = data.data.value
-  tableData.value.forEach((row) => {
-    getCategoryInfo(row.cid);
-  });
   total.value = data.data.count
   loading.value = false
 }
@@ -91,25 +75,30 @@ const onChange = async (currentPage: number, pageSize: number) => {
 const searchCid = ref<number>()
 // 搜索框变量
 const searchData = ref('')
-// 发布状态选择器改变事件函数
+//  搜索事件函数
 const onSearchChange = async () => {
   await getList()
+  if (searchCid.value && searchData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.name.includes(searchData.value) && item.cid === searchCid.value)
+  }
+  if (searchCid.value) {
+    return tableData.value = tableData.value?.filter((item) => item.cid === searchCid.value)
+  }
   if (searchData.value) {
-    tableData.value = tableData.value?.filter((item) => item.name.includes(searchData.value) && item.cid == searchCid.value)
-  } else {
-    tableData.value = tableData.value?.filter((item) => item.cid == searchCid.value)
+    return tableData.value = tableData.value?.filter((item) => item.name.includes(searchData.value))
   }
 }
-
-// 搜索按钮事件函数
-const onDataSearch = async () => {
-  await getList()
-  if (searchCid.value && searchData.value) {
-    return tableData.value = tableData.value?.filter((item) => item.name.includes(searchData.value) && item.cid == searchCid.value)
-  }
-  return tableData.value = tableData.value?.filter((item) => item.name.includes(searchData.value) && item.cid == searchCid.value)
+// 一级分类选择器清空事件函数
+const onCidClear = async () => {
+  searchCid.value = undefined
+  await onSearchChange()
 }
 // 搜索框清除图标事件函数
+const onNameClear = async () => {
+  searchData.value = ''
+  await onSearchChange()
+}
+// 重置按钮事件函数
 const onClear = async () => {
   searchData.value = ''
   searchCid.value = undefined
@@ -133,12 +122,12 @@ type CategoryUpType = {
 }
 // 修改二级分类事件函数
 const headEdit = (data: CategoryUpType) => {
-  const {id,cid,name,profile,cover} = data
+  const { id, cid, name, profile, cover } = data
   isAdd.value = false
   isDrawer.value = true
   updataId.value = id
   addCategoryData.value = {
-    cid:cid.toString(),
+    cid: cid.toString(),
     name,
     profile,
     cover
@@ -154,10 +143,8 @@ const headDelete = async (id: number) => {
   }).then(async () => {
     // 用户点击确定后的操作
     loading.value = true
-    const { data } = await category2DeleteAPI(id)
-    isOk(data)
+    await category2DeleteAPI(id)
     loading.value = false
-    ElMessage.success('删除成功！')
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -279,22 +266,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         formData.append('file', file.value);
         // 调用上传接口
         const resFile = await uploadsFileAPI(formData)
-        isOk(resFile.data)
         addCategoryData.value.cover = resFile.data.data.url
         // 判断为添加还是修改
         if (isAdd.value) {
           // 调用添加接口
-          const res = await category2AddAPI(addCategoryData.value)
-          isOk(res.data)
-          ElMessage.success('添加成功！')
+          await category2AddAPI(addCategoryData.value)
+
           selData.value.page = lastPage(total.value, selData.value.itemsPerPage)
         } else {
-          const res = await category2UpdataAPI({
+          await category2UpdataAPI({
             ...addCategoryData.value,
             id: updataId.value
           })
-          isOk(res.data)
-          ElMessage.success('修改成功')
         }
       }
     } else {
@@ -315,15 +298,15 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <el-form :inline="true">
       <!--  所属一级分类搜索 -->
       <el-form-item label="所属一级分类">
-        <el-select style="width: 200px" v-model="searchCid" @change="onSearchChange" clearable>
-          <el-option v-for="(value, key) in name" :key="key" :value="key" :label="value"></el-option>
+        <el-select style="width: 200px" v-model="searchCid" @change="onSearchChange" clearable @clear="onCidClear">
+          <el-option v-for="item in categoryName" :key="item.id" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <!-- 分类名搜索 -->
       <el-form-item>
         <el-input v-model="searchData" style="width: 250px" placeholder="请输入想搜索分类名" clearable :suffix-icon="Search"
-          @clear="onClear" />
-        <el-button type="primary" :icon="Search" @click="onDataSearch">搜索</el-button>
+          @clear="onNameClear" />
+        <el-button type="primary" :icon="Search" @click="onSearchChange">搜索</el-button>
         <el-button @click="onClear">重置</el-button>
       </el-form-item>
     </el-form>
@@ -342,13 +325,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       </el-table-column>
       <el-table-column prop="name" label="分类名" />
       <el-table-column prop="profile" label="简介" />
-      <el-table-column label="所属一级分类">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ getCategoryName(scope.row.cid) }}</span>
-          </div>
-        </template>
-      </el-table-column>
+      <el-table-column prop="cValue" label="所属一级分类" />
       <!-- 表格操作部分 -->
       <el-table-column label="操作" class="table_operation" width="50px">
         <template #default="scope">
@@ -375,6 +352,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       <el-form size="large" autocomplete="off" :model="addCategoryData" :rules="addCategoryRules" ref="ruleFormRef">
         <!-- 表单数据区域 -->
         <el-form-item prop="main" label="内容" label-position="top">
+          <!-- 上传区域 -->
           <el-upload class="avatar-uploader" :headers="headers" :show-file-list="false" :before-upload="beforeUpload"
             :on-change="onUploadChange" :on-exceed="handleExceed" :auto-upload="false" :limit="1" ref="uploadRef"
             v-loading="isLoadingUpload">
@@ -384,9 +362,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             </el-icon>
           </el-upload>
         </el-form-item>
-        <el-form-item  label="分类" label-position="top">
+        <el-form-item label="分类" label-position="top">
           <el-select style="width: 200px" v-model="addCategoryData.cid" clearable>
-            <el-option v-for="(value, key) in name" :key="key" :value="key" :label="value"></el-option>
+            <el-option v-for="item in categoryName" :key="item.id" :value="item.id" :label="item.name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="title" label="分类名" label-position="top">

@@ -20,6 +20,11 @@ export interface PageByType {
     by: string
     des: string
 }
+// 不分页类型
+export type ByType = {
+    by:string
+    des:string
+}
 
 // 列表查询返回泛型
 export type ResListTpye<Type> = {

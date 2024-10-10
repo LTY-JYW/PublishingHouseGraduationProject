@@ -11,7 +11,7 @@ import { ElMessage } from 'element-plus'
 // 导入el 数据类型
 import type { FormProps } from 'element-plus'
 // 导入后端数据类型
-import type { AuditOveryValueType } from '@/api/audit'
+import type { AuditInfoType } from '@/api/audit'
 // 导入公共函数
 import { lastPage } from '@/utils/funtion'
 
@@ -20,7 +20,7 @@ const page = ref(1)
 // 每页显示条数
 const itemsPerPage = ref(10)
 // 表格数据
-const tableDate = ref<AuditOveryValueType>()
+const tableDate = ref<AuditInfoType[]>()
 // 数据总条数
 const total = ref<number>(0)
 // 是否为加载状态
@@ -131,7 +131,6 @@ const onConfirm = async () => {
       repassword:''
     }
     isDialog.value = false
-    ElMessage.success("添加成功")
     page.value = lastPage(total.value,itemsPerPage.value)
     await getList()
   }

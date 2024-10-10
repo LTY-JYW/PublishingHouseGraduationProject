@@ -5,7 +5,8 @@ const password = joi.string().pattern(/^[\S]{6,12}$/).required()
 const id = joi.number().integer().min(1).required()
 const nickname = joi.string().required()
 const email = joi.string().email().required()
-const avatar = joi.string().dataUri().required()
+const briefly = joi.string().required()
+const avatar = joi.string().required()
 const page = joi.number().min(1).required()
 const itemsPerPage = joi.number().min(1).required()
 
@@ -20,7 +21,10 @@ exports.reg_login_schema = {
 exports.updata_userInfo_schema = {
     body: {
         nickname,
-        email
+        email,
+        briefly,
+        avatar
+        
     }
 }
 //更新用户密码验证规则
@@ -36,6 +40,12 @@ exports.updata_userPic_schema = {
         avatar
     }
 }
+// 更新昵称验证规则
+exports.update_nickname_schema = {
+    body:{
+        nickname
+    }
+}
 
 // 获取所用用户验证规则
 exports.overy_sel_schema = {
@@ -44,3 +54,4 @@ exports.overy_sel_schema = {
         itemsPerPage
     }
 }
+

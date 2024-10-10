@@ -1,20 +1,29 @@
 <script setup lang="ts">
 import { ref } from "vue";
+// 导入el图标
 import { User, Lock } from '@element-plus/icons-vue'
+// 导入el类型
 import type { FormRules, FormInstance } from 'element-plus'
+// 导入el组件
 import { ElMessage } from 'element-plus'
+// 导入API
 import { userRegisterAPI, userLoginAPI } from '@/api/user'
 import { adminLoginAPI } from '@/api/admin'
+import { auditLoginAPI } from '@/api/audit'
+
+// 导入路由
 import router from '@/router/index'
+// 导入pinia
 import { useUserStore } from '@/stores/user'
 // 是登录还是注册
 const isRegister = ref(false)
-// 是管理员还是用户
-const isAdmin = ref(false)
+// 是身份变量
+const Permissions = ref(2)
 // 是否记住用户
 const isRemember = ref(false)
 
 const userStore = useUserStore()
+
 // 表单类型
 type DateType = {
   username: string
@@ -36,15 +45,13 @@ const formDate = ref<DateType>({
 })
 
 // 判断本地是否有用户名和密码
-const voucherString:string = localStorage.getItem('User_Login')||''
-
-if(voucherString){
-  const voucher:LoginType = JSON.parse(voucherString) || ''
-
-if (voucher) {
-  formDate.value.username = voucher.username
-  formDate.value.password = voucher.password
-}
+const voucherString: string = localStorage.getItem('User_Login') || ''
+if (voucherString) {
+  const voucher: LoginType = JSON.parse(voucherString) || ''
+  if (voucher) {
+    formDate.value.username = voucher.username
+    formDate.value.password = voucher.password
+  }
 }
 
 
@@ -100,7 +107,6 @@ const rules: FormRules<DateType> = {
 // 注册请求函数
 const Register = async () => {
   await userRegisterAPI(formDate.value)
-  ElMessage.success('注册成功！')
 }
 
 // 获取表单数据变量
@@ -132,32 +138,40 @@ const remember = (username: string, password: string) => {
   }))
 }
 
-
-
 // 用户登录请求函数
 const userLogin = async () => {
   const res = await userLoginAPI(formDate.value)
   userStore.setToken(res.data.data.token)
   saveToken(res.data.data.token)
+  userStore.setPermissions(2)
   if (isRemember.value) {
     remember(formDate.value.username, formDate.value.password)
   }
-  ElMessage.success('登录成功！')
-  router.push('/user')
+  router.push('/')
 }
 // 管理员登录请求函数
 const adminLogin = async () => {
   const res = await adminLoginAPI(formDate.value)
   userStore.setToken(res.data.data.token)
   saveToken(res.data.data.token)
+  userStore.setPermissions(0)
   if (isRemember.value) {
     remember(formDate.value.username, formDate.value.password)
   }
-  ElMessage.success('登录成功！')
+  router.push('/admin')
+}
+// 审核员登录请求函数
+const auditLogin = async () => {
+  const res = await auditLoginAPI(formDate.value)
+  userStore.setToken(res.data.data.token)
+  saveToken(res.data.data.token)
+  userStore.setPermissions(1)
+  if (isRemember.value) {
+    remember(formDate.value.username, formDate.value.password)
+  }
   router.push('/admin')
 }
 
-// 
 // 登录按钮逻辑
 const submitLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -166,11 +180,14 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
       localStorage.removeItem('User_Login');
     }
     if (valid) {
-      if (isAdmin.value) {
+      if (Permissions.value === 0) {
         adminLogin()
-      } else {
+      } else if (Permissions.value === 2) {
         userLogin()
+      } else if (Permissions.value === 1) {
+        auditLogin()
       }
+
     } else {
       ElMessage.error('出现异常错误请稍后再试')
     }
@@ -234,10 +251,14 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
           <el-button class="button" type="primary" auto-insert-space @click="submitLogin(ruleFormRef)">登录</el-button>
         </el-form-item>
         <el-form-item class="flex">
-
           <div class="flex">
             <el-link type="info" :underline="false" @click="isRegister = true">注册 →</el-link>
-            <el-checkbox v-model="isAdmin" label="我是管理员" size="large" class="isAdmin" />
+            <el-select v-model="Permissions" placeholder="Select" size="default">
+              <el-option label="用户" :value="2" />
+              <el-option label="管理员" :value="0" />
+              <el-option label="审核员" :value="1" />
+
+            </el-select>
           </div>
         </el-form-item>
       </el-form>
@@ -276,5 +297,9 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
       justify-content: space-between;
     }
   }
+}
+
+.el-select {
+  width: 150px;
 }
 </style>

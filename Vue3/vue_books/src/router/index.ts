@@ -8,7 +8,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: () => import('@/views/login/loginView.vue')
     },
@@ -52,17 +52,52 @@ const router = createRouter({
           name: 'information',
           component: () => import('@/views/admin/information/adminInformation.vue')
         },
+        {
+          path: 'user',
+          name: 'adminUser',
+          component: () => import('@/views/admin/user/adminUser.vue')
+        },
+        {
+          path: 'info',
+          name: 'adminInfo',
+          component: () => import('@/views/admin/info/adminInfo.vue')
+        },
+        {
+          path: 'pwd',
+          name: 'adminPwd',
+          component: () => import('@/views/admin/info/adminPwd.vue')
+        },
+        {
+          path: 'avatar',
+          name: 'adminAvatar',
+          component: () => import('@/views/admin/info/adminAvatar.vue')
+        },
       ]
     },
     {
-      path: '/user',
+      path: '/',
       name: 'user',
       component: () => import('@/views/user/layout/userLayout.vue'),
       children:[
         {
+          path: '',
+          name: 'userIndex',
+          component: () => import('@/views/user/index/userIndex.vue')
+        },
+        {
           path: 'books',
           name: 'userBooks',
           component: () => import('@/views/user/books/userBooks.vue')
+        },
+        {
+          path: 'booksInfo',
+          name: 'userBooksInfo',
+          component: () => import('@/views/user/books/userBooksInfo.vue')
+        },
+        {
+          path: 'buyNow',
+          name: 'buyNow',
+          component: () => import('@/views/user/buyNow/buyNow.vue')
         },
         {
           path: 'cart',
@@ -74,6 +109,11 @@ const router = createRouter({
           name: 'userInformation',
           component: () => import('@/views/user/information/userInformation.vue')
         },
+        {
+          path: 'informationInfo',
+          name: 'informationInfo',
+          component: () => import('@/views/user/information/informationInfo.vue')
+        },
       ]
     },
   ]
@@ -83,10 +123,14 @@ const router = createRouter({
 router.beforeEach((to) => {
   const userStore = useUserStore()
   //没有登录的用户只能访问登陆页面
-  if (!userStore.token && to.path != '/') {
+  if (!userStore.token && to.path.includes('/admin') ) {
     ElMessage.error('请先登录')
+    return '/login'
+  } else if(userStore.permissions === 2 && to.path.includes('/admin')) {
+    console.log(userStore.permissions);
+    ElMessage.error('用户禁止访问！')
     return '/'
-  } else {
+  }else{
     return true
   }
 })

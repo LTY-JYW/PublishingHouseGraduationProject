@@ -16,7 +16,7 @@ router.post('',expressJoi(addInformation),information.add)
 // 删除资讯————delete请求
 router.delete('',expressJoi(id_query),information.delete)
 // 查询资讯————get请求
-router.get('',expressJoi(selInformation),information.sel)
+// router.get('',expressJoi(selInformation),information.sel)
 
 
 //导出路由

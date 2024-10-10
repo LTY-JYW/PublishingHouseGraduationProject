@@ -1,24 +1,33 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 // 导入API
 import { informationGetListAPI, informationDeleteAPI, informationAddAPI } from '@/api/information'
 import { uploadsFileAPI, getHtmlAPI } from '@/api/uploads'
-import { auditAdminGetInfo } from '@/api/audit'
+import { auditIsOkInformationAPI, auditIsNoInformationAPI } from '@/api/audit'
 // 导入API类型
 import type { InformationType } from '@/api/information'
 import type { PageByType } from '@/api/results'
 import type { InformationAddType } from '@/api/information'
-// 导入统一错误处理函数
-import { isOk } from '@/utils/funtion'
 // 导入时间处理函数
 import { formDate } from '@/utils/dayjs'
 // 导入el图标
-import { Delete, Search, View } from '@element-plus/icons-vue'
+import { Delete, Search, View, SuccessFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
 // 导入el类型
 import type { FormRules, FormInstance, UploadInstance, UploadProps, UploadFile, UploadUserFile, UploadRawFile } from 'element-plus'
 // 导入el组件
 import { ElMessageBox, ElMessage, genFileId } from 'element-plus'
+// 导入pinia
+import { useUserStore } from '@/stores/user'
 
+// 使用pinan
+const userStore = useUserStore()
+// 判断管理员和审核员变量
+const isAdmin = ref<boolean>()
+if (userStore.permissions === 0) {
+  isAdmin.value = true
+} else if (userStore.permissions === 1) {
+  isAdmin.value = false
+}
 //控制加载状态变量
 const loading = ref(false)
 // 表格数据
@@ -32,30 +41,11 @@ const selData = ref<PageByType>({
   by: 'id',
   des: 'asc'
 })
-// 审核员名称集合类型
-type AuditNameListType = {
-  [key: number]: string
-}
-// 审核员名称集合
-const auditName = ref<AuditNameListType>({});
-// 根据aid查询审核员名称信息
-const getAuditInfo = async (id: number) => {
-  if (id === undefined || !id) {
-    return
-  }
-  const { data } = await auditAdminGetInfo(id)
-  auditName.value[id] = data.data[0].nickname
-}
-// 计算属性，用于根据 id 获取审核员名称
-const getAuditName = computed(() => {
-  return (id: number) => auditName.value[id] || '暂无审核员';
-});
 
 // 获取资讯列表函数
 const getList = async () => {
   loading.value = true
   const { data } = await informationGetListAPI(selData.value)
-  isOk(data)
   if (data.data === undefined) {
     tableData.value = undefined
     loading.value = false
@@ -63,11 +53,6 @@ const getList = async () => {
   }
   tableData.value = data.data.value
   total.value = data.data.count
-  // 在组件初始化时，预先获取所有分类信息
-  tableData.value.forEach((row) => {
-    getAuditInfo(row.audit_id)
-  });
-
   loading.value = false
 }
 // 进入页面就调用获取资讯列表函数
@@ -78,7 +63,7 @@ await getList()
 // 搜索框变量
 const searchData = ref('')
 // 发布状态变量
-const searchStatus = ref<number>()
+const searchDisable = ref<number>()
 // 时间选择器变量
 const datePickerData = ref('')
 // 时间选择器快捷按钮变量
@@ -102,50 +87,49 @@ const shortcuts = [
     },
   },
 ]
-// 发布状态选择器改变事件函数
+// 搜索事件函数
 const onSearchChange = async () => {
   await getList()
-  if (searchData.value) {
-    tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && item.disable == searchStatus.value)
-  } else {
-    tableData.value = tableData.value?.filter((item) => item.disable == searchStatus.value)
-  }
-}
-// 时间选择器时间改变事件函数
-const onChangeTime = async () => {
   // 将时间选择器转化为Date类型
   const dateAgo = new Date(datePickerData.value[0])
   const dateAfter = new Date(datePickerData.value[1])
-  await getList()
-  if (searchData.value) {
-    tableData.value = tableData.value?.filter((item) => (item.title.includes(searchData.value)) && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
-  } else {
-    tableData.value = tableData.value?.filter((item) => new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter)
+
+  if (searchDisable.value && datePickerData.value && searchData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && item.disable == searchDisable.value && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
   }
-}
-// 搜索按钮事件函数
-const onDataSearch = async () => {
-  await getList()
-  // 将时间选择器转化为Date类型
-  const dateAgo = new Date(datePickerData.value[0])
-  const dateAfter = new Date(datePickerData.value[1])
-  if (searchStatus.value && datePickerData.value) {
-    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && item.disable == searchStatus.value && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
+  if (searchDisable.value && datePickerData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.disable == searchDisable.value && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
   }
-  if (searchStatus.value) {
-    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && item.disable == searchStatus.value)
+  if (searchDisable.value && searchData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && item.disable == searchDisable.value)
+  }
+  if (datePickerData.value && searchData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value) && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
+  }
+  if (searchDisable.value) {
+    return tableData.value = tableData.value?.filter((item) => item.disable == searchDisable.value)
   }
   if (datePickerData.value) {
-
-    return tableData.value = tableData.value?.filter((item) => (item.title.includes(searchData.value)) && (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
+    return tableData.value = tableData.value?.filter((item) => (new Date(item.time) >= dateAgo && new Date(item.time) <= dateAfter))
   }
-  tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value))
+  if (searchData.value) {
+    return tableData.value = tableData.value?.filter((item) => item.title.includes(searchData.value))
+  }
+}
+// 清除发布状态事件函数
+const onDisableClear = async () => {
+  searchDisable.value = undefined
+  await onSearchChange()
+}
+// 清除事件事件函数
+const onDateClear = async () => {
+  datePickerData.value = ''
+  await onSearchChange()
 }
 // 搜索框清除图标事件函数
 const onClear = async () => {
   searchData.value = ''
-  searchStatus.value = undefined
-  await getList()
+  await onSearchChange()
 }
 
 // 表格操作部分
@@ -157,9 +141,7 @@ const headDelete = async (id: number) => {
     type: 'warning',
   }).then(async () => {
     // 用户点击确定后的操作
-    const res = await informationDeleteAPI(id)
-    isOk(res.data)
-    ElMessage.success('删除成功')
+    await informationDeleteAPI(id)
     await getList()
   }).catch(() => {
     // 用户点击取消后的操作
@@ -173,7 +155,7 @@ const isDrawerHtml = ref(false)
 const headView = async (main: string) => {
   isDrawerHtml.value = true
   const { data } = await getHtmlAPI(main)
-  html.value = data.data
+  html.value = data.data.html
 }
 
 // 分页部分
@@ -226,6 +208,8 @@ const url = 'https://element-plus.org/images/element-plus-logo.svg'
 const fileList = ref<UploadUserFile[]>()
 // 校验类型变量
 const isOkType = ref(false)
+// 添加加载变量
+const loadingAdd = ref(false)
 // 上传文件改变时的事件函数
 const onUploadChange = (uploadFile: UploadFile) => {
   fileList.value = [{ name: uploadFile.name, url }]
@@ -252,11 +236,12 @@ const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
   }
   return false
 }
-// 确认添加图书事件函数
+// 确认添加资讯事件函数
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
+      loadingAdd.value = true
       // 触发上传验证文件
       uploadRef.value!.submit()
       if (isOkType.value) {
@@ -265,12 +250,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         formData.append('file', file.value);
         // 调用上传接口
         const resFile = await uploadsFileAPI(formData)
-        isOk(resFile.data)
         // 调用添加接口
         addInforData.value.main = resFile.data.data.url
-        const res = await informationAddAPI(addInforData.value)
-        isOk(res.data)
-        ElMessage.success('添加成功！')
+        await informationAddAPI(addInforData.value)
+        loadingAdd.value = false
+        isDrawer.value = false
       }
     } else {
       ElMessage.error(fields)
@@ -279,34 +263,49 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await getList()
   isDrawer.value = false
 }
+
+// 通过审核
+const headAgree = async (id: number) => {
+  await auditIsOkInformationAPI(id)
+  await getList()
+}
+// 驳回审核
+const headReject = async (id: number) => {
+  await auditIsNoInformationAPI(id)
+  await getList()
+}
+
+
 </script>
 <template>
   <pageComponent title="资讯管理">
     <!-- 添加资讯插槽 -->
     <template #button>
-      <el-button plain type="primary" round @click="isDrawer = true">添加资讯</el-button>
+      <el-button plain type="primary" round @click="isDrawer = true" v-if="isAdmin">添加资讯</el-button>
     </template>
     <!-- 搜索表单部分 -->
     <el-form :inline="true">
       <!-- 发布状态搜索 -->
       <el-form-item label="发布状态">
-        <el-select style="width: 200px" v-model="searchStatus" @change="onSearchChange">
+        <el-select style="width: 200px" v-model="searchDisable" @change="onSearchChange" clearable
+          @clear="onDisableClear">
           <el-option label="审核通过" value="0"></el-option>
           <el-option label="审核失败" value="1"></el-option>
           <el-option label="审核中" value="2"></el-option>
         </el-select>
       </el-form-item>
       <!-- 日期返回搜索 -->
-      <el-form-item label="发布状态">
+      <el-form-item label="发布日期">
         <el-date-picker v-model="datePickerData" type="daterange" unlink-panels range-separator="--->"
-          start-placeholder="Start date" end-placeholder="End date" :shortcuts="shortcuts" @change="onChangeTime" />
+          start-placeholder="Start date" end-placeholder="End date" :shortcuts="shortcuts" @change="onSearchChange"
+          clearable @clear="onDateClear" />
       </el-form-item>
 
       <!-- 书名和作者搜索 -->
       <el-form-item>
         <el-input v-model="searchData" style="width: 250px" placeholder="请输入想搜索标题" clearable :suffix-icon="Search"
           @clear="onClear" />
-        <el-button type="primary" :icon="Search" @click="onDataSearch">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="onSearchChange">搜索</el-button>
         <el-button @click="onClear">重置</el-button>
       </el-form-item>
     </el-form>
@@ -328,20 +327,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           <div v-else-if="scope.row.disable === 2"> <el-tag type="warning" round effect="dark">审核中</el-tag></div>
         </template>
       </el-table-column>
-      <el-table-column label="审核员">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ getAuditName(scope.row.audit_id) }}</span>
-          </div>
-        </template>
-      </el-table-column>
+      <el-table-column label="审核员" prop="aValue" />
       <!-- 表格操作部分 -->
       <el-table-column label="操作" class="table_operation" width="50px">
         <template #default="scope">
-          <el-button-group>
+          <el-button-group v-if="isAdmin">
             <el-button type="danger" :icon="Delete" circle plain @click="headDelete(scope.row.id)"
               class="table_operation_button" size="large" />
             <el-button type="danger" :icon="View" circle plain @click="headView(scope.row.main)"
+              class="table_operation_button" size="large" />
+          </el-button-group>
+          <el-button-group v-else>
+            <el-button type="primary" :icon="SuccessFilled" circle plain @click="headAgree(scope.row.id)"
+              class="table_operation_button" size="large" />
+            <el-button type="danger" :icon="WarnTriangleFilled" circle plain @click="headReject(scope.row.id)"
               class="table_operation_button" size="large" />
           </el-button-group>
         </template>
@@ -354,7 +353,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         @change="onChange" />
     </div>
     <!-- 添加资讯抽屉 -->
-    <el-drawer v-model="isDrawer" title="添加咨询" direction="rtl">
+    <el-drawer v-model="isDrawer" title="添加咨询" direction="rtl" v-loading="loadingAdd">
       <!-- 更新图书模块 -->
       <el-form size="large" autocomplete="off" :model="addInforData" :rules="informationRules" ref="ruleFormRef">
         <!-- 表单数据区域 -->

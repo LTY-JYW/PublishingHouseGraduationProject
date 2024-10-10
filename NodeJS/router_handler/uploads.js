@@ -5,8 +5,6 @@ const db = require('../db/index')
 const fs = require('fs');
 // 将word转化为html中间件
 const mammoth = require('mammoth');
-//导入同意错误返回信息
-const { isNoRes } = require('../utils/resNo')
 // 导入七牛云工具
 const QiNiuUploader = require('../utils/qiNiu');
 // 导入uuid创建唯一的文件名
@@ -30,7 +28,9 @@ exports.uploadFile = async (req, res) => {
       // 构建文件的外链
       const cdnPrefix = uploader.URL;
       const fileUrl = `${cdnPrefix}/${uniqueFileName}`
-      res.result('上传成功！', 0, { url: fileUrl })
+      // 上传成功后，删除临时文件
+      fs.promises.unlink(file.path);
+      return res.result('上传成功！', 0, { url: fileUrl })
     })
     .catch(error => {
       console.error('Failed to upload file:', error)
@@ -49,12 +49,14 @@ exports.uploadFile = async (req, res) => {
 exports.getWordForHtml = async (req, res) => {
   try {
     const { fileName } = req.query; // 前端发送的文件名
-    if (!fileName) {
+    const lastSlashIndex = fileName.lastIndexOf('/');
+    const name = fileName.slice(lastSlashIndex + 1);
+    if (!name) {
       return res.status(400).send('File name is required.');
     }
     // 生成下载链接
     const bucketManager = new qiniu.rs.BucketManager(uploader.mac, uploader.config);
-    const downloadUrl = bucketManager.publicDownloadUrl(uploader.URL, fileName);
+    const downloadUrl = bucketManager.publicDownloadUrl(uploader.URL, name);
     axios.get(downloadUrl, { responseType: 'arraybuffer' })
       .then(response => {
         // 检查响应是否成功
@@ -67,7 +69,9 @@ exports.getWordForHtml = async (req, res) => {
         mammoth.convertToHtml({ buffer: buffer })
           .then(result => {
             // 转换结果是一个对象，其中包含转换后的HTML
-            res.result('获取成功', 0, result.value)
+            res.result('获取成功', 0, {
+              html: result.value
+            })
           })
           .catch(error => {
             res.result(error)

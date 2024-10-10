@@ -1,15 +1,13 @@
 //接口定义
 import requeset from '@/utils/request'
 //获取泛型类型
-import type { ResType, ResListTpye } from "./results";
+import type { ResType, ResListTpye,PageByType,ByType } from "./results";
 
 //注册接口
 //提交后端数据类型
 export interface BooksGetListType {
     page: number
     itemsPerPage: number
-    by: string
-    des: string
 }
 // 获取图书列表每一项的返回类型
 export type BooksResListType = {
@@ -28,10 +26,16 @@ export type BooksResListType = {
     popularity: number,
     cover: string,
     disable: number,
-    isdelete: number
+    isdelete: number,
+    cValue: string,
+    uValue: string,
+    aValue: string,
+
 }[]
 // 获取未删除图书列表
-export const booksGetListAPI = (params: BooksGetListType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/my/books/overy', { params })
+export const booksGetListAPI = (params: PageByType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/overy', { params })
+// 获取未删除图书列表（不分页）
+export const booksGetListNoPageAPI = (params: ByType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/overyNo', { params })
 // 获取所有图书列表
 export const booksGetListOveryAPI = (params: BooksGetListType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/my/books/overyevery', { params })
 
@@ -66,3 +70,31 @@ export const booksDelAPI = (id:number) => requeset.delete<ResType<undefined>>('/
 
 // 恢复图书
 export const booksRestoreAPI = (id:number) => requeset.post<ResType<undefined>>('/my/books/restore',{id})
+
+// 图书详细信息返回类型
+export type BookInfoType = {
+    id: number
+    cid: number
+    uid: number
+    aid: number
+    name: string
+    profile: string
+    time: string
+    edition: number
+    price: number
+    pages: number
+    number: number
+    topic: string
+    popularity: number
+    cover: string
+    preview:string
+    disable: number
+    isdelete: number
+    cValue:string
+    uValue:string
+    aValue:string
+    uBriefly:string
+
+}[]
+// 获取图书详细信息
+export const booksGetInfoAPI = (id:number) => requeset.get<ResType<BookInfoType>>('/api/books/info',{params:{id}})

@@ -52,6 +52,7 @@ app.use(express.json())
 app.use(function (req, res, next) {
     res.result = async (err, code = 1, data = {}) => {
         if (lodash.isEqual(data, {})) {
+            res.status = 50
             await res.send({
                 code,
                 message: err instanceof Error ? err.message : err,
@@ -67,6 +68,7 @@ app.use(function (req, res, next) {
     }
     next()
 })
+
 //全局解析token的中间件
 app.use(jwt({
     secret: config.jwtSecretKey,
@@ -83,16 +85,23 @@ const admin = require('./router/admin.js')
 const auditLogin = require('./router/auditlog.js')
 const audit = require('./router/audit.js')
 const information = require('./router/information.js')
+const informationApi = require('./router/informationApi.js')
 const category = require('./router/category.js')
 const category2 = require('./router/category2.js')
+const category2Api = require('./router/category2Api.js')
 const books = require('./router/books.js')
+const booksApi = require('./router/booksApi.js')
 const cart = require('./router/cart.js')
 const uploads = require('./router/uploads.js')
+const address = require('./router/address.js')
 //api开头无需token认证
 app.use('/api', userRouter)
 app.use('/api', uploads)
 app.use('/api/admin', adminlogin)
 app.use('/api/audit', auditLogin)
+app.use('/api/books',booksApi)
+app.use('/api/news',informationApi)
+app.use('/api/category2',category2Api)
 // app.use('/api/uploads', uploads)
 //my开头需要token认证
 app.use('/my', userInfo)
@@ -103,14 +112,15 @@ app.use('/my/category', category)
 app.use('/my/category2', category2)
 app.use('/my/books', books)
 app.use('/my/cart', cart)
+app.use('/my/address', address)
+
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-    console.error(err.stack);
     if (err.name === 'UnauthorizedError') {
         return res.status(401).send('身份认证失败！');
     } else if (err instanceof joi.ValidationError) {
-        return res.status(400).send(err);
+        return res.status(400).send(err.message);
     } else {
         return res.status(500).send({
             message: 'Internal server error',

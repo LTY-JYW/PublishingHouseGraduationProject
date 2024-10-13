@@ -7,8 +7,12 @@ const upload = require('../router_handler/uploads')
 const  expressJoi = require('@escook/express-joi')
 //导入校验规则 
 const { fileName } = require('../schema/uploads')
-//上传模块————post请求
-router.post('/upload',upload.uploadFile)
+
+
+//上传图片模块————post请求
+router.post('/img',upload.uploadImgFile)
+// 上传word模块————post请求
+router.post('/word',upload.uploadWordFile)
 // word转化html模块————get请求
 router.get('/gethtml',expressJoi(fileName),upload.getWordForHtml)
 

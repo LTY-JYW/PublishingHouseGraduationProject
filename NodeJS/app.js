@@ -15,34 +15,22 @@ const config = require('./config.js')
 //导入lodash库（用于判断对象是否相等）
 const lodash = require('lodash')
 
-const fs = require('fs');
+// 启用环境变量
+require('dotenv').config()
 
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
-}
+const upload = multer({ storage: multer.memoryStorage() })
+upload.uploadImgFile = upload.single('fileName'); // 假设上传的表单字段名为 'img'
 
-// 创建 Multer 实例
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // 文件保存的目录
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now()); // 文件名
-    }
-});
-
-const upload = multer({ storage: storage });
-
-//注册中间件
+//注册中间件跨域
 app.use(cors())
 
 // 配置 Multer 中间件
 app.use('/api/upload', upload.single('file'), (req, res, next) => {
     if (!req.file) {
-        return res.status(400).send('中间件报错，未找到文件！');
+        return res.status(400).send('中间件报错，未找到文件！')
     }
-    next();
-});
+    next()
+})
 
 //配置解析application/x-www-form-urlencoded的中间件
 app.use(express.urlencoded({ extended: false, limit: '50mb' }))
@@ -94,6 +82,7 @@ const booksApi = require('./router/booksApi.js')
 const cart = require('./router/cart.js')
 const uploads = require('./router/uploads.js')
 const address = require('./router/address.js')
+const email = require('./router/email.js')
 //api开头无需token认证
 app.use('/api', userRouter)
 app.use('/api', uploads)
@@ -102,7 +91,8 @@ app.use('/api/audit', auditLogin)
 app.use('/api/books',booksApi)
 app.use('/api/news',informationApi)
 app.use('/api/category2',category2Api)
-// app.use('/api/uploads', uploads)
+app.use('/api/email',email)
+app.use('/api/upload', uploads)
 //my开头需要token认证
 app.use('/my', userInfo)
 app.use('/my/admin', admin)

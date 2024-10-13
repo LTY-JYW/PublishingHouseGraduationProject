@@ -15,73 +15,65 @@ const path = require('path');
 // 创建上传器实例
 const uploader = new QiNiuUploader();
 const qiniu = require('qiniu');
-//上传文件处理模块
-exports.uploadFile = async (req, res) => {
+// 文件压缩类
+const compressImage = require('../utils/sharp.js');
+const AlibabaCloud = require('../utils/alibabaCloud.js')
+const alibabaCloud = new AlibabaCloud()
+
+//上传图片文件处理模块
+exports.uploadImgFile = async (req, res) => {
   if (!req.file) {
     return res.status(400).send('未上传文件！')
   }
-  const file = req.file; // 前端发送的文件字段名为 "file"
-  const uniqueFileName = `${uuidv4()}${path.extname(file.originalname)}`
-  // 上传文件
-  uploader.uploadFile(file.path, uniqueFileName)
-    .then(result => {
-      // 构建文件的外链
-      const cdnPrefix = uploader.URL;
-      const fileUrl = `${cdnPrefix}/${uniqueFileName}`
-      // 上传成功后，删除临时文件
-      fs.promises.unlink(file.path);
-      return res.result('上传成功！', 0, { url: fileUrl })
-    })
-    .catch(error => {
-      console.error('Failed to upload file:', error)
-      res.status(500).json({ success: false, message: 'Failed to upload file.', error: error.message })
-    })
-    .then(() => {
-      fs.unlink(file.path, err => {
-        if (err) {
-          console.error('Error deleting temporary file:', err)
-        }
-      })
-    })
+  // 前端发送的文件字段名为 "file"
+  const file = req.file;
+  if (!file.mimetype.startsWith('image/')) {
+    return res.status(400).send('请上传图片文件！');
+  }
+  const uniqueFileName = `${process.env.OSS_AVATAR}${new Date().getTime()}${uuidv4()}.webp`
+  // 使用sharp压缩图片
+  const compressedFilePath = await compressImage(file.buffer);
+  const a = alibabaCloud.upPut(uniqueFileName, compressedFilePath)
+  a.then((resData) => {
+    return res.result('上asdawd传成功', 0, { url: resData.url })
+  }).catch((err) => {
+    return res.result(err)
+  })
 }
+
+//上传word文件处理模块
+exports.uploadWordFile = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('未上传文件！')
+  }
+  // 前端发送的文件字段名为 "file"
+  const file = req.file;
+  const uniqueFileName = `${process.env.OSS_WORD}${uuidv4()}${path.extname(file.originalname)}`
+  const a = alibabaCloud.upPut(uniqueFileName, file.buffer)
+  a.then((resData) => {
+    return res.result('上传成功', 0, { url: resData.name })
+  }).catch((err) => {
+    return res.result(err)
+  })
+}
+
+
 
 // 根据文件名获取word文档转化为html返回
 exports.getWordForHtml = async (req, res) => {
+  const { fileName } = req.query
   try {
-    const { fileName } = req.query; // 前端发送的文件名
-    const lastSlashIndex = fileName.lastIndexOf('/');
-    const name = fileName.slice(lastSlashIndex + 1);
-    if (!name) {
-      return res.status(400).send('File name is required.');
-    }
-    // 生成下载链接
-    const bucketManager = new qiniu.rs.BucketManager(uploader.mac, uploader.config);
-    const downloadUrl = bucketManager.publicDownloadUrl(uploader.URL, name);
-    axios.get(downloadUrl, { responseType: 'arraybuffer' })
-      .then(response => {
-        // 检查响应是否成功
-        if (!response || !response.data) {
-          throw new Error('Failed to download the file.');
-        }
-        // 将ArrayBuffer转换为Buffer
-        const buffer = Buffer.from(response.data);
-        // 使用mammoth将ArrayBuffer转换为HTML
-        mammoth.convertToHtml({ buffer: buffer })
-          .then(result => {
-            // 转换结果是一个对象，其中包含转换后的HTML
-            res.result('获取成功', 0, {
-              html: result.value
-            })
-          })
-          .catch(error => {
-            res.result(error)
-          });
-      })
-      .catch(error => {
-        res.result(error)
-      });
-
+    // 从OSS获取Word文档
+    const result = await alibabaCloud.getBuffer(fileName)
+    console.log(result);
+    const buffer = result.content;
+    // 使用mammoth将Word文档转换为HTML
+    const htmlResult = await mammoth.convertToHtml({ buffer });
+    // 发送转换后的HTML回前端
+    res.result('获取html成功',0,{html:htmlResult.value})
   } catch (error) {
-    res.status(500).result(error)
+    // 处理错误情况
+    console.error('Error:', error);
+    res.status(500).send('Error converting document');
   }
 }

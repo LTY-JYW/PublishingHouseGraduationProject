@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 // 导入API
 import { informationGetListAPI, informationDeleteAPI, informationAddAPI } from '@/api/information'
-import { uploadsFileAPI, getHtmlAPI } from '@/api/uploads'
+import { uploadsFileWordAPI, getHtmlAPI } from '@/api/uploads'
 import { auditIsOkInformationAPI, auditIsNoInformationAPI } from '@/api/audit'
 // 导入API类型
 import type { InformationType } from '@/api/information'
@@ -249,7 +249,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         const formData = new FormData();
         formData.append('file', file.value);
         // 调用上传接口
-        const resFile = await uploadsFileAPI(formData)
+        const resFile = await uploadsFileWordAPI(formData)
         // 调用添加接口
         addInforData.value.main = resFile.data.data.url
         await informationAddAPI(addInforData.value)

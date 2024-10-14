@@ -17,23 +17,23 @@ import router from '@/router'
 const bookList = ref([
     {
         id: 1,
-        cover: 'http://qiniuy.ltyjyw.site/books-1.jpeg'
+        cover: 'http://al.ltyjyw.site/assets/Slideshow/books/books-1.jpeg'
     },
     {
         id: 2,
-        cover: 'http://qiniuy.ltyjyw.site/books-2.jpeg'
+        cover: 'http://al.ltyjyw.site/assets/Slideshow/books/books-2.jpeg'
     },
     {
         id: 3,
-        cover: 'http://qiniuy.ltyjyw.site/books-3.jpeg'
+        cover: 'http://al.ltyjyw.site/assets/Slideshow/books/books-3.jpeg'
     },
     {
         id: 4,
-        cover: 'http://qiniuy.ltyjyw.site/books-4.jpeg'
+        cover: 'http://al.ltyjyw.site/assets/Slideshow/books/books-4.jpeg'
     },
     {
         id: 5,
-        cover: 'http://qiniuy.ltyjyw.site/books-5.jpeg'
+        cover: 'http://al.ltyjyw.site/assets/Slideshow/books/books-5.jpeg'
     }
 ])
 //查询变量
@@ -117,7 +117,7 @@ const onInformation = (id:number) => {
 </script>
 <template>
     <div class="box">
-        <img class="img" src="http://qiniuy.ltyjyw.site/banner-bg.jpg" alt="">
+        <img class="img" src="http://al.ltyjyw.site/assets/bg/slideshow-bg.jpg" alt="">
         <el-carousel indicator-position="outside" height="492px">
             <el-carousel-item v-for="item in bookList" :key="item">
                 <img :src="item.cover" alt="" @click="clickBook(item.id)">

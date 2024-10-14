@@ -80,7 +80,7 @@ const onClickAvatar = () => {
     <div class="box-head">
       <div class="box-head-icon">
         <div class="box-head-icon-img">
-          <img src="http://qiniuy.ltyjyw.site/%E5%9B%BE%E6%A0%87.png" alt="">
+          <img src="http://al.ltyjyw.site/assets/icon/icon.webp" alt="">
         </div>
         <div class="box-head-icon-font">
           天翼图书

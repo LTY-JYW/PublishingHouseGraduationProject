@@ -63,9 +63,6 @@ exports.overySel = async (req, res) => {
                         category ON category2.cid = category.id
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql, { cid: formDate.cid });
-    if (resSel.data.length < 1) {
-        return res.result('暂无分类信息')
-    }
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM category2'
     const resCount = await db.executeQuery(sqlCount, { cid: formDate.cid })

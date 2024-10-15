@@ -37,7 +37,7 @@ const total = ref<number>()
 // 查询资讯信息提交数据变量
 const selData = ref<PageByType>({
   page: 1,
-  itemsPerPage: 5,
+  itemsPerPage: 6,
   by: 'id',
   des: 'asc'
 })

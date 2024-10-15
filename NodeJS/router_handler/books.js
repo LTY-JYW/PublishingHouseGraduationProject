@@ -159,9 +159,6 @@ exports.selOveryBooks = async (req, res) => {
                         ${formDate.by} ${formDate.des}
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无图书信息')
-    }
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books WHERE isdelete = 0'
     const resCount = await db.executeQuery(sqlCount)
@@ -213,9 +210,6 @@ exports.selOveryNoPageBooks = async (req, res) => {
                     ORDER BY 
                         ${formDate.by} ${formDate.des}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无图书信息')
-    }
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books WHERE isdelete = 0'
     const resCount = await db.executeQuery(sqlCount)
@@ -262,10 +256,6 @@ exports.selOveryEveryBooks = async (req, res) => {
                         audit ON books.aid = audit.id
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无图书信息')
-    }
-
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books'
     const resCount = await db.executeQuery(sqlCount)
@@ -292,10 +282,6 @@ exports.selCatergoryBooks = async (req, res) => {
     //OFFSET 用于指定从哪一行开始返回数据。
     const sql = `SELECT * FROM books where cid = ${formDate.cid} and isdelete = 0 LIMIT ${formDate.itemsPerPage} OFFSET ${offset} `
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无图书信息')
-    }
-
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM books where cid = :cid'
     const resCount = await db.executeQuery(sqlCount, { cid: formDate.cid })

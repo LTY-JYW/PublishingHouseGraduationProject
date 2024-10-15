@@ -26,16 +26,23 @@ exports.uploadImgFile = async (req, res) => {
     return res.status(400).send('未上传文件！')
   }
   // 前端发送的文件字段名为 "file"
-  const file = req.file;
+  const file = req.file
+  // 前端标识符
+  const flag = req.body.flag
   if (!file.mimetype.startsWith('image/')) {
     return res.status(400).send('请上传图片文件！');
   }
-  const uniqueFileName = `${process.env.OSS_AVATAR}${new Date().getTime()}${uuidv4()}.webp`
+  let uniqueFileName = ''
+  if(flag == 'avatar'){
+    uniqueFileName = `${process.env.OSS_AVATAR}${new Date().getTime()}${uuidv4()}.webp`
+  }else if(flag == 'category'){
+    uniqueFileName = `${process.env.OSS_CATEGORY}${new Date().getTime()}${uuidv4()}.webp`
+  }
   // 使用sharp压缩图片
   const compressedFilePath = await compressImage(file.buffer);
   const a = alibabaCloud.upPut(uniqueFileName, compressedFilePath)
   a.then((resData) => {
-    return res.result('上asdawd传成功', 0, { url: resData.url })
+    return res.result('上传成功', 0, { url: resData.url })
   }).catch((err) => {
     return res.result(err)
   })

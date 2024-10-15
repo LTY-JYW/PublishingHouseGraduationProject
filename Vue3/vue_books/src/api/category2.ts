@@ -28,8 +28,8 @@ export type Category2ListType = {
 // 获取二级分类列表API
 export const category2ListAPI = (params: PageType) => requeset.get<ResType<ResListTpye<Category2ListType>>>('/api/category2/overy', { params })
 
-// 获取一级分类名API
-export const category2NameAPI = () => requeset.get<ResType<CategoryNameType>>('/my/category2/name')
+// 获取二级分类名API
+export const category2NameAPI = () => requeset.get<ResType<CategoryNameType>>('/api/category2/name')
 
 // 更新二级分类提交类型
 export type Category2UpdataType = {

@@ -66,9 +66,6 @@ exports.getCart = async (req,res) => {
     //OFFSET 用于指定从哪一行开始返回数据。
     const sqlSelCart = `select * from cart where uid = :uid LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSelCart = await db.executeQuery(sqlSelCart,{uid})
-    if(resSelCart.data.length <1){
-        return res.result('暂无购物车信息')
-    }
      // 查询获取数据总数 
      const sqlCount = 'SELECT COUNT(*) AS count FROM cart where uid = :uid'
      const resCount = await db.executeQuery(sqlCount,{uid})

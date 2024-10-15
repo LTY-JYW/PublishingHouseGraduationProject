@@ -43,9 +43,6 @@ exports.sel = async (req, res) => {
     //OFFSET 用于指定从哪一行开始返回数据。
     const sql = `SELECT * FROM category LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无分类信息')
-    }
 
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM category'

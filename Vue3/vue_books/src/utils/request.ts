@@ -26,6 +26,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (res) => {
+
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
@@ -47,17 +48,33 @@ instance.interceptors.response.use(
       )
       return Promise.reject(res.data)
     }
-    ElMessage.error(
-      res.data.message || '服务器响应异常'
-    )
     return Promise.reject(res.data)
   },
   (err) => {
     // TODO 5. 处理401错误
     if (err.response?.status === 401) {
-      ElMessage.error('请登录！')
-      router.push('/login')
-      return Promise.reject(err)
+      //路由守卫
+      router.beforeEach((to) => {
+        const userStore = useUserStore()
+        //没有登录的用户只能访问登陆页面
+        if (!userStore.token && to.path.includes('/admin')) {
+          ElMessage.error('请先登录')
+          // router.push('/login')
+          return '/login'
+          // return Promise.reject(err)
+
+        } else if (userStore.permissions === 2 && to.path.includes('/admin')) {
+          console.log(userStore.permissions);
+          ElMessage.error('用户禁止访问！')
+          return '/'
+        } else {
+          return true
+        }
+      })
+      // ElMessage.error('请登录！')
+      // console.log(router.);
+
+      // router.push('/login')
     }
     ElMessage.error(err.message || '服务器响应异常')
     return Promise.reject(err)

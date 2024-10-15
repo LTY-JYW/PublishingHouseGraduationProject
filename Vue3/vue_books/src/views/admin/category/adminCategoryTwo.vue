@@ -262,9 +262,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       uploadRef.value!.submit()
       if (isOkType.value) {
         // 将文件封装到formData中
-        const formData = new FormData();
-        formData.append('file', file.value);
+        const formData = new FormData()
+        formData.append('file', file.value)
+        formData.append('flag', "category")
         // 调用上传接口
+        console.log(formData);
+        
         const resFile = await uploadsFileAPI(formData)
         addCategoryData.value.cover = resFile.data.data.url
         // 判断为添加还是修改
@@ -345,7 +348,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         :page-sizes="[5, 10, 15, 20]" :background="true" layout="jumper, total, sizes, prev, pager, next" :total="total"
         @change="onChange" />
     </div>
-
     <!-- 添加资讯抽屉 -->
     <el-drawer v-model="isDrawer" :title="isAdd ? '添加分类' : '编辑分类'" direction="rtl">
       <!-- 更新图书模块 -->

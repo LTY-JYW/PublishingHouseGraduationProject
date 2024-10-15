@@ -2,10 +2,22 @@
 import { ref } from 'vue'
 // 导入API
 import { userGetInfoAPI } from '@/api/user'
+import { categoryListAPI } from '@/api/category2'
+import { informationApprovedGetListAPI } from '@/api/information'
+import { userGetListNoPageAPI } from '@/api/user'
+import { booksGetListNoPageAPI } from '@/api/books'
+
 // 导入API类型
 import type { UserInfoType } from '@/api/user'
+import type { categoryListType } from '@/api/category2'
+import type { PageByType } from '@/api/results'
+import type { InformationType } from '@/api/information'
+import type { UserListType } from '@/api/user'
+import type { BooksResListType } from '@/api/books'
+import type { ByType } from '@/api/results'
+
 // 导入el图标
-import { Search,User,SwitchButton,CaretBottom } from '@element-plus/icons-vue'
+import { Search, User, SwitchButton, CaretBottom } from '@element-plus/icons-vue'
 
 // 导入el组件
 import { ElMessageBox } from 'element-plus'
@@ -30,10 +42,10 @@ const userStore = useUserStore()
 const userInfo = ref<UserInfoType>()
 // 获取用户信息事件函数
 const getInfo = async () => {
-  if(userStore.permissions === 2){
+  if (userStore.permissions === 2) {
     const { data } = await userGetInfoAPI()
     userInfo.value = data.data
-  }else{
+  } else {
     return
   }
 }
@@ -67,78 +79,196 @@ const handCommand = async (command: string | number | object) => {
 }
 // 头像点击事件
 const onClickAvatar = () => {
-  if(isLogin.value){
+  if (isLogin.value) {
     console.log('一登陆');
-  }else{
+  } else {
 
     router.push('/login')
   }
 }
+
+// 获取分类名
+const categoryName = ref<categoryListType>()
+const getCategory = async () => {
+  const { data: { data } } = await categoryListAPI()
+  categoryName.value = data
+}
+
+// 获取资讯
+const page = ref<PageByType>({
+  page: 1,
+  itemsPerPage: 100,
+  by: 'count',
+  des: 'DESC'
+})
+const information = ref<InformationType>()
+const getInformation = async () => {
+  const { data: { data } } = await informationApprovedGetListAPI(page.value)
+  information.value = data.value
+}
+
+const flage = ref('')
+
+// 获取用户
+const userList = ref<UserListType>()
+const getUserLsit = async () => {
+  const { data: { data } } = await userGetListNoPageAPI()
+  userList.value = data.value
+  console.log(userList.value);
+  userList.value = userList.value.filter((item) => item.isAuthor == 1)
+}
+// 控制鼠标变量
+const isHover = ref(false)
+// 鼠标划入事件函数
+const handover = async (fage: string) => {
+  isHover.value = true
+  flage.value = fage
+  if (!categoryName.value && fage == 'books') {
+    await getCategory()
+  }
+  if (!information.value && fage == 'information') {
+    await getInformation()
+  }
+  if (!userList.value && fage == 'author') {
+    await getUserLsit()
+  }
+}
+// 鼠标划出事件函数
+const handout = () => {
+  isHover.value = false
+}
+
+// 搜索打开弹窗变量
+const search = ref(false)
+// 弹窗搜索变量
+const input = ref('')
+// 查询提交变量
+const pageBy = ref<ByType>({
+  by: 'popularity',
+  des: 'DESC'
+})
+// 图书列表变量
+const bookList = ref<BooksResListType>()
+// 获取图书列表
+const getBookList = async () => {
+  const { data: { data } } = await booksGetListNoPageAPI(pageBy.value)
+  bookList.value = data.value
+}
+await getBookList()
+
 </script>
 <template>
   <div class="box">
-    <div class="box-head">
-      <div class="box-head-icon">
-        <div class="box-head-icon-img">
-          <img src="http://al.ltyjyw.site/assets/icon/icon.webp" alt="">
-        </div>
-        <div class="box-head-icon-font">
-          天翼图书
-        </div>
-      </div>
-      <div class="box-head-search">
-        <!-- 搜索表单部分 -->
-        <el-form :inline="true">
-          <!-- 书名和作者搜索 -->
-          <el-form-item>
-            <el-input v-model="searchData" placeholder="请输入想搜索的书名" clearable :suffix-icon="Search" @clear="onClear"
-              size="large" />
-          </el-form-item>
-        </el-form>
-      </div>
-      <div class="box-head-avatar">
-        <el-dropdown placement="bottom-end" @command="handCommand">
-          <span class="el-dropdown__box" @click="onClickAvatar">
-            <el-avatar :size="60" v-if="isLogin" :src="userInfo![0].avatar"  />
-            <el-avatar :size="60" v-else> 未登录 </el-avatar>
-            <el-icon v-if="isLogin">
-              <CaretBottom />
-            </el-icon>
-          </span>
-          <template #dropdown v-if="isLogin">
-            <el-dropdown-menu>
-              <el-dropdown-item command="info" :icon="User">个人中心</el-dropdown-item>
-              <el-dropdown-item command="pwd" :icon="User">修改密码</el-dropdown-item>
-              <el-dropdown-item command="avatar" :icon="User">修改头像</el-dropdown-item>
-              <el-dropdown-item command="loginOut" :icon="SwitchButton">退出登录</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
-    </div>
     <div class="box-nav">
-      <el-menu :default-active="$route.path" router mode="horizontal" :ellipsis="false" class="box-nav-item">
-        <el-menu-item index="/">
-          <span>首页</span>
-        </el-menu-item>
-        <el-menu-item index="/information">
-          <span>资讯中心</span>
-        </el-menu-item>
-        <el-menu-item index="/books">
-          <span>图书大全</span>
-        </el-menu-item>
-        <el-menu-item index="/download">
-          <span>资源下载</span>
-        </el-menu-item>
-      </el-menu>
+      <!-- 文字 -->
+      <div id="container"
+        :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
+        @mouseleave="handout">
+        <div>
+          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }" @mouseenter="handover('books')">图书
+          </div>
+          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }"
+            @mouseenter="handover('information')">
+            资讯</div>
+          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }" @mouseenter="handover('author')">作者
+          </div>
+        </div>
+        <!-- 弹出内容 -->
+        <div v-show="isHover" class="content">
+          <div class="nav-item" v-if="flage === 'books'">
+            <a href="">
+              <div>所有图书</div>
+            </a>
+            <span style="color: #66ccff;">类别</span>
+            <el-scrollbar height="85vh">
+              <div v-for="item in categoryName" :key="item.value">
+                <span>{{ item.label }}</span>
+                <div class="nav-item-main" v-for="itemC in item.children" :key="itemC.value" style="margin-top: 0;">
+                  {{ itemC.label }}
+                </div>
+              </div>
+            </el-scrollbar>
+          </div>
+          <div class="nav-item" v-else-if="flage === 'information'">
+            <a href="">
+              <div>所有资讯</div>
+            </a>
+            <div class="nav-item-main" v-for="item in information" :key="item.id">{{ item.title }}</div>
+          </div>
+          <div class="nav-item" v-else-if="flage === 'author'">
+            <a href="">
+              <div>作者列表</div>
+            </a>
+            <div class="nav-item-main" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
+          </div>
+
+        </div>
+        <!-- 更多项... -->
+      </div>
+      <div class="nav">
+        <!-- 搜索表单部分 -->
+
+        <div class="search mouse" @click="search = true">
+          <el-icon>
+            <Search />
+          </el-icon>
+          <span>搜索书籍和作者</span>
+        </div>
+        <!-- 头像 -->
+        <div class="avatar mouse">
+          <el-dropdown placement="bottom-end" @command="handCommand">
+            <span class="el-dropdown__box" @click="onClickAvatar">
+              <el-avatar :size="60" v-if="isLogin" :src="userInfo![0].avatar" />
+              <el-avatar :size="60" v-else> 未登录 </el-avatar>
+              <el-icon v-if="isLogin">
+                <CaretBottom />
+              </el-icon>
+            </span>
+            <template #dropdown v-if="isLogin">
+              <el-dropdown-menu>
+                <el-dropdown-item command="info" :icon="User">个人中心</el-dropdown-item>
+                <el-dropdown-item command="pwd" :icon="User">修改密码</el-dropdown-item>
+                <el-dropdown-item command="avatar" :icon="User">修改头像</el-dropdown-item>
+                <el-dropdown-item command="loginOut" :icon="SwitchButton">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div>
     </div>
     <div class="main">
       <Suspense>
         <RouterView />
       </Suspense>
     </div>
+    <!-- 修改图书信息抽屉 -->
+    <el-drawer v-model="search" direction="ttb" class="drawer" size="75%">
+      <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" />
+      <el-icon class="drawer-icon">
+        <Right />
+      </el-icon>
+      <div style="display: flex;">
+        <div>
+          <div class="drawer-popular">热门图书</div>
+          <div class="drawer-main">
+            <div class="item" v-for="item in bookList" :key="item.id">
+              <div class="item-img">
+                <img :src="item.cover" alt="">
+              </div>
+              <div class="item-username">{{ item.uValue }}</div>
+              <div class="item-name">{{ item.name }}</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-left: 5vw;">
+          <div class="drawer-popular">作者</div>
+          <div>
+            <div class="drawer-item" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
-
   <div class="footer">
     <span>天翼图书 ©2024</span> <br> 互联网ICP备案：鄂ICP备2024073345号-1
   </div>
@@ -151,53 +281,187 @@ const onClickAvatar = () => {
   user-select: none;
 }
 
+.mouse:hover {
+  /* 将鼠标指针变为手形 */
+  cursor: pointer;
+}
+
 .box {
-  width: 1200px;
+  width: 100vw;
   margin: auto;
+  position: relative;
 
-  .box-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .box-nav {
+    width: 100vw;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
 
-    .box-head-icon {
+    #container {
+      padding: 10px;
+      padding-left: 20px;
+      padding-top: 20px;
       display: flex;
-      align-items: center;
+      transition: width 0.5s;
+      z-index: 999;
 
-      .box-head-icon-img {
-        img {
-          width: 100px;
-          height: 100px;
+      .item {
+        cursor: pointer;
+        font-size: 20px;
+        color: white;
+        padding: 10px;
+        padding-top: 20px;
+        width: 4vw;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        margin-left: 200px;
+        border-left: 1px black solid;
+        width: 400px;
+        height: 96.5vh;
+
+        .nav-item {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 10px;
+          padding-top: 20px;
+
+          a {
+            text-decoration: none;
+
+            div {
+              font-size: 30px;
+              font-family: '程荣光刻楷', sans-serif;
+              color: #66CCFF;
+              margin-bottom: 20px;
+            }
+          }
+
+          span {
+            font-size: 18px;
+            color: rgb(114, 114, 114);
+          }
+
+          .nav-item-main {
+            font-size: 20px;
+            padding: 10px;
+            /* 限制内容在一行显示 */
+            white-space: nowrap;
+            /* 隐藏超出部分的内容 */
+            overflow: hidden;
+            /* 超出部分显示省略号 */
+            text-overflow: ellipsis;
+          }
+        }
+
+      }
+
+    }
+
+    .nav {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+
+      .search {
+        color: white;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px white solid;
+        margin-right: 20px;
+
+        span {
+          padding-left: 20px;
         }
       }
 
-      .box-head-icon-font {
-        font-size: 40px;
-        font-family: '程荣光刻楷', sans-serif;
+      .avatar {
+        :focus {
+          /* 移除聚焦时的边框 */
+          outline: none;
+        }
       }
     }
+
+
+
+
   }
 
+  .drawer {
+    padding: 10px;
+    background: rgb(250, 250, 247);
 
-  .box-nav {
-    display: flex;
+    .drawer-input {
+      padding: 10px;
+      /* 移除所有边框 */
+      border: none;
+      /* 仅保留底边框 */
+      border-bottom: 1px solid #ccc;
+      outline: none;
+      box-sizing: border-box;
+      font-size: 80px;
+      width: 60%;
+    }
 
-    .el-menu {
-      width: 100%;
-      justify-content: space-between;
+    .drawer-input:focus {
+      border-bottom-color: #66CCFF;
+    }
 
-      .el-menu-item {
-        width: 30%;
-        font-size: 50px;
-        background: rgb(102, 204, 255);
+    .drawer-icon {
+      font-size: 50px;
+    }
+
+    .drawer-popular {
+      font-size: 18px;
+      color: rgb(150, 150, 150);
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .drawer-main {
+      display: flex;
+      width: 60%;
+
+      .item {
+        margin: 10px;
+
+        .item-img {
+          background: #66CCFF;
+          padding: 30px;
+
+          img {
+            width: 203px;
+          }
+        }
+
+
+        .item-username {
+          font-size: 18px;
+          margin-top: 10px;
+        }
+
+        .item-name {
+          font-size: 20px;
+          margin-top: 8px;
+        }
       }
     }
-  }
 
-  .box-nav-item {
-    font-size: 30px;
-    font-family: '程荣光刻楷', sans-serif;
-    --el-menu-text-color: rgb(255, 255, 255);
+    .drawer-item {
+      font-size: 35px;
+      font-family: '程荣光刻楷', sans-serif;
+      padding: 10px;
+    }
   }
 }
 
@@ -214,20 +478,4 @@ const onClickAvatar = () => {
     margin-bottom: 10px;
   }
 }
-
-
-.el-dropdown__box {
-      display: flex;
-      align-items: center;
-
-      .el-icon {
-        color: #999;
-        margin-left: 10px;
-      }
-
-      &:active,
-      &:focus {
-        outline: none;
-      }
-    }
 </style>

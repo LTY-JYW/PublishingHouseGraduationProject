@@ -64,7 +64,7 @@ exports.sel = async (req, res) => {
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
-        return res.result('暂无资讯信息')
+        return res.result('暂无资讯信息',0,{value:undefined})
     }
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM information'
@@ -108,7 +108,7 @@ exports.selApproved = async (req, res) => {
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     if (resSel.data.length < 1) {
-        return res.result('暂无资讯信息')
+        return res.result('暂无资讯信息',0,{value:undefined})
     }
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM information WHERE disable = 0'

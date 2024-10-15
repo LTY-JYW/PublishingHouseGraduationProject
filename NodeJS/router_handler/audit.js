@@ -164,9 +164,6 @@ exports.selOveryAudit = async (req, res) => {
     //OFFSET 用于指定从哪一行开始返回数据。
     const sql = `SELECT id,username,nickname,avatar FROM audit LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无审核员员信息')
-    }
 
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM audit'

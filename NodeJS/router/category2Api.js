@@ -13,7 +13,8 @@ const { id,id_query } = require('../schema/id')
 
 // 获取所有分类————get请求
 router.get('/overy',expressJoi(overySelCategory),category2.overySel)
-
+// 获取二级分类名————get请求
+router.get('/name',category2.selName)
 // 获取一级和二级分类————get请求
 router.get('',category2.categoryOvery)
 

@@ -54,8 +54,8 @@ const getInformationList = async () => {
     sqlData.value.itemsPerPage = 8
     const { data } = await informationApprovedGetListAPI(sqlData.value)
     informationTime.value = JSON.parse(JSON.stringify(data.data.value))
-    informationCount.value =JSON.parse(JSON.stringify(data.data.value))
-    informationCount.value?.sort((a,b)=>b.count - a.count)
+    informationCount.value = JSON.parse(JSON.stringify(data.data.value))
+    informationCount.value?.sort((a, b) => b.count - a.count)
 }
 await getInformationList()
 
@@ -107,19 +107,20 @@ const rankingsIndex = ref(0)
 
 // 图书点击事件函数
 const clickBook = (id: number) => {
-    router.push(`/booksInfo?id=${id}`)
+    // router.push(`/booksInfo?id=${id}`)
 }
 
 // 资讯点击事件
-const onInformation = (id:number) => {
+const onInformation = (id: number) => {
     router.push(`/informationInfo?id=${id}`)
 }
+
+
 </script>
 <template>
     <div class="box">
-        <img class="img" src="http://al.ltyjyw.site/assets/bg/slideshow-bg.jpg" alt="">
-        <el-carousel indicator-position="outside" height="492px">
-            <el-carousel-item v-for="item in bookList" :key="item">
+        <el-carousel indicator-position="none" height="auto">
+            <el-carousel-item v-for="item in bookList" :key="item" style="height: 50vw">
                 <img :src="item.cover" alt="" @click="clickBook(item.id)">
             </el-carousel-item>
         </el-carousel>
@@ -221,23 +222,17 @@ const onInformation = (id:number) => {
     color: red;
 }
 
-body{
+body {
     position: relative;
 }
-.box {
-    .img {
-        width: 100vw;
-        height: 500px;
-        position: absolute;
-        left: 0;
-    }
-    .el-carousel {
-            width: 1137px;
-            height: 429px;
-            margin: auto;
-            padding-top: 35px;
-        }
 
+.box {
+    .el-carousel {
+        img {
+            width: 100vw;
+            height: 50vw;
+        }
+    }
 
     .box-information {
         display: flex;

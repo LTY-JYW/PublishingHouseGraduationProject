@@ -32,6 +32,8 @@ export type UserListType = {
 }[]
 // 获取用户列表API
 export const userGetListAPI = (params: PageType) => requeset.get<ResType<ResListTpye<UserListType>>>('/my/overy', { params })
+// 获取用户列表API无鉴权
+export const userGetListNoPageAPI = () => requeset.get<ResType<ResListTpye<UserListType>>>('/api/')
 
 // 用户详细信息返回类型
 export type UserInfoType = {
@@ -85,3 +87,4 @@ export type IdType = {
 export const userEnableAPI = (data:IdType) => requeset.post<ResType<undefined>>('/my/admin/enable',data)
 // 禁用用户API
 export const userUpDissableAPI = (data:IdType) => requeset.post<ResType<undefined>>('/my/admin/disable',data)
+

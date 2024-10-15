@@ -19,7 +19,7 @@ const lodash = require('lodash')
 require('dotenv').config()
 
 const upload = multer({ storage: multer.memoryStorage() })
-upload.uploadImgFile = upload.single('fileName'); // 假设上传的表单字段名为 'img'
+// upload.uploadImgFile = upload.single('fileName'); // 假设上传的表单字段名为 'img'
 
 //注册中间件跨域
 app.use(cors())
@@ -88,10 +88,10 @@ app.use('/api', userRouter)
 app.use('/api', uploads)
 app.use('/api/admin', adminlogin)
 app.use('/api/audit', auditLogin)
-app.use('/api/books',booksApi)
-app.use('/api/news',informationApi)
-app.use('/api/category2',category2Api)
-app.use('/api/email',email)
+app.use('/api/books', booksApi)
+app.use('/api/news', informationApi)
+app.use('/api/category2', category2Api)
+app.use('/api/email', email)
 app.use('/api/upload', uploads)
 //my开头需要token认证
 app.use('/my', userInfo)

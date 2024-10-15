@@ -127,10 +127,36 @@ exports.overySel = async (req, res) => {
                         audit ON users.aid = audit.id
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
-    if (resSel.data.length < 1) {
-        return res.result('暂无审核员员信息')
-    }
+    // 查询获取数据总数 
+    const sqlCount = 'SELECT COUNT(*) AS count FROM users'
+    const resCount = await db.executeQuery(sqlCount)
+    const count = resCount.data[0].count
 
+    // 返回结果
+    return res.result('获取成功！', 0, {
+        value: resSel.data,
+        count
+    })
+}
+// 获取用户列表
+exports.overySelNoPage = async (req, res) => {
+    const sql = `SELECT 
+                    users.id,
+                    users.username,
+                    users.nickname,
+                    users.avatar,
+                    users.email,
+                    users.briefly,
+                    users.disable,
+                    users.isAuthor,
+                    users.aid,
+		            audit.nickname AS aValue
+                    FROM 
+                        users
+                    LEFT JOIN 
+                        audit ON users.aid = audit.id
+                    WHERE disable = 0`
+    const resSel = await db.executeQuery(sql);
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM users'
     const resCount = await db.executeQuery(sqlCount)

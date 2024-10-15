@@ -19,8 +19,7 @@ router.delete('',expressJoi(id_query),category2.delete)
 router.put('',expressJoi(upCategory),category2.upData)
 // 获取所有分类————get请求
 // router.get('/overy',expressJoi(overySelCategory),category2.overySel)
-// 获取二级分类名————get请求
-router.get('/name',category2.selName)
+
 
 // 获取分类详细信息————get请求
 router.get('/info',expressJoi(id_query),category2.getInfo)

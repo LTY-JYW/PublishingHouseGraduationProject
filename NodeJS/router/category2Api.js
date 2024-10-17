@@ -17,6 +17,8 @@ router.get('/overy',expressJoi(overySelCategory),category2.overySel)
 router.get('/name',category2.selName)
 // 获取一级和二级分类————get请求
 router.get('',category2.categoryOvery)
+// 获取热门分类
+router.get('/hot',category2.popularCategories)
 
 
 //导出路由

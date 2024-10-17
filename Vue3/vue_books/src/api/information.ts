@@ -6,14 +6,15 @@ import type { ResType, PageByType, ResListTpye } from "./results";
 //查询资讯列表 
 // 查询资讯列表返回类型
 export type InformationType = {
-    id: number,
-    title:string,
+    id: number
+    title:string
     audit_id:number
-    main: string,
-    time:string,
-    aValue: string,
-    author_id: number,
-    count: number,
+    main: string
+    time:string
+    aValue: string
+    author_id: number
+    cover:string
+    count: number
     disable: number
 }[]
 // 查询资讯列表API
@@ -27,9 +28,14 @@ export const informationApprovedGetListAPI = (params: PageByType) => requeset.ge
 export type InformationAddType = {
     title:string
     main:string
+    cover:string
 }
 // 添加资讯API
-export const informationAddAPI = (data:InformationAddType) => requeset.post<ResType<undefined>>('/my/news', data)
+export const informationAddAPI = (data:InformationAddType) => {
+  console.log(data);
+  return requeset.post<ResType<undefined>>('/my/news', data)
+  
+}
 
 // 删除资讯
 // 删除资讯API
@@ -37,13 +43,14 @@ export const informationDeleteAPI = (id:number) => requeset.delete<ResType<undef
 
 // 获取详细信息返回类型
 export type InforInfoType = {
-  id: number;
-  title: string;
-  main: string;
-  time: string;
-  audit_id: number;
-  count: number;
-  disable: number;
+  id: number
+  title: string
+  main: string
+  time: string
+  audit_id: number
+  count: number
+  disable: number
+  cover:string
 }[]
 // 获取资讯详细信息API
 export const informationInfoAPI = (id:number) => requeset.get<ResType<InforInfoType>>('/api/news/info',{params:{id}})

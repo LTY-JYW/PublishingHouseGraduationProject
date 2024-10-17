@@ -37,6 +37,8 @@ exports.uploadImgFile = async (req, res) => {
     uniqueFileName = `${process.env.OSS_AVATAR}${new Date().getTime()}${uuidv4()}.webp`
   }else if(flag == 'category'){
     uniqueFileName = `${process.env.OSS_CATEGORY}${new Date().getTime()}${uuidv4()}.webp`
+  }else if(flag == 'information'){
+    uniqueFileName = `${process.env.OSS_INFORMATION}${new Date().getTime()}${uuidv4()}.webp`
   }
   // 使用sharp压缩图片
   const compressedFilePath = await compressImage(file.buffer);
@@ -72,7 +74,6 @@ exports.getWordForHtml = async (req, res) => {
   try {
     // 从OSS获取Word文档
     const result = await alibabaCloud.getBuffer(fileName)
-    console.log(result);
     const buffer = result.content;
     // 使用mammoth将Word文档转换为HTML
     const htmlResult = await mammoth.convertToHtml({ buffer });

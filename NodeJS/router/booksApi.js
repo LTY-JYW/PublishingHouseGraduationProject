@@ -7,7 +7,7 @@ const books = require('../router_handler/books')
 //导入验证模块中间件
 const  expressJoi = require('@escook/express-joi')
 //导入id验证模块
-const { id_query } = require('../schema/id')  
+const { id_query,id } = require('../schema/id')  
 //导入验证模块
 const { selNoDelBooks,selNoDelNoPageBooks } = require('../schema/books')
 
@@ -17,6 +17,8 @@ router.get('/overy',expressJoi(selNoDelBooks),books.selOveryBooks)
 router.get('/overyNo',expressJoi(selNoDelNoPageBooks),books.selOveryNoPageBooks)
 // 查询图书详情模块————get请求
 router.get('/info',expressJoi(id_query),books.selInfoBooks)
+// 查询作者图书模块————get请求
+router.get('/users',expressJoi(id_query),books.selUsersBooks)
 
 //导出路由
 module.exports = router

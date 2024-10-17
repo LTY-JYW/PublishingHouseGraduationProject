@@ -98,3 +98,45 @@ export type BookInfoType = {
 }[]
 // 获取图书详细信息
 export const booksGetInfoAPI = (id:number) => requeset.get<ResType<BookInfoType>>('/api/books/info',{params:{id}})
+
+// 获取作者图书列表返回类型
+// export type BooksUserType = {
+//   id: number;
+//   cid: number;
+//   uid: number;
+//   aid: number;
+//   name: string;
+//   profile: string;
+//   time: string;
+//   edition: number;
+//   price: number;
+//   pages: number;
+//   number: number;
+//   topic: string;
+//   popularity: number;
+//   cover: string;
+//   preview: string;
+//   disable: number;
+//   isdelete: number;
+// }[]
+
+export type BooksUserType = {
+  id: number;
+  name: string;
+  profile: string;
+  time: string;
+  edition: number;
+  price: number;
+  pages: number;
+  number: number;
+  topic: string;
+  popularity: number;
+  cover: string;
+  disable: number;
+  isdelete: number;
+  cValue: string;
+  uValue: string;
+  aValue: string;
+}[]
+
+export const booksGetUserBooksAPI = (id:number) => requeset.get<ResType<ResListTpye<BooksUserType>>>('/api/books/users',{params:{id}})

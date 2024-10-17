@@ -46,7 +46,7 @@ class AlibabaCloud {
 
     async getBuffer (filePath) {
         try {
-            console.log(filePath);
+            // console.log(filePath);
           const result = await this.client.get(filePath);
           return result
         } catch (e) {

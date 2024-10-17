@@ -120,11 +120,18 @@ exports.overySel = async (req, res) => {
                     users.disable,
                     users.isAuthor,
                     users.aid,
-		            audit.nickname AS aValue
+                    users.flyer,
+                    users.time,
+		            audit.nickname AS aValue,
+                    SUM(books.popularity) as heat
                     FROM 
                         users
                     LEFT JOIN 
                         audit ON users.aid = audit.id
+                    LEFT JOIN 
+                        books ON users.id = books.uid
+                    GROUP BY 
+                        users.id
 		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     // 查询获取数据总数 
@@ -141,27 +148,40 @@ exports.overySel = async (req, res) => {
 // 获取用户列表
 exports.overySelNoPage = async (req, res) => {
     const sql = `SELECT 
-                    users.id,
-                    users.username,
-                    users.nickname,
-                    users.avatar,
-                    users.email,
-                    users.briefly,
-                    users.disable,
-                    users.isAuthor,
-                    users.aid,
-		            audit.nickname AS aValue
-                    FROM 
-                        users
-                    LEFT JOIN 
-                        audit ON users.aid = audit.id
-                    WHERE disable = 0`
+    users.id,
+    users.username,
+    users.nickname,
+    users.avatar,
+    users.email,
+    users.briefly,
+    users.disable,
+    users.isAuthor,
+    users.aid,
+    users.flyer, 
+    users.time,
+    SUM(books.popularity) as heat,
+    audit.nickname AS aValue
+FROM 
+    users
+LEFT JOIN 
+    audit ON users.aid = audit.id
+JOIN 
+    books ON users.id = books.uid
+WHERE 
+    users.disable = 0 AND users.isAuthor = 1
+GROUP BY 
+    users.id
+ORDER BY 
+    heat DESC;
+`
     const resSel = await db.executeQuery(sql);
     // 查询获取数据总数 
     const sqlCount = 'SELECT COUNT(*) AS count FROM users'
     const resCount = await db.executeQuery(sqlCount)
     const count = resCount.data[0].count
-
+    resSel.data.forEach(item => {
+        item.flyer = item.flyer.replace(/\t/g, '');
+    });
     // 返回结果
     return res.result('获取成功！', 0, {
         value: resSel.data,

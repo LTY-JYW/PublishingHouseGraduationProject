@@ -243,9 +243,9 @@ exports.selOveryEveryBooks = async (req, res) => {
                     books.cover,
                     books.disable,
                     books.isdelete,
-                    category2.name AS cid,
-		            users.nickname AS uid,
-		            audit.nickname AS aid
+                    category2.name AS cValue,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue
                     FROM 
                         books
                     LEFT JOIN 
@@ -332,4 +332,50 @@ exports.selInfoBooks = async (req, res) => {
         return res.result('暂无图书信息')
     }
     return res.result('图书详细信息获取成功！', 0, resSel.data)
+}
+
+// 查询作者所有图书
+exports.selUsersBooks = async (req,res) => {
+    const { id } = req.query
+    const sqlSelUser = `SELECT id
+                    FROM users
+                    WHERE id = :id AND isAuthor = 1`
+    const resSelUser = await db.executeQuery(sqlSelUser,{id})
+    if(resSelUser.data.length != 1){
+        return res.result('未找到该作者')
+    }
+    const sql = `SELECT 
+                    books.id,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue
+                    FROM books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE books.uid = :id;
+                    `
+    const resSql = await db.executeQuery(sql,{id})
+    const sqlCount = 'SELECT COUNT(*) AS count FROM books where uid = :id'
+    const resCount = await db.executeQuery(sqlCount,{id})
+
+    return res.result('获取作者图书成功！',0,{
+        value:resSql.data,
+        count:resCount.data
+    })
 }

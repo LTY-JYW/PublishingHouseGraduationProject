@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 //导入公共函数
 const { isAudit } = require('../utils/funtion')
+const { timeDate } = require('../utils/Time')
+
 
 //审核员注册处理模块
 exports.reguser = async (req, res) => {
@@ -69,8 +71,9 @@ const isAuthorUser = async (req, isStatus, res) => {
     if (resSel.data.length !== 1) {
         return res.result('该账户未申请作者')
     }
-    const sql = 'UPDATE users SET isAuthor = :isAuthor,aid = :aid WHERE id = :id'
-    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus, aid: req.auth.id })
+    const time = new Date
+    const sql = 'UPDATE users SET isAuthor = :isAuthor,aid = :aid, time = :time WHERE id = :id'
+    const resAuthor = await db.executeQuery(sql, { id: id, isAuthor: isStatus, aid: req.auth.id, time:timeDate(time) })
 
 
     if (isStatus === 1) {

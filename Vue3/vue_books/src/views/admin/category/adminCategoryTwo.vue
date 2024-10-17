@@ -189,6 +189,8 @@ const addCategoryRules: FormRules<Category2AddType> = {
     }
   ],
 }
+
+
 // 获取表单数据变量
 const ruleFormRef = ref<FormInstance>()
 // 请求头
@@ -266,8 +268,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         formData.append('file', file.value)
         formData.append('flag', "category")
         // 调用上传接口
-        console.log(formData);
-        
         const resFile = await uploadsFileAPI(formData)
         addCategoryData.value.cover = resFile.data.data.url
         // 判断为添加还是修改

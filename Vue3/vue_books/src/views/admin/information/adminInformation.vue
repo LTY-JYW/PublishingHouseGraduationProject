@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 // 导入API
 import { informationGetListAPI, informationDeleteAPI, informationAddAPI } from '@/api/information'
-import { uploadsFileWordAPI, getHtmlAPI } from '@/api/uploads'
+import { uploadsFileWordAPI, getHtmlAPI,uploadsFileAPI } from '@/api/uploads'
 import { auditIsOkInformationAPI, auditIsNoInformationAPI } from '@/api/audit'
 // 导入API类型
 import type { InformationType } from '@/api/information'
@@ -176,7 +176,8 @@ const isDrawer = ref(false)
 // 添加图书表单变量
 const addInforData = ref<InformationAddType>({
   title: '',
-  main: ''
+  main: '',
+  cover: ''
 })
 // 添加图书校验规则
 const informationRules: FormRules<InformationAddType> = {
@@ -196,18 +197,22 @@ const headers = {
 }
 // 上传文件变量
 const uploadRef = ref<UploadInstance>()
+const uploadRefImg = ref<UploadInstance>()
 // 创建一个空的 File 对象作为初始值
 const emptyFileBlob = new Blob([''], { type: 'text/plain' });
 const emptyFileName = 'empty.txt';
 const initialFile = new File([emptyFileBlob], emptyFileName);
 // 保存要上传的文件的变量
 const file = ref<File>(initialFile)
+const fileImg = ref<File>(initialFile)
 // 文件列表图标常量
 const url = 'https://element-plus.org/images/element-plus-logo.svg'
 // 上传文件列变量
 const fileList = ref<UploadUserFile[]>()
+const fileListImg = ref<UploadUserFile[]>()
 // 校验类型变量
 const isOkType = ref(false)
+const isOkTypeImg = ref(false)
 // 添加加载变量
 const loadingAdd = ref(false)
 // 上传文件改变时的事件函数
@@ -215,12 +220,23 @@ const onUploadChange = (uploadFile: UploadFile) => {
   fileList.value = [{ name: uploadFile.name, url }]
   file.value = uploadFile.raw ? uploadFile.raw : initialFile
 }
+// 上传文件改变时的事件函数
+const onUploadChangeImg = (uploadFile: UploadFile) => {
+  fileListImg.value = [{ name: uploadFile.name, url }]
+  fileImg.value = uploadFile.raw ? uploadFile.raw : initialFile
+}
 // 重复选择文件时的事件函数
 const handleExceed: UploadProps['onExceed'] = (files) => {
   uploadRef.value!.clearFiles()
   const file = files[0] as UploadRawFile
   file.uid = genFileId()
   uploadRef.value!.handleStart(file)
+}
+const handleExceedImg: UploadProps['onExceed'] = (files) => {
+  uploadRefImg.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  uploadRefImg.value!.handleStart(file)
 }
 // 上传文件前的校验事件函数
 const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -236,6 +252,25 @@ const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
   }
   return false
 }
+// 上传文件前的校验事件函数
+const beforeUploadImg: UploadProps['beforeUpload'] = (rawFile) => {
+  // 修改文件类型检查逻辑
+  // 允许的文件类型
+  // const allowedTypes = ['image/png', 'image/jpg'];
+  if (rawFile.type.startsWith('image/')) {
+    console.log('是图');
+
+  }
+  if (!rawFile.type.startsWith('image/')) {
+    ElMessage.error('文件类型不匹配！')
+  } else if (rawFile.size / 1024 / 1024 > 1024) {
+    ElMessage.error('文件大小不能超过1G')
+  } else {
+    isOkTypeImg.value = true
+  }
+  return false
+}
+
 // 确认添加资讯事件函数
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -244,14 +279,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       loadingAdd.value = true
       // 触发上传验证文件
       uploadRef.value!.submit()
-      if (isOkType.value) {
+      uploadRefImg.value!.submit()
+      if (isOkType.value && isOkTypeImg.value) {
         // 将文件封装到formData中
-        const formData = new FormData();
+        const formData = new FormData()
+        const formDataImg = new FormData()
         formData.append('file', file.value);
+        formDataImg.append('flag', "information")
+        formDataImg.append('file',fileImg.value)
         // 调用上传接口
         const resFile = await uploadsFileWordAPI(formData)
+        const resFileImg = await uploadsFileAPI(formDataImg)
         // 调用添加接口
         addInforData.value.main = resFile.data.data.url
+        addInforData.value.cover = resFileImg.data.data.url
         await informationAddAPI(addInforData.value)
         loadingAdd.value = false
         isDrawer.value = false
@@ -311,6 +352,17 @@ const headReject = async (id: number) => {
     </el-form>
     <!-- 表格部分 -->
     <el-table stripe style="width: 100%" :data="tableData" v-loading="loading" height="680" table-layout="auto">
+      <el-table-column label="封面" width="180">
+        <template #default="scope">
+          <el-image :src="scope.row.cover">
+            <template #error>
+              <div class="image-slot">
+                <el-icon><icon-picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column prop="title" label="标题" />
       <el-table-column prop="time" label="时间">
         <template #default="scope">
@@ -360,7 +412,23 @@ const headReject = async (id: number) => {
         <el-form-item prop="title" label="标题" label-position="top">
           <el-input placeholder="请输入标题" v-model="addInforData.title"></el-input>
         </el-form-item>
-        <!-- 上传区域 -->
+        <!-- 上传区域cover -->
+        <el-form-item prop="cover" label="封面" label-position="top">
+          <el-upload class="upload-demo" drag ref="uploadRefImg" :headers="headers" :auto-upload="false"
+            :before-upload="beforeUploadImg" :on-change="onUploadChangeImg" multiple v-model:file-list="fileListImg" :limit="1"
+            :on-exceed="handleExceedImg">
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text">
+              拖拽或者 <em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                请上传图片文件,并且文件大小不超过5m
+              </div>
+            </template>
+          </el-upload>
+        </el-form-item>
+        <!-- 上传区域word -->
         <el-form-item prop="main" label="内容" label-position="top">
           <el-upload class="upload-demo" drag ref="uploadRef" :headers="headers" :auto-upload="false"
             :before-upload="beforeUpload" :on-change="onUploadChange" multiple v-model:file-list="fileList" :limit="1"

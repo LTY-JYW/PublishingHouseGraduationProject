@@ -133,3 +133,14 @@ exports.categoryOvery = async (req, res) => {
     });
     res.result('分类信息获取成功', 0, transformedData)
 }
+
+// 查询人气最高的分类
+exports.popularCategories = async (req,res) => {
+    const sql = `SELECT category2.id, category2.name, SUM(books.popularity) as total_popularity
+                    FROM category2
+                    JOIN books ON category2.id = books.cid
+                    GROUP BY category2.id, category2.name
+                    ORDER BY total_popularity DESC;`
+    const resSql = await db.executeQuery(sql)
+    res.result('热门分类获取成功',0,resSql.data)
+}

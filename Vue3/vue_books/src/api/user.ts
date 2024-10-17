@@ -29,7 +29,12 @@ export type UserListType = {
     disable: number
     isAuthor: number
     aid: string
+    heat: number
+    flyer: string
+    aValue: null
+    time:string
 }[]
+
 // 获取用户列表API
 export const userGetListAPI = (params: PageType) => requeset.get<ResType<ResListTpye<UserListType>>>('/my/overy', { params })
 // 获取用户列表API无鉴权

@@ -67,6 +67,10 @@ export type categoryListType = {
 // 获取一级分类和二级分类信息
 export const categoryListAPI = () => requeset.get<ResType<categoryListType>>('/api/category2')
 
-
-
-
+// 热门分类返回类型
+export type CategoryHotType = {
+    id: number
+    name: string
+    total_popularity: number
+}[]
+export const categoryHotAPI = () => requeset.get<ResType<CategoryHotType>>('/api/category2/hot')

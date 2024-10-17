@@ -16,9 +16,8 @@ exports.add = async (req, res) => {
     if(resSel.data.length >= 1){
         return res.result('标题重复！请更换标题后重试！')
     }
-
-    const sql = 'INSERT INTO information (title, main, time, disable,count) VALUES (:title, :main, :time, 2,0)';
-    const resAdd = await db.executeQuery(sql, { title: formData.title, main: formData.main, time: timeDate(time)})
+    const sql = 'INSERT INTO information (title, main, time, disable,count,cover) VALUES (:title, :main, :time, 2,0,:cover)';
+    const resAdd = await db.executeQuery(sql, { title: formData.title, main: formData.main, time: timeDate(time),cover:formData.cover})
     return res.result('发表成功！', 0)
 }
 
@@ -54,6 +53,7 @@ exports.sel = async (req, res) => {
                     information.audit_id,
                     information.count,
                     information.disable,
+                    information.cover,
 		            audit.nickname AS aValue
                     FROM 
                         information
@@ -97,6 +97,7 @@ exports.selApproved = async (req, res) => {
                     information.audit_id,
                     information.count,
                     information.disable,
+                    information.cover,
 		            audit.nickname AS aValue
                     FROM 
                         information

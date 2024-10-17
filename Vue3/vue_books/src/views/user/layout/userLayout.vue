@@ -114,9 +114,10 @@ const userList = ref<UserListType>()
 const getUserLsit = async () => {
   const { data: { data } } = await userGetListNoPageAPI()
   userList.value = data.value
-  console.log(userList.value);
   userList.value = userList.value.filter((item) => item.isAuthor == 1)
+  userList.value?.sort((a, b) => b.heat - a.heat)
 }
+await getUserLsit()
 // 控制鼠标变量
 const isHover = ref(false)
 // 鼠标划入事件函数
@@ -162,7 +163,7 @@ await getBookList()
     <div class="box-nav">
       <!-- 文字 -->
       <div id="container"
-        :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
+      :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
         @mouseleave="handout">
         <div>
           <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }" @mouseenter="handover('books')">图书
@@ -242,7 +243,7 @@ await getBookList()
       </Suspense>
     </div>
     <!-- 修改图书信息抽屉 -->
-    <el-drawer v-model="search" direction="ttb" class="drawer" size="75%">
+    <el-drawer v-model="search" direction="ttb" class="drawer" size="80%">
       <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" />
       <el-icon class="drawer-icon">
         <Right />
@@ -263,7 +264,7 @@ await getBookList()
         <div style="margin-left: 5vw;">
           <div class="drawer-popular">作者</div>
           <div>
-            <div class="drawer-item" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
+            <div class="drawer-item" v-for="item in userList?.slice(0,6)" :key="item.id">{{ item.nickname }}</div>
           </div>
         </div>
       </div>
@@ -436,11 +437,11 @@ await getBookList()
         margin: 10px;
 
         .item-img {
-          background: #66CCFF;
-          padding: 30px;
+          background: rgb(240, 240, 235);
+          padding: 60px;
 
           img {
-            width: 203px;
+            width: 150px;
           }
         }
 

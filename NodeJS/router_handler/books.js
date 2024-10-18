@@ -144,6 +144,7 @@ exports.selOveryBooks = async (req, res) => {
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
+                    category2.profile AS cProfile,
 		            users.nickname AS uValue,
 		            audit.nickname AS aValue
                     FROM 
@@ -196,6 +197,7 @@ exports.selOveryNoPageBooks = async (req, res) => {
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
+                    category2.profile AS cProfile,
 		            users.nickname AS uValue,
 		            audit.nickname AS aValue
                     FROM 
@@ -231,6 +233,9 @@ exports.selOveryEveryBooks = async (req, res) => {
     //OFFSET 用于指定从哪一行开始返回数据。
     const sql = `SELECT 
                     books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
                     books.name,
                     books.profile,
                     books.time,
@@ -244,6 +249,7 @@ exports.selOveryEveryBooks = async (req, res) => {
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
+                    category2.profile AS cProfile,
 		            users.nickname AS uValue,
 		            audit.nickname AS aValue
                     FROM 
@@ -268,7 +274,7 @@ exports.selOveryEveryBooks = async (req, res) => {
 
 // 查询对应分类图书信息
 exports.selCatergoryBooks = async (req, res) => {
-    const formDate = req.body
+    const formDate = req.query
     const sqlCategorySel = 'select * from category2 where id = :id'
     const resCategorySel = await db.executeQuery(sqlCategorySel, { id: formDate.cid })
     if (resCategorySel.data.length !== 1) {
@@ -280,10 +286,40 @@ exports.selCatergoryBooks = async (req, res) => {
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sql = `SELECT * FROM books where cid = ${formDate.cid} and isdelete = 0 LIMIT ${formDate.itemsPerPage} OFFSET ${offset} `
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+                    category2.profile AS cProfile,
+		            users.nickname AS uValue,
+		            audit.nickname AS aValue
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE books.isdelete = 0 and books.cid = ${formDate.cid}
+		            LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
     const resSel = await db.executeQuery(sql);
     // 查询获取数据总数 
-    const sqlCount = 'SELECT COUNT(*) AS count FROM books where cid = :cid'
+    const sqlCount = 'SELECT COUNT(*) AS count FROM books where cid = :cid and isdelete = 0'
     const resCount = await db.executeQuery(sqlCount, { cid: formDate.cid })
     const count = resCount.data[0].count
 
@@ -315,6 +351,7 @@ exports.selInfoBooks = async (req, res) => {
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
+                    category2.profile AS cProfile,
 		            users.nickname AS uValue,
 		            audit.nickname AS aValue,
                     users.briefly AS uBriefly

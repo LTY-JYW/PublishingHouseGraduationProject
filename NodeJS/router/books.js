@@ -23,8 +23,7 @@ router.put('',expressJoi(upBooks),books.updateBooks)
 // router.get('/overy',expressJoi(selNoDelBooks),books.selOveryBooks)
 // 查询所有图书模块
 router.get('/overyevery',expressJoi(selOveryBooks),books.selOveryEveryBooks)
-// 查询分类图书模块————get请求
-router.get('/categorybook',expressJoi(selCategoryBooks),books.selCatergoryBooks)
+
 
 
 

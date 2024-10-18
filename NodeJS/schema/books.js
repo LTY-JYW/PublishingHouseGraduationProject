@@ -1,4 +1,5 @@
 //导入验证模块
+const { query } = require('express')
 const joi = require('joi')
 
 const cid = joi.number().min(1).required()
@@ -71,7 +72,7 @@ exports.selNoDelNoPageBooks = {
 } 
 // 查询分类对应图书校验规则
 exports.selCategoryBooks = {
-    body: {
+    query: {
         page,
         itemsPerPage,
         cid

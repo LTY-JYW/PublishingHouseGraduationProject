@@ -324,95 +324,37 @@ body {
 
     .news {
         margin-top: 100px;
+
         .news-font {
             font-size: 50px;
-    font-family: '程荣光刻楷', sans-serif;
+            font-family: '程荣光刻楷', sans-serif;
 
         }
 
         .news-item {
             width: 20vw;
-            max-height:50vw;
+            max-height: 50vw;
             overflow: hidden;
             padding: 20px;
-            background: rgb(240 , 240, 235);
+            background: rgb(240, 240, 235);
             margin: 25px;
             margin-bottom: 50px;
             text-align: center;
-            .news-item-img{
+
+            .news-item-img {
                 width: 15vw;
             }
-            .news-item-title{
+
+            .news-item-title {
                 font-size: 30px;
                 font-weight: bold;
                 margin-top: 20px;
                 margin-bottom: 20px;
             }
-            .news-item-main{}
+
+            .news-item-main {}
         }
     }
-
-    .box-information {
-        display: flex;
-        background: white;
-        margin-top: 40px;
-        justify-content: space-between;
-        font-size: 20px;
-        border-top: 5px red solid;
-
-        li {
-            margin-top: 20px;
-        }
-
-        li:hover {
-            color: red;
-        }
-
-        .box-information--font {
-            font-family: '程荣光刻楷', sans-serif;
-            font-size: 35px;
-            color: red;
-        }
-    }
-
-    .box-keyBooks {
-        margin-top: 30px;
-
-        .box-keyBooks-nav {
-            display: flex;
-            justify-content: space-between;
-
-            span {
-                @include nav-span;
-            }
-
-            .box-keyBooks-nav-main {
-                display: flex;
-
-                div {
-                    @include nav-main-div;
-                }
-
-                div:hover {
-                    font-weight: bold;
-                }
-            }
-        }
-
-        .box-keyBooks-main {
-            @include books-main;
-
-            .box-keyBooks-main-info {
-                text-align: center;
-
-                div {
-                    margin-top: 20px;
-                    color: #878787;
-                }
-            }
-        }
-    }
-
     .newBooks {
         margin-top: 50px;
         margin-left: 20px;
@@ -439,5 +381,4 @@ body {
             }
         }
     }
-}
-</style>
+}</style>

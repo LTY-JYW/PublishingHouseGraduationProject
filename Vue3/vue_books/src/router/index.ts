@@ -85,6 +85,11 @@ const router = createRouter({
           component: () => import('@/views/user/index/userIndex.vue')
         },
         {
+          path: 'category',
+          name: 'usercategory',
+          component: () => import('@/views/user/category/categoryIndex.vue')
+        },
+        {
           path: 'books',
           name: 'userBooks',
           component: () => import('@/views/user/books/userBooks.vue')

@@ -26,7 +26,12 @@ import { RouterView } from 'vue-router'
 import router from '@/router/index'
 // 导入pinia
 import { useUserStore } from '@/stores/user'
+// 导入路由
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
+// 图书Id
+const path = route.path
 // 搜索变量
 const searchData = ref('')
 
@@ -157,6 +162,13 @@ const getBookList = async () => {
 }
 await getBookList()
 
+// 点击导航
+const handNav = (id:number,flage:string) => {
+    if (flage == 'category') {
+      router.push(`/category?id=${id}`)
+    }
+
+}
 </script>
 <template>
   <div class="box">
@@ -166,12 +178,12 @@ await getBookList()
       :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
         @mouseleave="handout">
         <div>
-          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }" @mouseenter="handover('books')">图书
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }:{ color: 'white' }" @mouseenter="handover('books')">图书
           </div>
-          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }"
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }: { color: 'white' }"
             @mouseenter="handover('information')">
             资讯</div>
-          <div class="item" :style="isHover ? { color: 'black' } : { color: 'white' }" @mouseenter="handover('author')">作者
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }: { color: 'white' }" @mouseenter="handover('author')">作者
           </div>
         </div>
         <!-- 弹出内容 -->
@@ -184,7 +196,7 @@ await getBookList()
             <el-scrollbar height="85vh">
               <div v-for="item in categoryName" :key="item.value">
                 <span>{{ item.label }}</span>
-                <div class="nav-item-main" v-for="itemC in item.children" :key="itemC.value" style="margin-top: 0;">
+                <div class="nav-item-main mouse" v-for="itemC in item.children" :key="itemC.value" style="margin-top: 0;" @click="handNav(itemC.value,'category')">
                   {{ itemC.label }}
                 </div>
               </div>
@@ -194,13 +206,13 @@ await getBookList()
             <a href="">
               <div>所有资讯</div>
             </a>
-            <div class="nav-item-main" v-for="item in information" :key="item.id">{{ item.title }}</div>
+            <div class="nav-item-main mouse" v-for="item in information" :key="item.id">{{ item.title }}</div>
           </div>
           <div class="nav-item" v-else-if="flage === 'author'">
             <a href="">
               <div>作者列表</div>
             </a>
-            <div class="nav-item-main" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
+            <div class="nav-item-main mouse" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
           </div>
 
         </div>
@@ -242,7 +254,7 @@ await getBookList()
         <RouterView />
       </Suspense>
     </div>
-    <!-- 修改图书信息抽屉 -->
+    <!-- 搜索抽屉 -->
     <el-drawer v-model="search" direction="ttb" class="drawer" size="80%">
       <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" />
       <el-icon class="drawer-icon">

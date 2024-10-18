@@ -11,25 +11,26 @@ export interface BooksGetListType {
 }
 // 获取图书列表每一项的返回类型
 export type BooksResListType = {
-    id: number,
-    cid: number,
-    uid: number,
-    aid: number,
-    name: string,
-    profile: string,
-    time: string,
-    edition: number,
-    price: number,
-    pages: number,
-    number: number,
-    topic: string,
-    popularity: number,
-    cover: string,
-    disable: number,
-    isdelete: number,
-    cValue: string,
-    uValue: string,
-    aValue: string,
+    id: number
+    cid: number
+    uid: number
+    aid: number
+    name: string
+    profile: string
+    time: string
+    edition: number
+    price: number
+    pages: number
+    number: number
+    topic: string
+    popularity: number
+    cover: string
+    disable: number
+    isdelete: number
+    cValue: string
+    uValue: string
+    aValue: string
+    cProfile:string
 
 }[]
 // 获取未删除图书列表
@@ -140,3 +141,11 @@ export type BooksUserType = {
 }[]
 
 export const booksGetUserBooksAPI = (id:number) => requeset.get<ResType<ResListTpye<BooksUserType>>>('/api/books/users',{params:{id}})
+
+// 获取分类图书提交类型
+export type BooksCategoryType = {
+    page:number
+    itemsPerPage:number
+    cid:number
+}
+export const booksCategoryAPI = (params:BooksCategoryType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/categorybook',{params})

@@ -91,9 +91,6 @@ searchInputData.value = inputData
 const handleEnter = () => {
     router.push(`/search?data=${searchInputData.value}`)
 }
-
-// 搜素函数
-const onhandleInput = () => {}
 </script>
 <template>
     <div class="box">

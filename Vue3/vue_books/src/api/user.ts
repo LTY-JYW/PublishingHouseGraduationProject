@@ -49,6 +49,7 @@ export type UserInfoType = {
     email: string
     briefly:string
     disable: number
+    flyer:string
     isAuthor: number
     aid:number
     aValue:string

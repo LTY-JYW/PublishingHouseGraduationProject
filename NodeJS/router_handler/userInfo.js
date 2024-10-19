@@ -5,7 +5,7 @@ const bcryptjs = require('bcryptjs')
 const { isUser } = require('../utils/funtion')
 //获取用户基本信息模块
 exports.getUserInfo = async (req, res, id) => {
-    const sqlGetUserInfo = 'select id,username,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const sqlGetUserInfo = 'select id,flyer,username,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
     const resultsUserInfo = await db.executeQuery(sqlGetUserInfo, { id })
     return res.result('信息获取成功', 0, resultsUserInfo.data)
 }
@@ -20,7 +20,7 @@ exports.getUserInfoService = async (req, res) => {
 // 管理员获取用户信息
 exports.getUserInfoAdminService = async (req, res) => {
     const { id } = req.query
-    const sqlSel = 'select id,username,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const sqlSel = 'select id,username,flyer,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
     const resSel = await db.executeQuery(sqlSel,{id})
     if(resSel.data.length != 1){
         return res.result('没有这个用户！')

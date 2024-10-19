@@ -29,7 +29,7 @@ import { useUserStore } from '@/stores/user'
 // 导入路由
 import { useRoute } from 'vue-router'
 // 导入公共函数
-import { onBooks, onAuthor, onInformation} from '@/utils/funtion'
+import { onBooks, onAuthor, onInformation } from '@/utils/funtion'
 
 const route = useRoute()
 // 图书Id
@@ -81,7 +81,7 @@ const handCommand = async (command: string | number | object) => {
       // 用户点击取消后的操作
     });
   } else {
-    router.push(`/admin/${command}`)
+    router.push(`/${command}`)
   }
 }
 // 头像点击事件
@@ -175,28 +175,33 @@ const handNav = (id: number, flage: string) => {
   if (flage == 'category') {
     router.push(`/category?id=${id}`)
   }
+}
 
+const isUserInfo = () => {
+  if (path == '/userInfo') {
+    return true
+  }else{
+    return false
+  }
 }
 </script>
 <template>
   <div class="box">
-    <div class="box-nav">
-    <div :style="path == '/'?{ color: 'white' }:{ color: 'black' }" class="index mouse" @click="()=>{router.push(`/`)}">天翼图书</div>
+    <div class="box-nav" v-if="!isUserInfo()">
+      <div :style="path == '/' ? { color: 'white' } : { color: 'black' }" class="index mouse" @click="() => { router.push(`/`) }">
+        天翼图书</div>
       <!-- 文字 -->
       <div id="container"
         :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
         @mouseleave="handout">
         <div>
-          <div class="item"
-            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/' ? { color: 'white' } : { color: 'black' }"
             @mouseenter="handover('books')">图书
           </div>
-          <div class="item"
-            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/' ? { color: 'white' } : { color: 'black' }"
             @mouseenter="handover('information')">
             资讯</div>
-          <div class="item"
-            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
+          <div class="item" :style="isHover ? { color: 'black' } : path == '/' ? { color: 'white' } : { color: 'black' }"
             @mouseenter="handover('author')">作者
           </div>
         </div>
@@ -221,13 +226,15 @@ const handNav = (id: number, flage: string) => {
             <a href="">
               <div>所有资讯</div>
             </a>
-            <div class="nav-item-main mouse" v-for="item in information" :key="item.id" @click="onInformation(item.id)">{{ item.title }}</div>
+            <div class="nav-item-main mouse" v-for="item in information" :key="item.id" @click="onInformation(item.id)">{{
+              item.title }}</div>
           </div>
           <div class="nav-item" v-else-if="flage === 'author'">
             <a href="">
               <div>作者列表</div>
             </a>
-            <div class="nav-item-main mouse" v-for="item in userList" :key="item.id" @click="onAuthor(item.id)">{{ item.nickname }}</div>
+            <div class="nav-item-main mouse" v-for="item in userList" :key="item.id" @click="onAuthor(item.id)">{{
+              item.nickname }}</div>
           </div>
 
         </div>
@@ -236,7 +243,7 @@ const handNav = (id: number, flage: string) => {
       <div class="nav">
         <!-- 首页部分 -->
         <!-- 搜索表单部分 -->
-        <div :style="path == '/'?{ color: 'white' }:{ color: 'black' }" class="search mouse" @click="search = true">
+        <div :style="path == '/' ? { color: 'white' } : { color: 'black' }" class="search mouse" @click="search = true">
           <el-icon>
             <Search />
           </el-icon>
@@ -254,7 +261,7 @@ const handNav = (id: number, flage: string) => {
             </span>
             <template #dropdown v-if="isLogin">
               <el-dropdown-menu>
-                <el-dropdown-item command="info" :icon="User">个人中心</el-dropdown-item>
+                <el-dropdown-item command="userInfoLayout" :icon="User">个人中心</el-dropdown-item>
                 <el-dropdown-item command="pwd" :icon="User">修改密码</el-dropdown-item>
                 <el-dropdown-item command="avatar" :icon="User">修改头像</el-dropdown-item>
                 <el-dropdown-item command="loginOut" :icon="SwitchButton">退出登录</el-dropdown-item>
@@ -271,7 +278,8 @@ const handNav = (id: number, flage: string) => {
     </div>
     <!-- 搜索抽屉 -->
     <el-drawer v-model="search" direction="ttb" class="drawer" size="80%">
-      <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" @keyup.enter="handleEnter"/>
+      <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput"
+        @keyup.enter="handleEnter" />
       <el-icon class="drawer-icon" @click="handleEnter">
         <Right />
       </el-icon>
@@ -279,7 +287,7 @@ const handNav = (id: number, flage: string) => {
         <div>
           <div class="drawer-popular">热门图书</div>
           <div class="drawer-main">
-            <div class="item mouse" v-for="item in bookList?.slice(0,4)" :key="item.id" @click="onBooks(item.id)">
+            <div class="item mouse" v-for="item in bookList?.slice(0, 4)" :key="item.id" @click="onBooks(item.id)">
               <div class="item-img">
                 <img :src="item.cover" alt="">
               </div>
@@ -291,7 +299,8 @@ const handNav = (id: number, flage: string) => {
         <div style="margin-left: 5vw;">
           <div class="drawer-popular">作者</div>
           <div>
-            <div class="drawer-item mouse" v-for="item in userList?.slice(0, 6)" :key="item.id" @click="onAuthor(item.id)">{{ item.nickname }}</div>
+            <div class="drawer-item mouse" v-for="item in userList?.slice(0, 6)" :key="item.id"
+              @click="onAuthor(item.id)">{{ item.nickname }}</div>
           </div>
         </div>
       </div>

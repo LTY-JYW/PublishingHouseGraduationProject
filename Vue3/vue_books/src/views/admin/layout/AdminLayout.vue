@@ -10,7 +10,7 @@ import { auditGetInfo } from '@/api/audit'
 // 导入公共类型
 import type { AdminGetInfoType } from '@/api/admin'
 // 导入默认头像
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 // 导入el图标
 import {
   Management,
@@ -54,7 +54,7 @@ const getInfo = async () => {
   if (adminInfo.value[0].avatar) {
     avatar.value = adminInfo.value[0].avatar
   } else {
-    avatar.value = URL
+    avatar.value = URLAVATAR
   }
 }
 onMounted(async () => {

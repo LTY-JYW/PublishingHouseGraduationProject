@@ -20,8 +20,8 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component:() => import('@/views/admin/layout/AdminLayout.vue'),
-      children:[
+      component: () => import('@/views/admin/layout/AdminLayout.vue'),
+      children: [
         {
           path: 'audit',
           name: 'audit',
@@ -78,7 +78,7 @@ const router = createRouter({
       path: '/',
       name: 'user',
       component: () => import('@/views/user/layout/userLayout.vue'),
-      children:[
+      children: [
         {
           path: '',
           name: 'userIndex',
@@ -129,6 +129,18 @@ const router = createRouter({
           name: 'search',
           component: () => import('@/views/user/search/searchIndex.vue')
         },
+        {
+          path: 'userInfoLayout',
+          name: 'userInfoLayout',
+          component: () => import('@/views/user/info/userInfo.vue'),
+          children: [
+            {
+              path: 'userIndex',
+              name: 'userIndex',
+              component: () => import('@/views/user/info/userIndex.vue')
+            },
+          ]
+        },
       ]
     },
   ]
@@ -138,14 +150,14 @@ const router = createRouter({
 router.beforeEach((to) => {
   const userStore = useUserStore()
   //没有登录的用户只能访问登陆页面
-  if (!userStore.token && to.path.includes('/admin') ) {
+  if (!userStore.token && to.path.includes('/admin')) {
     ElMessage.error('请先登录')
     return '/login'
-  } else if(userStore.permissions === 2 && to.path.includes('/admin')) {
+  } else if (userStore.permissions === 2 && to.path.includes('/admin')) {
     console.log(userStore.permissions);
     ElMessage.error('用户禁止访问！')
     return '/'
-  }else{
+  } else {
     return true
   }
 })

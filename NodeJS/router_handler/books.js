@@ -434,3 +434,52 @@ exports.selUsersBooks = async (req,res) => {
         count:resCount.data
     })
 }
+
+// 搜索图书
+exports.selBooksName = async (req,res) => {
+    const { data,page,itemsPerPage } = req.query
+    const offset = (page - 1) * itemsPerPage;
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.preview,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+                    category2.profile AS cProfile,
+		            users.nickname AS uValue,
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
+                    FROM 
+                        books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE books.isdelete = 0 AND UPPER(books.name) LIKE UPPER('%${ data }%')
+                    LIMIT ${itemsPerPage} OFFSET ${offset}`
+    const resSel = await db.executeQuery(sql)
+    const sqlCount = `SELECT COUNT(*) AS count FROM books WHERE books.isdelete = 0 AND UPPER(books.name) LIKE UPPER('%${ data }%')`
+    const resCount = await db.executeQuery(sqlCount)
+    const count = resCount.data[0]
+    return res.result('搜素成功！', 0, {
+        value: resSel.data,
+        ...count
+    })
+}

@@ -104,6 +104,9 @@ const onBooks = (id:number) => {
                     </el-icon>
                     显示更多
                 </div>
+                <div class="exhibit-introduce-price">
+                    ￥{{ bookInfo[0].price}}
+                </div>
                 <div class="exhibit-introduce-button">
                     <el-button type="success">
                         <el-icon>
@@ -234,6 +237,14 @@ body {
 
             .exhibit-introduce-more {
                 font-size: 20px;
+            }
+
+            .exhibit-introduce-price{
+                color: red;
+                margin-top: 8vw;
+                font-size: 3vw;
+                border-top:1px solid rgba(0, 0, 0, 0.2);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.2);
             }
 
             .exhibit-introduce-button {

@@ -21,5 +21,7 @@ router.get('/info',expressJoi(id_query),books.selInfoBooks)
 router.get('/users',expressJoi(id_query),books.selUsersBooks)
 // 查询分类图书模块————get请求
 router.get('/categorybook',expressJoi(selCategoryBooks),books.selCatergoryBooks)
+// 搜索图书模块————get请求
+router.get('/search',books.selBooksName)
 //导出路由
 module.exports = router

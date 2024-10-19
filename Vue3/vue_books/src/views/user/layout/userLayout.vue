@@ -164,6 +164,12 @@ const getBookList = async () => {
 }
 await getBookList()
 
+// 搜索框确定函数
+const handleEnter = () => {
+  router.push(`/search?data=${input.value}`)
+
+}
+
 // 点击导航
 const handNav = (id: number, flage: string) => {
   if (flage == 'category') {
@@ -265,8 +271,8 @@ const handNav = (id: number, flage: string) => {
     </div>
     <!-- 搜索抽屉 -->
     <el-drawer v-model="search" direction="ttb" class="drawer" size="80%">
-      <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" />
-      <el-icon class="drawer-icon">
+      <input type="text" v-model="input" placeholder="在这里搜索" class="drawer-input" ref="searchInput" @keyup.enter="handleEnter"/>
+      <el-icon class="drawer-icon" @click="handleEnter">
         <Right />
       </el-icon>
       <div style="display: flex;">

@@ -127,3 +127,12 @@ export type BooksCategoryType = {
     cid:number
 }
 export const booksCategoryAPI = (params:BooksCategoryType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/categorybook',{params})
+
+// 提交类型
+export type SearchBooksType = {
+    page:number
+    itemsPerPage:number
+    data:string
+}
+// 搜素图书API
+export const booksSearchAPI = (params:SearchBooksType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/search',{params})

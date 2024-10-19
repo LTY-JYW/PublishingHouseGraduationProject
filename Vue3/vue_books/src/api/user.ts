@@ -59,9 +59,12 @@ export const userGetInfoAPI = () => requeset.get<ResType<UserInfoType>>('/my/use
 // 管理员获取用户详细信息API
 export const userGetInfoAdminAPI = (id:number) => requeset.get<ResType<UserInfoType>>('/api/info',{params:{id}})
 
-
+// 提交类型
+export type AuthorType = {
+    reviewMaterials:string
+}
 // 申请成为作者API
-export const userAuthorAPI = () => requeset.post<ResType<undefined>>('/my/author')
+export const userAuthorAPI = (data:AuthorType) => requeset.post<ResType<undefined>>('/my/author',data)
 
 // 更新用户详细信息提交类型
 export type UserUpInfoType = {

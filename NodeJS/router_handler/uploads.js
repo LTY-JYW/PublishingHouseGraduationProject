@@ -33,11 +33,11 @@ exports.uploadImgFile = async (req, res) => {
     return res.status(400).send('请上传图片文件！');
   }
   let uniqueFileName = ''
-  if(flag == 'avatar'){
+  if (flag == 'avatar') {
     uniqueFileName = `${process.env.OSS_AVATAR}${new Date().getTime()}${uuidv4()}.webp`
-  }else if(flag == 'category'){
+  } else if (flag == 'category') {
     uniqueFileName = `${process.env.OSS_CATEGORY}${new Date().getTime()}${uuidv4()}.webp`
-  }else if(flag == 'information'){
+  } else if (flag == 'information') {
     uniqueFileName = `${process.env.OSS_INFORMATION}${new Date().getTime()}${uuidv4()}.webp`
   }
   // 使用sharp压缩图片
@@ -57,7 +57,14 @@ exports.uploadWordFile = async (req, res) => {
   }
   // 前端发送的文件字段名为 "file"
   const file = req.file;
-  const uniqueFileName = `${process.env.OSS_WORD}${uuidv4()}${path.extname(file.originalname)}`
+  const flag = req.body.flag
+  let uniqueFileName = ''
+  if (flag == 'word') {
+    uniqueFileName = `${process.env.OSS_WORD}${new Date().getTime()}${uuidv4()}${path.extname(file.originalname)}`
+
+  } else if (flag == 'author') {
+    uniqueFileName = `${process.env.OSS_AUTHOR}${new Date().getTime()}${uuidv4()}${path.extname(file.originalname)}`
+  }
   const a = alibabaCloud.upPut(uniqueFileName, file.buffer)
   a.then((resData) => {
     return res.result('上传成功', 0, { url: resData.name })
@@ -78,7 +85,7 @@ exports.getWordForHtml = async (req, res) => {
     // 使用mammoth将Word文档转换为HTML
     const htmlResult = await mammoth.convertToHtml({ buffer });
     // 发送转换后的HTML回前端
-    res.result('获取html成功',0,{html:htmlResult.value})
+    res.result('获取html成功', 0, { html: htmlResult.value })
   } catch (error) {
     // 处理错误情况
     console.error('Error:', error);

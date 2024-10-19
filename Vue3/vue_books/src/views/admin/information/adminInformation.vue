@@ -285,6 +285,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         const formData = new FormData()
         const formDataImg = new FormData()
         formData.append('file', file.value);
+        formData.append('flag', 'word');
         formDataImg.append('flag', "information")
         formDataImg.append('file',fileImg.value)
         // 调用上传接口

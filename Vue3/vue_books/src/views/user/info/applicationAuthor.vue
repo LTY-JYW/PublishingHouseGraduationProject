@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 // 导入API
-import { userGetInfoAPI, userUpInfoAPI } from '@/api/user'
-import { uploadsFileAPI } from '@/api/uploads'
+import { userAuthorAPI, userUpInfoAPI } from '@/api/user'
+import { uploadsFileWordAPI } from '@/api/uploads'
 // 导入API类型
-import type { UserInfoType, UserUpInfoType } from '@/api/user'
+import type { AuthorType, UserUpInfoType } from '@/api/user'
 // 导入默认头像
 import { URLAVATAR, URLBG } from '@/utils/default'
 
@@ -21,13 +21,17 @@ const isDrawer = ref(false)
 const ruleFormRef = ref()
 
 // 表单变量
-const submitDocuments = ref({
-    reviewMaterials:''
+const submitDocuments = ref<AuthorType>({
+    reviewMaterials: ''
 })
 // 校验变量
-const submitDocumentsRules : FormRules<UserUpInfoType> = {
-    reviewMaterials:[
-
+const submitDocumentsRules: FormRules<AuthorType> = {
+    reviewMaterials: [
+        {
+            required: true,
+            message: '请输入昵称',
+            trigger: 'blur'
+        }
     ]
 }
 
@@ -79,11 +83,8 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
 const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
     // 修改文件类型检查逻辑
     // 允许的文件类型
-    if (rawFile.type.startsWith('image/')) {
-        console.log('是图');
-
-    }
-    if (!rawFile.type.startsWith('image/')) {
+    const allowedTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(rawFile.type)) {
         ElMessage.error('文件类型不匹配！')
     } else if (rawFile.size / 1024 / 1024 > 1024) {
         ElMessage.error('文件大小不能超过1G')
@@ -103,45 +104,46 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                 // 将文件封装到formData中
                 const formData = new FormData()
                 formData.append('file', file.value)
-                formData.append('flag', "avatar")
+                formData.append('flag', "author")
                 // 调用上传接口
-                const resFile = await uploadsFileAPI(formData)
-                userFormData.value.avatar = resFile.data.data.url
+                const resFile = await uploadsFileWordAPI(formData)
+                submitDocuments.value.reviewMaterials = resFile.data.data.url
                 // 调用添加接口
-                await userUpInfoAPI(userFormData.value)
+                await userAuthorAPI(submitDocuments.value)
             }
         } else {
             ElMessage.error(fields)
         }
     })
-    await getInfo()
-    isDrawer.value = false
 }
 </script>
 <template>
     <div class="box-author">
         <pageComponent title="申请作者">
             <div class="main">
-                <el-form size="large" autocomplete="off" :model="submitDocuments" :rules="submitDocumentsRules" ref="ruleFormRef">
-                <!-- 表单数据区域 -->
-                <el-form-item prop="nickname" label="提交材料">
-                    <!-- 上传区域 -->
-                    <el-upload class="avatar-uploader" :headers="headers" :show-file-list="false"
-                        :before-upload="beforeUpload" :on-change="onUploadChange" :on-exceed="handleExceed"
-                        :auto-upload="false" :limit="1" ref="uploadRef" v-loading="isLoadingUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                        <el-icon v-else class="avatar-uploader-icon">
-                            <Plus />
-                        </el-icon>
-                    </el-upload>
-                </el-form-item>
-                <!-- 表单按钮区域 -->
-                <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="submitForm(ruleFormRef)">
-                        确认
-                    </el-button>
-                </el-form-item>
-            </el-form>
+                <el-form size="large" autocomplete="off" label-position="top" :model="submitDocuments"
+                    :rules="submitDocumentsRules" ref="ruleFormRef">
+                    <!-- 表单数据区域 -->
+                    <el-form-item prop="nickname" label="提交材料">
+                        <!-- 上传区域 -->
+                        <el-upload class="avatar-uploader" :headers="headers" :show-file-list="false"
+                            :before-upload="beforeUpload" :on-change="onUploadChange" :on-exceed="handleExceed"
+                            :auto-upload="false" :limit="1" ref="uploadRef" v-loading="isLoadingUpload">
+                            <el-icon class="avatar-uploader-icon">
+                                <Plus />
+                            </el-icon>
+                        </el-upload>
+                    </el-form-item>
+                    <!-- 表单按钮区域 -->
+                    <el-form-item class="aaa">
+                        <el-button class="button" type="primary" auto-insert-space @click="submitForm(ruleFormRef)" round>
+                            <el-icon>
+                                <Upload />
+                            </el-icon>
+                            提交
+                        </el-button>
+                    </el-form-item>
+                </el-form>
             </div>
         </pageComponent>
     </div>
@@ -149,5 +151,36 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
     
 <style scoped lang="scss">
+.box-author {
+    width: 64vw;
+    height: 83vh;
+    .main {
+        .avatar-uploader {
+            border: 1px dashed black;
+            padding: 50px;
+            margin: auto;
+            width: 5.3vw;
+        }
 
-</style>
+        margin-top: 20px;
+
+        :deep(.el-form-item__label) {
+            font-size: 50px;
+            width: 11.5vw;
+            margin: auto;
+            padding-bottom: 80px;
+        }
+
+        :deep(.el-form-item__content) {
+            font-size: 100px;
+        }
+
+        :deep(.el-button--primary) {
+            font-size: 50px;
+            height: 100px;
+            margin-left: auto;
+        }
+
+
+    }
+}</style>

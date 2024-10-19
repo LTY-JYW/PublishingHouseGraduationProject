@@ -81,6 +81,7 @@ exports.updateUserPicService = async (req, res) => {
 //申请作者
 exports.addAuthor = async (req, res) => {
     const { id } = req.auth
+    const { reviewMaterials } = req.body
         if(isUser(req,res)){
         return res.result('该接口限用户调用')
     }
@@ -101,9 +102,8 @@ exports.addAuthor = async (req, res) => {
         return res.result('已申请！请耐心等待')
     }
 
-    const sql = 'UPDATE users SET isAuthor = 2 WHERE id = :id'
-    const resultReg = await db.executeQuery(sql, { id })
-    (resultReg)
+    const sql = 'UPDATE users SET isAuthor = 2,reviewMaterials = :reviewMaterials WHERE id = :id'
+    const resultReg = await db.executeQuery(sql, { id,reviewMaterials })
     return res.result('申请作者成功!', 0)
 }
 

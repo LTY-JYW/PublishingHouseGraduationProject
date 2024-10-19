@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 // 导入API
-import { booksGetInfoAPI } from '@/api/books'
+import { booksGetInfoAPI, booksGetUserBooksAPI } from '@/api/books'
 import { getHtmlAPI } from '@/api/uploads'
 import { cartAddAPI } from '@/api/cart'
 // 导入API类型
-import type { BookInfoType } from '@/api/books'
+import type { BooksResListType, BooksUserType } from '@/api/books'
 // 导入公共函数
 import { formDate } from '@/utils/dayjs'
 // 导入路由
@@ -17,7 +17,15 @@ import { useUserStore } from '@/stores/user'
 import { ShoppingCart, ShoppingBag } from '@element-plus/icons-vue'
 // 导入el组件
 import { ElMessageBox } from 'element-plus'
+import { Swiper, SwiperSlide } from 'swiper/vue';
 
+// Import Swiper styles
+import 'swiper/css';
+
+import 'swiper/css/free-mode';
+import 'swiper/css/pagination';
+import { FreeMode, Pagination } from 'swiper/modules';
+const modules = [FreeMode, Pagination]
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -25,11 +33,15 @@ const route = useRoute()
 const bookId: number = Number(route.query.id)
 
 // 图书详细信息变量
-const bookInfo = ref<BookInfoType>([])
+const bookInfo = ref<BooksResListType>([])
+// 作者图书变量
+const userBooks = ref<BooksUserType>()
 // 获取图书详细信息事件函数
 const getBookInfo = async () => {
     const { data } = await booksGetInfoAPI(bookId)
     bookInfo.value = data.data
+    const res = await booksGetUserBooksAPI(bookInfo.value[0].uid)
+    userBooks.value = res.data.data.value
 }
 await getBookInfo()
 
@@ -63,76 +75,85 @@ const buyNow = async (id: number, fage: boolean) => {
     }
 }
 
+
+// 图书点击事件
+const onBooks = (id:number) => {
+    router.push(`/booksInfo?id=${id}`)
+
+}
+
 </script>
 <template>
     <div class="box">
-        <div> 当前位置：<span>首页</span> >> <span>图书大全</span></div>
-        <div class="box-info">
-            <img :src="bookInfo[0].cover" alt="">
-            <div class="box-info-font">
-                <div class="box-info-font-title">{{ bookInfo[0].name }}</div>
-                <div class="box-info-font-main">
-                    <el-form>
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <el-form-item label="ID：">{{ bookInfo[0].id }}</el-form-item>
-                            </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="作者：">{{ bookInfo[0].uValue }}</el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <el-form-item label="出版日期:">{{ formDate(bookInfo[0].time) }}</el-form-item>
-                            </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="版次:">{{ bookInfo[0].edition }}</el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <el-form-item label="价格:">{{ bookInfo[0].price }}</el-form-item>
-                            </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="页数:">{{ bookInfo[0].pages }}</el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <el-form-item label="卷数：">{{ bookInfo[0].number }}</el-form-item>
-                            </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="主题词：">{{ bookInfo[0].topic }}</el-form-item>
-                            </el-col>
-                        </el-row>
-                        <!-- 操作部分 -->
-                        <el-button-group>
-                            <el-button type="primary" :icon="ShoppingCart" @click="buyNow(bookId, false)">加入购物车</el-button>
-                            <el-button type="danger" :icon="ShoppingBag" @click="buyNow(bookId, true)">立即购买</el-button>
-                        </el-button-group>
-                    </el-form>
+        <div class="exhibit">
+            <div class="exhibit-img">
+                <img :src="bookInfo[0].cover" alt="">
+            </div>
+            <div class="exhibit-introduce">
+                <div class="exhibit-introduce-author">作者： {{ bookInfo[0].uValue }}</div>
+                <div class="exhibit-introduce-name">{{ bookInfo[0].name }}</div>
+                <div class="exhibit-introduce-num">
+                    <div>{{ formDate(bookInfo[0].time) }}</div>
+                    <div>页数： {{ bookInfo[0].number }}</div>
+                    <div>版次： {{ bookInfo[0].edition }}</div>
+                </div>
+                <div class="exhibit-introduce-introduction">{{ bookInfo[0].profile }}</div>
+                <div class="exhibit-introduce-more">
+                    <el-icon class="slide-fade ">
+                        <Bottom />
+                    </el-icon>
+                    显示更多
+                </div>
+                <div class="exhibit-introduce-button">
+                    <el-button type="success">
+                        <el-icon>
+                            <ShoppingCartFull />
+                        </el-icon>
+                        加入购物车
+                    </el-button>
+                    <el-button type="primary">
+                        <el-icon>
+                            <Goods />
+                        </el-icon>
+                        立即购买
+                    </el-button>
                 </div>
             </div>
         </div>
-        <div class="box-introduction">
-            <div class="box-introduction-book">
-                <span>内容简介</span>
-                <div class="box-introduction-book-main">
-                    {{ bookInfo[0].profile }}
+        <div class="author">
+            <div class="author-info">
+                <div class="author-info-name">
+                    {{ bookInfo[0].uValue }}
                 </div>
-            </div>
-            <div class="box-introduction-user">
-                <span>作者简介</span>
-                <div class="box-introduction-user-main">
+                <div class="author-info-briefly">
                     {{ bookInfo[0].uBriefly }}
                 </div>
             </div>
+            <div class="author-img">
+                <img :src="bookInfo[0].uAvatar" alt="">
+            </div>
         </div>
-        <div class="box-preview">
-            <span class="box-preview-span">试读</span>
-            <div class="box-preview-main" v-html="html" v-if="html"></div>
-            <div class="box-preview-main" v-else>
-                该图书暂无试读
+        <div class="preview">
+            <div class="preview-font">试读内容</div>
+            <div v-if="html" class="preview-html" v-html="html"></div>
+            <div v-else class="preview-html">暂无试读内容</div>
+        </div>
+        <div class="books">
+            <div class="books-font">
+                作者所著书籍
+            </div>
+            <div class="books-list">
+                <swiper :freeMode="true" :modules="modules" :slidesPerView="4" :spaceBetween="30">
+                    <swiper-slide class="item mouse" v-for="item in userBooks" :key="item.id" @click="onBooks(item.id)">
+                        <img :src="item.cover" alt="">
+                        <div class="item-uValue">
+                            {{ item.uValue }}
+                        </div>
+                        <div class="item-name">
+                            {{ item.name }}
+                        </div>
+                    </swiper-slide>
+                </swiper>
             </div>
         </div>
     </div>
@@ -141,91 +162,171 @@ const buyNow = async (id: number, fage: boolean) => {
 
     
 <style lang="scss">
-@mixin box-introduction-font {
-    font-size: 20px;
-    margin-top: 10px;
+.mouse:hover {
+    /* 将鼠标指针变为手形 */
+    cursor: pointer;
 }
 
-@mixin box-span {
-    color: #66ccff;
-    font-family: '程荣光刻楷', sans-serif;
-    font-size: 30px;
+
+.slide-fade {
+    animation: slideFade 2s ease-in-out infinite;
+}
+
+@keyframes slideFade {
+    0% {
+        opacity: 0;
+        transform: translateY(0px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(2px);
+    }
+}
+
+body {
+    background: rgba(250, 250, 247);
 }
 
 .box {
-    .box-info {
+    .exhibit {
+        display: flex;
+
+        .exhibit-img {
+            padding: 220px;
+            padding-left: 500px;
+            background: rgb(240, 240, 235);
+
+            img {
+                width: 20vw;
+            }
+        }
+
+        .exhibit-introduce {
+            padding: 100px;
+            background: rgb(250, 250, 247);
+            position: relative;
+
+            .exhibit-introduce-author {
+                color: rgb(150, 150, 150);
+            }
+
+            .exhibit-introduce-name {
+                font-size: 40px;
+            }
+
+            .exhibit-introduce-num {
+                display: flex;
+
+                div {
+                    margin: 10px;
+                    background: rgb(237, 237, 234);
+                    padding: 5px;
+                }
+            }
+
+            .exhibit-introduce-introduction {
+                font-size: 20px;
+                line-height: 35px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .exhibit-introduce-more {
+                font-size: 20px;
+            }
+
+            .exhibit-introduce-button {
+                position: absolute;
+                bottom: 80px;
+                width: 80%;
+                display: flex;
+                justify-content: space-between;
+
+                .el-button {
+                    font-size: 30px;
+                    padding: 30px;
+                }
+            }
+        }
+    }
+
+    .author {
         display: flex;
         padding: 20px;
-        background: white;
+        margin-top: 50px;
+        max-height: 50vw;
+        overflow: hidden;
+        justify-content: space-between;
 
-        .box-info-font {
-            width: 745px;
-            margin-left: 30px;
-            margin-top: 20px;
+        .author-info {
+            position: relative;
 
-            .box-info-font-title {
+            .author-info-name {
                 font-family: '程荣光刻楷', sans-serif;
-                font-weight: bold;
-                font-size: 50px;
+                font-size: 8vw;
             }
 
-            .box-info-font-main {
-                margin-top: 10px;
-                color: #999999;
-
-                .el-form-item__label {
-                    font-size: 18px;
-                }
-
-                .el-form-item__content {
-                    font-size: 18px;
-                }
-
-            }
-
-
-        }
-
-    }
-
-    .box-introduction {
-        margin-top: 20px;
-        background: white;
-        padding: 30px;
-
-        span {
-            @include box-span;
-        }
-
-        .box-introduction-book {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px #999999 solid;
-
-            .box-introduction-book-main {
-                @include box-introduction-font;
+            .author-info-briefly {
+                position: absolute;
+                bottom: 1vw;
+                font-size: 30px;
+                line-height: 1.5;
             }
         }
 
-        .box-introduction-user {
-            .box-introduction-user-main {
-                @include box-introduction-font;
+        .author-img {
+            img {
+                width: 40vw;
             }
         }
     }
 
-    .box-preview {
-        margin-top: 20px;
-        background: white;
-        padding: 30px;
+    .preview {
+        margin-top: 5vw;
+        padding: 20px;
 
-        .box-preview-span {
-            @include box-span;
+        .preview-font {
+            font-size: 40px;
         }
 
-        .box-preview-main {
-            max-height: 1500px;
-            overflow: hidden;
+        .preview-html {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            font-size: 20px;
+            line-height: 1.5;
+            margin-top: 20px;
+            padding-top: 10px;
+            padding-bottom: 30px;
+        }
+    }
+
+    .books {
+        .books-font {
+            font-size: 40px;
+        }
+
+        .books-list {
+            width: 100vw;
+            display: flex;
+
+            .item {
+                padding: 5vw;
+                padding-bottom: 0px;
+                margin: 10px;
+                background: rgb(240, 240, 235);
+                width: auto !important;
+
+                .item-uValue {
+                    font-size: 18px;
+                    margin-top: 10px;
+                }
+
+                .item-name {
+                    font-size: 20px;
+                    margin: 10px;
+                }
+            }
         }
     }
 }

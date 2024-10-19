@@ -29,9 +29,15 @@ importers:
       postcss-px-to-viewport-ts:
         specifier: ^1.0.0
         version: 1.0.0(postcss@8.4.47)
+      swiper:
+        specifier: ^11.1.14
+        version: 11.1.14
       vue:
         specifier: ^3.4.29
         version: 3.4.38(typescript@5.4.5)
+      vue-awesome-swiper:
+        specifier: ^5.0.1
+        version: 5.0.1(swiper@11.1.14)(vue@3.4.38(typescript@5.4.5))
       vue-dayjs:
         specifier: ^1.0.2
         version: 1.0.2
@@ -3343,6 +3349,10 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
+  swiper@11.1.14:
+    resolution: {integrity: sha512-VbQLQXC04io6AoAjIUWuZwW4MSYozkcP9KjLdrsG/00Q/yiwvhz9RQyt0nHXV10hi9NVnDNy1/wv7Dzq1lkOCQ==}
+    engines: {node: '>= 4.7.0'}
+
   tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
@@ -3569,6 +3579,12 @@ packages:
 
   vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
+
+  vue-awesome-swiper@5.0.1:
+    resolution: {integrity: sha512-mWjFJzUqA4lG+DmsmibvMpoiBnl+IH2SSeiiQ3i5M0t1y9FknTxnGT0DsMb2YdJLgjYMEK3sYOWzqgLnZMH8Lg==}
+    peerDependencies:
+      swiper: ^7.0.0  || ^8.0.0
+      vue: 3.x
 
   vue-dayjs@1.0.2:
     resolution: {integrity: sha512-rYvbpjZ6ZZ2MyQPpyltQmPBqd4+2RRfcFZb5/Fa6VsmBCmeSXTl6RHrHSOY72y5NJOrrxTpBg6VnP556gNSU7w==}
@@ -7113,6 +7129,8 @@ snapshots:
       picocolors: 1.0.1
       stable: 0.1.8
 
+  swiper@11.1.14: {}
+
   tapable@2.2.1: {}
 
   terser-webpack-plugin@5.3.10(webpack@5.94.0):
@@ -7313,6 +7331,11 @@ snapshots:
       terser: 5.31.6
 
   vscode-uri@3.0.8: {}
+
+  vue-awesome-swiper@5.0.1(swiper@11.1.14)(vue@3.4.38(typescript@5.4.5)):
+    dependencies:
+      swiper: 11.1.14
+      vue: 3.4.38(typescript@5.4.5)
 
   vue-dayjs@1.0.2:
     dependencies:

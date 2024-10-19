@@ -51,6 +51,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    FreeDrag: typeof import('./src/components/freeDrag.vue')['default']
     PageComponent: typeof import('./src/components/pageComponent.vue')['default']
     PageDrawer: typeof import('./src/components/pageDrawer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

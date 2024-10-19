@@ -9,6 +9,8 @@ const user = require('../router_handler/userInfo')
 const  expressJoi = require('@escook/express-joi')
 //导入验证模块
 const { reg_login_schema } = require('../schema/user')
+const { id_query } = require('../schema/id')
+
 
 //用户注册模块————post请求
 router.post('/reguser',expressJoi(reg_login_schema),handUser.reguser)
@@ -16,5 +18,7 @@ router.post('/reguser',expressJoi(reg_login_schema),handUser.reguser)
 router.post('/login',expressJoi(reg_login_schema),handUser.login)
 // 获取用户列表模块————get请求
 router.get('',user.overySelNoPage)
+// 配置管理员获取用户信息接口————get请求
+router.get('/info',expressJoi(id_query),user.getUserInfoAdminService)
 //导出路由
 module.exports = router

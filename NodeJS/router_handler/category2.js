@@ -138,7 +138,7 @@ exports.categoryOvery = async (req, res) => {
 exports.popularCategories = async (req,res) => {
     const sql = `SELECT category2.id, category2.name, SUM(books.popularity) as total_popularity
                     FROM category2
-                    JOIN books ON category2.id = books.cid
+                    LEFT JOIN books ON category2.id = books.cid
                     GROUP BY category2.id, category2.name
                     ORDER BY total_popularity DESC;`
     const resSql = await db.executeQuery(sql)

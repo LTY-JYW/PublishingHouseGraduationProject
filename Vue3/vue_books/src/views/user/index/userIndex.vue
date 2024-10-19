@@ -15,6 +15,8 @@ import type { UserListType } from '@/api/user'
 import type { HtmlType } from '@/api/uploads'
 // 导入路由
 import router from '@/router'
+// 导入公共函数
+import { onBooks, onAuthor, onInformation, onCategory} from '@/utils/funtion'
 
 //查询变量
 const sqlData = ref<PageByType>({
@@ -88,26 +90,13 @@ const getUserList = async () => {
 }
 await getUserList()
 
-// 图书点击事件函数
-const clickBook = (id: number) => {
-    // router.push(`/booksInfo?id=${id}`)
-
-
-}
-
-// 资讯点击事件
-const onInformation = (id: number) => {
-    router.push(`/informationInfo?id=${id}`)
-}
-
-
 </script>
 <template>
     <div class="box">
         <!-- 跑马灯 -->
         <el-carousel indicator-position="none" height="auto">
-            <el-carousel-item v-for="item in userList?.slice(0, 4)" :key="item.id" style="height: 50vw">
-                <img :src="item.flyer" alt="" @click="clickBook(item.id)">
+            <el-carousel-item v-for="item in userList?.slice(0, 4)" :key="item.id" style="height: 50vw" @click="onAuthor(item.id)">
+                <img :src="item.flyer" alt="" @click="onBooks(item.id)">
                 <div class="font">
                     <div>{{ item.nickname }}</div>
                 </div>
@@ -117,7 +106,7 @@ const onInformation = (id: number) => {
         <div class="hot">
             <div class="hot-font">热门类别</div>
             <div style="display: flex;flex-wrap: wrap;">
-                <div class="item mouse" v-for="item in category2Hot" :key="item.id">
+                <div @click="onCategory(item.id)" class="item mouse" v-for="item in category2Hot?.slice(0,9)" :key="item.id">
                     {{ item.name }} /
                 </div>
             </div>
@@ -156,24 +145,25 @@ const onInformation = (id: number) => {
         <div class="newBooks">
             <div class="newBooks-font">新的图书</div>
             <div style="display: flex;flex-wrap: wrap;">
-                <div class="newBooks-item" v-for="item in booksList" :key="item.id">
-                    <img :src="item.cover" alt="">
+                <div class="newBooks-item mouse" v-for="item in booksList" :key="item.id" @click="onBooks(item.id)">
+                    <img :src="item.cover" alt="" @click="onBooks(item.id)">
                     <div class="newBooks-item-uValue">{{ item.uValue }}</div>
                     <div class="newBooks-item-name">{{ item.name }}</div>
                 </div>
             </div>
             <div style="text-align: center;">查看所有图书</div>
         </div>
+        <!-- 最热门作者 -->
         <div class="author">
-            <div class="author-img" v-for="item in userNewList?.slice(0, 1)" :key="item.id">
+            <div class="author-img mouse" v-for="item in userNewList?.slice(0, 1)" :key="item.id" @click="onAuthor(item.id)">
                 <img :src="item.flyer" alt="">
                 <div class="author-img-name">{{ item.nickname }}</div>
                 <div class="author-img-briefly">{{ item.briefly }}</div>
             </div>
             <el-carousel arrow="never" class="author-carousel">
-                <el-carousel-item v-for="item in usersNewBooks?.slice(0, 4)" :key="item.id" style="height: 50vw">
+                <el-carousel-item class="mouse" v-for="item in usersNewBooks?.slice(0, 4)" :key="item.id" style="height: 50vw" @click="onBooks(item.id)">
                     <div class="author-carousel-img">
-                        <img :src="item.cover" alt="" @click="clickBook(item.id)">
+                        <img :src="item.cover" alt="" @click="onBooks(item.id)">
                     </div>
                     <div class="author-carousel-uValue">{{ item.uValue }}</div>
                     <div class="author-carousel-name">{{ item.name }}</div>
@@ -183,7 +173,7 @@ const onInformation = (id: number) => {
         <div class="news">
             <div class="news-font">新闻与资讯</div>
             <div style="display: flex;flex-wrap: wrap;">
-                <div class="news-item" v-for="item in informationList" :key="item.id">
+                <div class="news-item mouse" v-for="item in informationList" :key="item.id" @click="onInformation(item.id)">
                     <img class="news-item-img" :src="item.cover" alt="">
                     <div class="news-item-title">{{ item.title }}</div>
                     <div class="news-item-main" v-html="item.main"></div>
@@ -352,7 +342,12 @@ body {
                 margin-bottom: 20px;
             }
 
-            .news-item-main {}
+            .news-item-main {
+                :deep(img) {
+                    width: 0px;
+                    height: 0px;
+                }
+            }
         }
     }
     .newBooks {

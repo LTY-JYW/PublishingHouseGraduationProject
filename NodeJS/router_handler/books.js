@@ -140,13 +140,17 @@ exports.selOveryBooks = async (req, res) => {
                     books.number,
                     books.topic,
                     books.popularity,
+                    books.preview,
                     books.cover,
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
                     category2.profile AS cProfile,
 		            users.nickname AS uValue,
-		            audit.nickname AS aValue
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
                     FROM 
                         books
                     LEFT JOIN 
@@ -193,13 +197,17 @@ exports.selOveryNoPageBooks = async (req, res) => {
                     books.number,
                     books.topic,
                     books.popularity,
+                    books.preview,
                     books.cover,
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
                     category2.profile AS cProfile,
 		            users.nickname AS uValue,
-		            audit.nickname AS aValue
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
                     FROM 
                         books
                     LEFT JOIN 
@@ -245,13 +253,17 @@ exports.selOveryEveryBooks = async (req, res) => {
                     books.number,
                     books.topic,
                     books.popularity,
+                    books.preview,
                     books.cover,
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
                     category2.profile AS cProfile,
 		            users.nickname AS uValue,
-		            audit.nickname AS aValue
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
                     FROM 
                         books
                     LEFT JOIN 
@@ -300,13 +312,17 @@ exports.selCatergoryBooks = async (req, res) => {
                     books.number,
                     books.topic,
                     books.popularity,
+                    books.preview,
                     books.cover,
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
                     category2.profile AS cProfile,
 		            users.nickname AS uValue,
-		            audit.nickname AS aValue
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
                     FROM 
                         books
                     LEFT JOIN 
@@ -353,6 +369,8 @@ exports.selInfoBooks = async (req, res) => {
                     category2.name AS cValue,
                     category2.profile AS cProfile,
 		            users.nickname AS uValue,
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
 		            audit.nickname AS aValue,
                     users.briefly AS uBriefly
                     FROM 
@@ -405,7 +423,7 @@ exports.selUsersBooks = async (req,res) => {
                         users ON books.uid = users.id
                     LEFT JOIN 
                         audit ON books.aid = audit.id
-                    WHERE books.uid = :id;
+                    WHERE books.uid = :id and books.isdelete = 0
                     `
     const resSql = await db.executeQuery(sql,{id})
     const sqlCount = 'SELECT COUNT(*) AS count FROM books where uid = :id'

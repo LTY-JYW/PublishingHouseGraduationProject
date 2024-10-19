@@ -11,8 +11,6 @@ const { id_query } = require('../schema/id')
 const userInfo = require('../router_handler/userInfo')
 //配置获取用户信息接口————get请求
 router.get('/userinfo',userInfo.getUserInfoService)
-// 配置管理员获取用户信息接口————get请求
-router.get('/userinfoadmin',expressJoi(id_query),userInfo.getUserInfoAdminService)
 //配置更新用户信息接口————post请求
 router.put('/userinfo',expressJoi(updata_userInfo_schema),userInfo.updataUserInfoService)
 //配置更新用户密码接口————post请求

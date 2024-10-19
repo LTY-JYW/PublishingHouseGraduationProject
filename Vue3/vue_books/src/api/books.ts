@@ -24,15 +24,18 @@ export type BooksResListType = {
     number: number
     topic: string
     popularity: number
+    preview: string
     cover: string
     disable: number
     isdelete: number
     cValue: string
+    cProfile: string
     uValue: string
+    uBriefly: string
+    uAvatar: string
     aValue: string
-    cProfile:string
-
 }[]
+
 // 获取未删除图书列表
 export const booksGetListAPI = (params: PageByType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/overy', { params })
 // 获取未删除图书列表（不分页）
@@ -72,33 +75,8 @@ export const booksDelAPI = (id:number) => requeset.delete<ResType<undefined>>('/
 // 恢复图书
 export const booksRestoreAPI = (id:number) => requeset.post<ResType<undefined>>('/my/books/restore',{id})
 
-// 图书详细信息返回类型
-export type BookInfoType = {
-    id: number
-    cid: number
-    uid: number
-    aid: number
-    name: string
-    profile: string
-    time: string
-    edition: number
-    price: number
-    pages: number
-    number: number
-    topic: string
-    popularity: number
-    cover: string
-    preview:string
-    disable: number
-    isdelete: number
-    cValue:string
-    uValue:string
-    aValue:string
-    uBriefly:string
-
-}[]
 // 获取图书详细信息
-export const booksGetInfoAPI = (id:number) => requeset.get<ResType<BookInfoType>>('/api/books/info',{params:{id}})
+export const booksGetInfoAPI = (id:number) => requeset.get<ResType<BooksResListType>>('/api/books/info',{params:{id}})
 
 // 获取作者图书列表返回类型
 // export type BooksUserType = {

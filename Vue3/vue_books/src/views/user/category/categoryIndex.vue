@@ -8,6 +8,8 @@ import type { BooksResListType, BooksCategoryType } from '@/api/books'
 import type { UserListType } from '@/api/user'
 // 导入路由
 import { useRoute } from 'vue-router'
+// 导入公共函数
+import { onBooks, onAuthor, onInformation, onCategory} from '@/utils/funtion'
 
 const route = useRoute()
 // 图书Id
@@ -116,7 +118,7 @@ const load = async () => {
             <div class="main-profile">
                 {{ booksListNow![0].cProfile }}
             </div>
-            <div class="main-item mouse" v-for="item in booksListNow" :key="item.id">
+            <div class="main-item mouse" v-for="item in booksListNow" :key="item.id" @click="onBooks(item.id)">
                 <div class="main-item-img">
                     <img :src="item.cover" alt="">
                 </div>

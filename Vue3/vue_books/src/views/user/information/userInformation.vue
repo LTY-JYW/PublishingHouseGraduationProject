@@ -11,6 +11,12 @@ import { formDate } from '@/utils/dayjs'
 import { Search } from '@element-plus/icons-vue'
 // 导入路由
 import router from '@/router'
+// 导入路由
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+// 图书Id
+const id: number = Number(route.query.id)
 
 // 搜索变量
 const search = ref('')

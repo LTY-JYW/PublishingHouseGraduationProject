@@ -19,7 +19,13 @@ exports.getUserInfoService = async (req, res) => {
 
 // 管理员获取用户信息
 exports.getUserInfoAdminService = async (req, res) => {
-    return this.getUserInfo(req, res, req.query.id)
+    const { id } = req.query
+    const sqlSel = 'select id,username,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const resSel = await db.executeQuery(sqlSel,{id})
+    if(resSel.data.length != 1){
+        return res.result('没有这个用户！')
+    }
+    return res.result('用户信息获取成功！',0,resSel.data)
 }
 
 //更新用户信息

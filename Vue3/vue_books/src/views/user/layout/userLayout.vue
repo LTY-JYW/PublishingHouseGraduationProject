@@ -28,6 +28,8 @@ import router from '@/router/index'
 import { useUserStore } from '@/stores/user'
 // 导入路由
 import { useRoute } from 'vue-router'
+// 导入公共函数
+import { onBooks, onAuthor, onInformation} from '@/utils/funtion'
 
 const route = useRoute()
 // 图书Id
@@ -163,27 +165,33 @@ const getBookList = async () => {
 await getBookList()
 
 // 点击导航
-const handNav = (id:number,flage:string) => {
-    if (flage == 'category') {
-      router.push(`/category?id=${id}`)
-    }
+const handNav = (id: number, flage: string) => {
+  if (flage == 'category') {
+    router.push(`/category?id=${id}`)
+  }
 
 }
 </script>
 <template>
   <div class="box">
     <div class="box-nav">
+    <div :style="path == '/'?{ color: 'white' }:{ color: 'black' }" class="index mouse" @click="()=>{router.push(`/`)}">天翼图书</div>
       <!-- 文字 -->
       <div id="container"
-      :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
+        :style="isHover ? { width: '40vw', background: 'white' } : { width: '4vw', background: 'rgba(1,1,1,0)' }"
         @mouseleave="handout">
         <div>
-          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }:{ color: 'white' }" @mouseenter="handover('books')">图书
+          <div class="item"
+            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
+            @mouseenter="handover('books')">图书
           </div>
-          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }: { color: 'white' }"
+          <div class="item"
+            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
             @mouseenter="handover('information')">
             资讯</div>
-          <div class="item" :style="isHover ? { color: 'black' } : path == '/category'? { color: 'black' }: { color: 'white' }" @mouseenter="handover('author')">作者
+          <div class="item"
+            :style="isHover ? { color: 'black' } : path == '/'?{ color: 'white' }:{ color: 'black' }"
+            @mouseenter="handover('author')">作者
           </div>
         </div>
         <!-- 弹出内容 -->
@@ -196,7 +204,8 @@ const handNav = (id:number,flage:string) => {
             <el-scrollbar height="85vh">
               <div v-for="item in categoryName" :key="item.value">
                 <span>{{ item.label }}</span>
-                <div class="nav-item-main mouse" v-for="itemC in item.children" :key="itemC.value" style="margin-top: 0;" @click="handNav(itemC.value,'category')">
+                <div class="nav-item-main mouse" v-for="itemC in item.children" :key="itemC.value" style="margin-top: 0;"
+                  @click="handNav(itemC.value, 'category')">
                   {{ itemC.label }}
                 </div>
               </div>
@@ -206,22 +215,22 @@ const handNav = (id:number,flage:string) => {
             <a href="">
               <div>所有资讯</div>
             </a>
-            <div class="nav-item-main mouse" v-for="item in information" :key="item.id">{{ item.title }}</div>
+            <div class="nav-item-main mouse" v-for="item in information" :key="item.id" @click="onInformation(item.id)">{{ item.title }}</div>
           </div>
           <div class="nav-item" v-else-if="flage === 'author'">
             <a href="">
               <div>作者列表</div>
             </a>
-            <div class="nav-item-main mouse" v-for="item in userList" :key="item.id">{{ item.nickname }}</div>
+            <div class="nav-item-main mouse" v-for="item in userList" :key="item.id" @click="onAuthor(item.id)">{{ item.nickname }}</div>
           </div>
 
         </div>
         <!-- 更多项... -->
       </div>
       <div class="nav">
+        <!-- 首页部分 -->
         <!-- 搜索表单部分 -->
-
-        <div class="search mouse" @click="search = true">
+        <div :style="path == '/'?{ color: 'white' }:{ color: 'black' }" class="search mouse" @click="search = true">
           <el-icon>
             <Search />
           </el-icon>
@@ -264,7 +273,7 @@ const handNav = (id:number,flage:string) => {
         <div>
           <div class="drawer-popular">热门图书</div>
           <div class="drawer-main">
-            <div class="item" v-for="item in bookList" :key="item.id">
+            <div class="item mouse" v-for="item in bookList?.slice(0,4)" :key="item.id" @click="onBooks(item.id)">
               <div class="item-img">
                 <img :src="item.cover" alt="">
               </div>
@@ -276,7 +285,7 @@ const handNav = (id:number,flage:string) => {
         <div style="margin-left: 5vw;">
           <div class="drawer-popular">作者</div>
           <div>
-            <div class="drawer-item" v-for="item in userList?.slice(0,6)" :key="item.id">{{ item.nickname }}</div>
+            <div class="drawer-item mouse" v-for="item in userList?.slice(0, 6)" :key="item.id" @click="onAuthor(item.id)">{{ item.nickname }}</div>
           </div>
         </div>
       </div>
@@ -303,6 +312,14 @@ const handNav = (id:number,flage:string) => {
   width: 100vw;
   margin: auto;
   position: relative;
+
+  .index {
+    font-family: '程荣光刻楷', sans-serif;
+    position: absolute;
+    font-size: 40px;
+    left: 45%;
+    top: 1%;
+  }
 
   .box-nav {
     width: 100vw;

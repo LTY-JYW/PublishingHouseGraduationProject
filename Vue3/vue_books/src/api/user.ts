@@ -47,7 +47,7 @@ export type UserInfoType = {
     nickname: string
     avatar: string
     email: string
-    brieflt:string
+    briefly:string
     disable: number
     isAuthor: number
     aid:number
@@ -56,7 +56,7 @@ export type UserInfoType = {
 // 获取用户详细信息API
 export const userGetInfoAPI = () => requeset.get<ResType<UserInfoType>>('/my/userinfo')
 // 管理员获取用户详细信息API
-export const userGetInfoAdminAPI = () => requeset.get<ResType<UserInfoType>>('/my/userinfoadmin')
+export const userGetInfoAdminAPI = (id:number) => requeset.get<ResType<UserInfoType>>('/api/info',{params:{id}})
 
 
 // 申请成为作者API

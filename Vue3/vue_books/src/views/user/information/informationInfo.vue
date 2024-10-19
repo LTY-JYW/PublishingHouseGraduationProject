@@ -52,7 +52,8 @@ await getInfo()
     
 <style scoped lang="scss">
 .box {
-    background: white;
+    background: rgb(250, 250, 247);
+    padding-top: 100px;
     .head {
         border-bottom: 1px black solid;
         text-align: center;

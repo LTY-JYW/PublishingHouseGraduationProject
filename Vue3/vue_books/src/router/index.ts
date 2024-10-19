@@ -100,6 +100,11 @@ const router = createRouter({
           component: () => import('@/views/user/books/userBooksInfo.vue')
         },
         {
+          path: 'author',
+          name: 'userAuthor',
+          component: () => import('@/views/user/author/authorIndex.vue')
+        },
+        {
           path: 'buyNow',
           name: 'buyNow',
           component: () => import('@/views/user/buyNow/buyNow.vue')

@@ -21,7 +21,7 @@ const { title } = toRefs(prop)
   </el-card>
 </template>
 
-<style>
+<style scoped>
 .page {
   min-height: 100%;
   box-sizing: border-box;

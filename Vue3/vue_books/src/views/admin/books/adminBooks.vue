@@ -9,7 +9,7 @@ import { Edit, Delete, Search, DocumentAdd, SuccessFilled, WarnTriangleFilled } 
 // 导入时间处理函数
 import { formDate } from '@/utils/dayjs'
 // 导入默认封面地址
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 // 导入类型
 import type { BooksInfoType } from '@/api/books'
 // 导入后端接口函数
@@ -336,7 +336,7 @@ const headReject = async (id:number) => {
         <template #default="scope">
           <div style="display: flex; align-items: center">
             <el-avatar :src='scope.row.cover' v-if="scope.row.cover" />
-            <el-avatar :src='URL' v-else />
+            <el-avatar :src='URLAVATAR' v-else />
           </div>
         </template>
       </el-table-column>

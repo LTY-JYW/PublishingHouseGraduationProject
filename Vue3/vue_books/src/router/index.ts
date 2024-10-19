@@ -13,11 +13,6 @@ const router = createRouter({
       component: () => import('@/views/login/loginView.vue')
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/views/AboutView.vue')
-    },
-    {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/admin/layout/AdminLayout.vue'),
@@ -138,6 +133,11 @@ const router = createRouter({
               path: 'userIndex',
               name: 'userIndex',
               component: () => import('@/views/user/info/userIndex.vue')
+            },
+            {
+              path: 'userAuthor',
+              name: 'userAuthor',
+              component: () => import('@/views/user/info/applicationAuthor.vue')
             },
           ]
         },

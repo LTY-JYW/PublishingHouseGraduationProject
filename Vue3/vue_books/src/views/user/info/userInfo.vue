@@ -2,27 +2,16 @@
 import { ref } from 'vue'
 // 导入API
 import { userGetInfoAPI } from '@/api/user'
-import { getHtmlAPI } from '@/api/uploads'
 // 导入API类型
 import type { UserInfoType } from '@/api/user'
-// 导入公共函数
-import { formDate } from '@/utils/dayjs'
-// 导入路由
-import { useRoute } from 'vue-router'
-// 导入pinia
-import { useUserStore } from '@/stores/user'
 // 导入默认头像
 import { URLAVATAR, URLBG } from '@/utils/default'
-
-const router = useRoute()
 // 用户详细信息变量
 const userInfo = ref<UserInfoType>()
 // 获取用户详细信息变量
 const getInfo = async () => {
     const { data: { data } } = await userGetInfoAPI()
     userInfo.value = data
-    console.log(userInfo.value);
-
 }
 await getInfo()
 
@@ -48,22 +37,27 @@ await getInfo()
             <div class="menu">
                 <el-menu active-text-color="#66CCFF" background-color="#ffffff" :default-active="$route.path"
                     text-color="#121315" router>
+                    <div class="menu-font">个人中心</div>
                     <el-menu-item index="/userInfoLayout/userIndex">
                         <el-icon><User /></el-icon>
                         <span>个人中心</span>
                     </el-menu-item>
-                    <el-menu-item index="/userInfoLayout/userAuthor">
+                    <el-menu-item index="/userInfoLayout/userAuthor" v-if="userInfo![0].isAuthor == 0">
                         <el-icon><Edit /></el-icon>
                         <span>申请作者</span>
                     </el-menu-item>
                     <el-menu-item index="/userInfoLayout/Avatar">
                         <el-icon><FullScreen /></el-icon>
-                        <span>更新头像</span>
+                        <span>查看订单</span>
+                    </el-menu-item>
+                    <el-menu-item index="/userInfoLayout/Avatar">
+                        <el-icon><FullScreen /></el-icon>
+                        <span>查看购物车</span>
                     </el-menu-item>
 
                 </el-menu>
             </div>
-            <div class="main">
+            <div class="mains">
                 <router-view></router-view>
             </div>
         </div>
@@ -79,6 +73,7 @@ await getInfo()
 
     .head {
         position: relative;
+        margin-bottom: 30px;
         img {
             width: 100%;
         }
@@ -113,23 +108,33 @@ await getInfo()
     }
 
     .main{
-        margin-top: 20px;
         display: flex;
         .menu{
-            width: 20vw;
+            width: 15vw;
+            height: 100vh;
+            .menu-font{
+                font-size: 50px;
+              font-family: '程荣光刻楷', sans-serif;
+              text-align: center;
+              align-items: center;
+              color: #66ccff;
+              margin-bottom: 20px;
+            }
             .el-menu {
-                // padding: 100px;
                 padding: 30px;
-                padding-left: 40px;
-                padding-right: 50px;
+                padding-left: 20px;
+                // padding-right: 0px;
                 font-size: 30px;
+                height: 83vh;
                 .el-menu-item{
                     font-size: 30px;
+                    margin-top: 10px;
                 }
             }
         }
-        .main{
-            width: 50vw;
+        .mains{
+            margin: 0;
+            width: 10vw;
             margin-left: 10px;
         }
     }

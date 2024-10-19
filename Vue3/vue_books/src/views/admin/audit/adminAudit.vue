@@ -3,7 +3,7 @@ import { ref } from 'vue'
 // 导入后端交互函数
 import { auditGetOveryApi,auditRegisterAPI } from '@/api/audit'
 // 导入默认头像地址
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 // 导入el图标
 import { User, Lock } from '@element-plus/icons-vue'
 // 导入el组件
@@ -150,7 +150,7 @@ const onConfirm = async () => {
         <template #default="scope">
           <div style="display: flex; align-items: center">
             <el-avatar :src='scope.row.date' v-if="scope.row.date" />
-            <el-avatar :src='URL' v-else />
+            <el-avatar :src='URLAVATAR' v-else />
           </div>
         </template>
       </el-table-column>

@@ -65,7 +65,7 @@ export const userAuthorAPI = () => requeset.post<ResType<undefined>>('/my/author
 
 // 更新用户详细信息提交类型
 export type UserUpInfoType = {
-    id: number
+    // id: number
     nickname: string
     email: string
     briefly:string

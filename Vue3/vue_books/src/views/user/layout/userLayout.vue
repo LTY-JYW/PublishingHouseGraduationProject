@@ -186,7 +186,7 @@ const isUserInfo = () => {
 }
 </script>
 <template>
-  <div class="box">
+  <div class="box-layout">
     <div class="box-nav" v-if="!isUserInfo()">
       <div :style="path == '/' ? { color: 'white' } : { color: 'black' }" class="index mouse" @click="() => { router.push(`/`) }">
         天翼图书</div>
@@ -323,7 +323,7 @@ const isUserInfo = () => {
   cursor: pointer;
 }
 
-.box {
+.box-layout {
   width: 100vw;
   margin: auto;
   position: relative;

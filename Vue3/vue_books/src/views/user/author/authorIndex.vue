@@ -82,7 +82,7 @@ const onBooks = (id: number) => {
     
 
     
-<style lang="scss">
+<style scoped lang="scss">
 .mouse:hover {
     /* 将鼠标指针变为手形 */
     cursor: pointer;

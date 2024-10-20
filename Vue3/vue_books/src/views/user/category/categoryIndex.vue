@@ -79,6 +79,7 @@ const onCheckbox = async () => {
 
 // 无限滚动加载函数
 const load = async () => {
+    page.value.itemsPerPage = 4
     page.value.page = page.value.page + 1
     await getList()
     booksListNow.value?.push(...bookList.value)

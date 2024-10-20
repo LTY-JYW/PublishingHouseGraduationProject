@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import { booksGetInfoAPI, booksGetUserBooksAPI } from '@/api/books'
 import { getHtmlAPI } from '@/api/uploads'
 import { cartAddAPI } from '@/api/cart'
+import { orderAddAPI } from '@/api/order'
 // 导入API类型
 import type { BooksResListType, BooksUserType } from '@/api/books'
 // 导入公共函数
@@ -54,26 +55,26 @@ if (bookInfo.value[0].preview) {
 }
 
 // 立即购买事件函数
-const buyNow = async (id: number, fage: boolean) => {
-    if (userStore.token && userStore.permissions === 2) {
-        if (fage) {
-            router.push(`/buyNow?id=${id}`)
-        } else {
-            await cartAddAPI(id)
-        }
-    } else {
-        ElMessageBox.confirm('请先登录！', '确认登录', {
-            confirmButtonText: '去登录',
-            cancelButtonText: '取消',
-            type: 'warning',
-        }).then(async () => {
-            // 用户点击确定后的操作
-            router.push(`/login`)
-        }).catch(() => {
-            // 用户点击取消后的操作
-        });
-    }
-}
+// const buyNow = async (id: number, fage: boolean) => {
+//     if (userStore.token && userStore.permissions === 2) {
+//         if (fage) {
+//             router.push(`/buyNow?id=${id}`)
+//         } else {
+//             await cartAddAPI(id)
+//         }
+//     } else {
+//         ElMessageBox.confirm('请先登录！', '确认登录', {
+//             confirmButtonText: '去登录',
+//             cancelButtonText: '取消',
+//             type: 'warning',
+//         }).then(async () => {
+//             // 用户点击确定后的操作
+//             router.push(`/login`)
+//         }).catch(() => {
+//             // 用户点击取消后的操作
+//         });
+//     }
+// }
 
 
 // 图书点击事件
@@ -82,6 +83,16 @@ const onBooks = (id:number) => {
 
 }
 
+
+// 添加购物车函数
+const addCart = async (id:number) => {
+    await cartAddAPI(id)
+}
+
+// 添加订单函数
+const addAddress = async (id:number) => {
+    await orderAddAPI(id,1)
+}
 </script>
 <template>
     <div class="box">
@@ -108,13 +119,13 @@ const onBooks = (id:number) => {
                     ￥{{ bookInfo[0].price}}
                 </div>
                 <div class="exhibit-introduce-button">
-                    <el-button type="success">
+                    <el-button type="success" @click="addCart(bookInfo[0].id)">
                         <el-icon>
                             <ShoppingCartFull />
                         </el-icon>
                         加入购物车
                     </el-button>
-                    <el-button type="primary">
+                    <el-button type="primary" @click="addAddress(bookInfo[0].id)">
                         <el-icon>
                             <Goods />
                         </el-icon>

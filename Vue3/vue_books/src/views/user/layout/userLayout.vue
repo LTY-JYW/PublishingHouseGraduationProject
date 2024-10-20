@@ -226,8 +226,10 @@ const isUserInfo = () => {
             <a href="">
               <div>所有资讯</div>
             </a>
+            <el-scrollbar height="85vh">
             <div class="nav-item-main mouse" v-for="item in information" :key="item.id" @click="onInformation(item.id)">{{
               item.title }}</div>
+              </el-scrollbar>
           </div>
           <div class="nav-item" v-else-if="flage === 'author'">
             <a href="">

@@ -31,15 +31,15 @@ instance.interceptors.response.use(
     // TODO 4. 摘取核心响应数据
     //请求成功
     console.log(res.data);
-    
+
     if (res.data.code === 0) {
       if ('data' in res.data) {
         if ('value' in res.data.data || res.config.method == 'get') {
           console.log('aaaaa');
-          
+
           return res
         }
-        
+
         ElMessage.success(res.data.message)
         return res
       } else {
@@ -48,7 +48,7 @@ instance.interceptors.response.use(
       }
     }
 
-    if (res.data.code === 3){
+    if (res.data.code === 3) {
       ElMessage.error(res.data.message)
       return res
 
@@ -63,6 +63,11 @@ instance.interceptors.response.use(
     return Promise.reject(res.data)
   },
   (err) => {
+    if (err.response?.status === 401) {
+      ElMessage.error('请先登录')
+      return '/login'
+
+    }
     // TODO 5. 处理401错误
     if (err.response?.status === 401) {
       //路由守卫
@@ -71,10 +76,7 @@ instance.interceptors.response.use(
         //没有登录的用户只能访问登陆页面
         if (!userStore.token && to.path.includes('/admin')) {
           ElMessage.error('请先登录')
-          // router.push('/login')
           return '/login'
-          // return Promise.reject(err)
-
         } else if (userStore.permissions === 2 && to.path.includes('/admin')) {
           console.log(userStore.permissions);
           ElMessage.error('用户禁止访问！')

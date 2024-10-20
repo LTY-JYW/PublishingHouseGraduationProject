@@ -64,7 +64,20 @@ exports.getCart = async (req,res) => {
     const offset = (formDate.page - 1) * formDate.itemsPerPage;
     //LIMIT 用于限制查询结果的行数。
     //OFFSET 用于指定从哪一行开始返回数据。
-    const sqlSelCart = `select * from cart where uid = :uid LIMIT ${formDate.itemsPerPage} OFFSET ${offset}`
+    const sqlSelCart = `SELECT 
+                    cart.id,
+                    cart.uid,
+                    cart.bid,
+                    cart.price,
+                    cart.count,
+                    books.name AS name,
+                    books.cover AS cover
+                    FROM cart
+                    LEFT JOIN 
+                        books ON cart.bid = books.id
+                    WHERE cart.uid = :uid
+                    LIMIT ${formDate.itemsPerPage} OFFSET ${offset}
+                    `
     const resSelCart = await db.executeQuery(sqlSelCart,{uid})
      // 查询获取数据总数 
      const sqlCount = 'SELECT COUNT(*) AS count FROM cart where uid = :uid'

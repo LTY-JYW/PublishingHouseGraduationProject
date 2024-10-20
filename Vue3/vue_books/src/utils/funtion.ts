@@ -27,3 +27,8 @@ export const onInformation = (id: number) => {
 export const onCategory = (id:number) => {
     router.push(`/category?id=${id}`)
 }
+
+// 订单点击事件
+export const onOrder = (id:number) => {
+    router.push(`/userInfoLayout/userOrderInfo?id=${id}`)
+}

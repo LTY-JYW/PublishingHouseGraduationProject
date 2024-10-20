@@ -19,11 +19,13 @@ export const cartUpNumAPI = (data:UpNumType) => requeset.put<ResType<undefined>>
 
 // 查询购物车返回类型
 export type CartListType = {
-    id: number;
-    uid: number;
-    bid: number;
-    price: number;
-    count: number;
+  id: number
+  uid: number
+  bid: number
+  price: number
+  count: number
+  name: string
+  cover: string
   }
 // 查询购物车API
 export const cartGetListAPI = (params:PageType) => requeset.get<ResType<ResListTpye<CartListType>>>('/my/cart',{params})

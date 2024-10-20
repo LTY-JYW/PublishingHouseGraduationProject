@@ -35,6 +35,7 @@ const userFormData = ref<UserUpInfoType>({
     email: userInfo.value![0].email,
     briefly: userInfo.value![0].briefly,
     avatar: userInfo.value![0].avatar,
+    phoneNumber: userInfo.value![0].phoneNumber
 })
 // 用户修改表单校验
 const userFormRules: FormRules<UserUpInfoType> = {
@@ -54,6 +55,12 @@ const userFormRules: FormRules<UserUpInfoType> = {
             message: '昵称在1-16给字符范围类',
             trigger: 'blur'
         }
+    ],
+    phoneNumber: [
+
+        { required: true, message: '请输入手机号', trigger: 'blur' },
+        { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+
     ],
     email: [
         {
@@ -234,6 +241,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                 <el-form-item prop="nickname" label="昵称">
                     <el-input placeholder="请输入昵称" v-model="userFormData.nickname"></el-input>
                 </el-form-item>
+                <el-form-item prop="phoneNumber" label="联系方式">
+                    <el-input placeholder="请输入邮箱" v-model="userFormData.phoneNumber"></el-input>
+                </el-form-item>
                 <el-form-item prop="nickname" label="邮箱">
                     <el-input placeholder="请输入邮箱" v-model="userFormData.email"></el-input>
                 </el-form-item>
@@ -259,10 +269,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     height: 100px;
 }
 
-.avatar{
+.avatar {
     width: 20vw;
 }
-.avatar-uploader-icon{
+
+.avatar-uploader-icon {
     font-size: 100px;
     margin-left: 20px;
     border: 1px dashed black;
@@ -310,7 +321,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                     align-items: center;
                     margin-left: 50px;
                     font-size: 30px;
-                    // padding: 10px;
                     min-width: 250px;
                     word-wrap: break-word;
                     overflow-wrap: break-word;

@@ -46,11 +46,11 @@ await getInfo()
                         <el-icon><Edit /></el-icon>
                         <span>申请作者</span>
                     </el-menu-item>
-                    <el-menu-item index="/userInfoLayout/Avatar">
+                    <el-menu-item index="/userInfoLayout/userOrder">
                         <el-icon><FullScreen /></el-icon>
                         <span>查看订单</span>
                     </el-menu-item>
-                    <el-menu-item index="/userInfoLayout/Avatar">
+                    <el-menu-item index="/userInfoLayout/cart">
                         <el-icon><FullScreen /></el-icon>
                         <span>查看购物车</span>
                     </el-menu-item>

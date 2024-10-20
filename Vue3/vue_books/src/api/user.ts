@@ -26,6 +26,7 @@ export type UserListType = {
     avatar: string
     email: string
     briefly: string
+    phoneNumber:number,
     disable: number
     isAuthor: number
     aid: string
@@ -46,6 +47,7 @@ export type UserInfoType = {
     username: string
     nickname: string
     avatar: string
+    phoneNumber:number,
     email: string
     briefly:string
     disable: number
@@ -68,11 +70,11 @@ export const userAuthorAPI = (data:AuthorType) => requeset.post<ResType<undefine
 
 // 更新用户详细信息提交类型
 export type UserUpInfoType = {
-    // id: number
     nickname: string
     email: string
     briefly:string
     avatar: string
+    phoneNumber:number
 }
 // 更新用户信息API
 export const userUpInfoAPI = (data:UserUpInfoType) => requeset.put<ResType<undefined>>('/my/userinfo',data)

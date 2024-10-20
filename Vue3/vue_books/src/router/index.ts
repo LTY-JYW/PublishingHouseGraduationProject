@@ -105,11 +105,6 @@ const router = createRouter({
           component: () => import('@/views/user/buyNow/buyNow.vue')
         },
         {
-          path: 'cart',
-          name: 'userCart',
-          component: () => import('@/views/user/cart/userCart.vue')
-        },
-        {
           path: 'information',
           name: 'userInformation',
           component: () => import('@/views/user/information/userInformation.vue')
@@ -138,6 +133,21 @@ const router = createRouter({
               path: 'userAuthor',
               name: 'userAuthor',
               component: () => import('@/views/user/info/applicationAuthor.vue')
+            },
+            {
+              path: 'userOrder',
+              name: 'userOrder',
+              component: () => import('@/views/user/info/userOrder.vue')
+            },
+            {
+              path: 'userOrderInfo',
+              name: 'userOrderInfo',
+              component: () => import('@/views/user/info/userOrderInfo.vue')
+            },
+            {
+              path: 'cart',
+              name: 'userCart',
+              component: () => import('@/views/user/info/cart/userCart.vue')
             },
           ]
         },

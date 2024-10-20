@@ -93,6 +93,7 @@ await getUserList()
 </script>
 <template>
     <div class="box">
+    aaaaaaa
         <!-- 跑马灯 -->
         <el-carousel indicator-position="none" height="auto">
             <el-carousel-item v-for="item in userList?.slice(0, 4)" :key="item.id" style="height: 50vw" @click="onAuthor(item.id)">
@@ -111,6 +112,7 @@ await getUserList()
                 </div>
             </div>
         </div>
+        asdasdasdasdadasda
         <!-- 资讯 -->
         <!-- <div class="box-information">
             <ul class="box-information-time">

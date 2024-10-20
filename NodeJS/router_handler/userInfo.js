@@ -5,7 +5,7 @@ const bcryptjs = require('bcryptjs')
 const { isUser } = require('../utils/funtion')
 //获取用户基本信息模块
 exports.getUserInfo = async (req, res, id) => {
-    const sqlGetUserInfo = 'select id,flyer,username,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const sqlGetUserInfo = 'select id,flyer,username,nickname,avatar,phoneNumber,email,briefly,disable,isAuthor,aid from users where id = :id'
     const resultsUserInfo = await db.executeQuery(sqlGetUserInfo, { id })
     return res.result('信息获取成功', 0, resultsUserInfo.data)
 }
@@ -20,7 +20,7 @@ exports.getUserInfoService = async (req, res) => {
 // 管理员获取用户信息
 exports.getUserInfoAdminService = async (req, res) => {
     const { id } = req.query
-    const sqlSel = 'select id,username,flyer,nickname,avatar,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const sqlSel = 'select id,username,flyer,nickname,avatar,phoneNumber,,email,briefly,disable,isAuthor,aid from users where id = :id'
     const resSel = await db.executeQuery(sqlSel,{id})
     if(resSel.data.length != 1){
         return res.result('没有这个用户！')
@@ -30,7 +30,7 @@ exports.getUserInfoAdminService = async (req, res) => {
 
 //更新用户信息
 exports.updataUserInfoService = async (req, res) => {
-    const { nickname, email, briefly, avatar } = req.body
+    const { nickname, email, briefly, avatar, phoneNumber, } = req.body
     const id = req.auth.id
     //看该用户是否存在
     const sqlSelect = 'select * from users where id = :id'
@@ -38,8 +38,8 @@ exports.updataUserInfoService = async (req, res) => {
     if (resSelect.data.length !== 1) {
         res.result('用户不存在！')
     }
-    const sql = 'UPDATE users SET nickname = :nickname,email = :email,briefly = :briefly,avatar = :avatar WHERE id = :id'
-    const results = await db.executeQuery(sql, { nickname, email, briefly, avatar, id })
+    const sql = 'UPDATE users SET nickname = :nickname,email = :email,briefly = :briefly,avatar = :avatar,phoneNumber = :phoneNumber WHERE id = :id'
+    const results = await db.executeQuery(sql, { nickname, email, briefly, avatar, id, phoneNumber })
     return res.result('更新成功！', 0)
 }
 //更新用户密码
@@ -121,6 +121,7 @@ exports.overySel = async (req, res) => {
                     users.username,
                     users.nickname,
                     users.avatar,
+                    users.phoneNumber,
                     users.email,
                     users.briefly,
                     users.disable,
@@ -158,6 +159,7 @@ exports.overySelNoPage = async (req, res) => {
     users.username,
     users.nickname,
     users.avatar,
+    users.phoneNumber,
     users.email,
     users.briefly,
     users.disable,

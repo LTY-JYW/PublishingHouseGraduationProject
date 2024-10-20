@@ -4,6 +4,7 @@ const username = joi.string().min(1).max(10).alphanum().required()
 const password = joi.string().pattern(/^[\S]{6,12}$/).required()
 const id = joi.number().integer().min(1).required()
 const nickname = joi.string().required()
+const phoneNumber = joi.string().pattern(/^1[3-9]\d{9}$/).required();
 const email = joi.string().email().required()
 const briefly = joi.string().required()
 const avatar = joi.string().required()
@@ -23,7 +24,8 @@ exports.updata_userInfo_schema = {
         nickname,
         email,
         briefly,
-        avatar
+        avatar,
+        phoneNumber
         
     }
 }

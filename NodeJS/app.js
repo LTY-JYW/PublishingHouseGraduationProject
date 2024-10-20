@@ -83,6 +83,7 @@ const cart = require('./router/cart.js')
 const uploads = require('./router/uploads.js')
 const address = require('./router/address.js')
 const email = require('./router/email.js')
+const order = require('./router/order.js')
 //api开头无需token认证
 app.use('/api', userRouter)
 app.use('/api', uploads)
@@ -103,6 +104,7 @@ app.use('/my/category2', category2)
 app.use('/my/books', books)
 app.use('/my/cart', cart)
 app.use('/my/address', address)
+app.use('/my/order',order)
 
 
 // 错误处理中间件

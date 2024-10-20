@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-
 // 导入el组件
 import { ElMessageBox } from 'element-plus'
 import type { FormRules, FormInstance } from 'element-plus'
 // 导入el图标
-import { Edit, Delete, Search, DocumentAdd, SuccessFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
+import { Edit, Delete, Search, DocumentAdd, SuccessFilled, WarnTriangleFilled, View } from '@element-plus/icons-vue'
 // 导入时间处理函数
 import { formDate } from '@/utils/dayjs'
 // 导入默认封面地址
@@ -15,7 +14,8 @@ import type { BooksInfoType } from '@/api/books'
 // 导入后端接口函数
 import { booksGetListAPI, booksGetListOveryAPI, booksUpInfoAPI, booksDelAPI, booksRestoreAPI } from '@/api/books'
 import { category2NameAPI } from '@/api/category2'
-import { auditIsOkBookAPI,auditIsNoBookAPI} from '@/api/audit'
+import { auditIsOkBookAPI, auditIsNoBookAPI } from '@/api/audit'
+import { uploadsFileWordAPI, getHtmlAPI, uploadsFileAPI } from '@/api/uploads'
 
 // 导入后端数据类型
 import type { BooksResListType } from '@/api/books'
@@ -83,8 +83,8 @@ const getList = async () => {
     const { data } = await booksGetListAPI({
       page: page.value,
       itemsPerPage: itemsPerPage.value,
-      by:'id',
-      des:'DESC'
+      by: 'id',
+      des: 'DESC'
     })
     if (data.data === undefined) {
       tableData.value = undefined
@@ -288,15 +288,25 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
 }
 // 同意图书事件函数
-const headAgree = async (id:number) => {
+const headAgree = async (id: number) => {
   await auditIsOkBookAPI(id)
   await getList()
 }
 // 驳回图书事件函数
-const headReject = async (id:number) => {
+const headReject = async (id: number) => {
   await auditIsNoBookAPI(id)
 }
 
+// 查看内容事件函数
+// 存储查看内容的HTML变量
+const html = ref('')
+// 控制查看内容抽屉显示隐藏变量
+const isDrawerHtml = ref(false)
+const headView = async (main: string) => {
+  isDrawerHtml.value = true
+  const { data } = await getHtmlAPI(main)
+  html.value = data.data.html
+}
 </script>
 
 <template>
@@ -397,6 +407,8 @@ const headReject = async (id:number) => {
               class="table_operation_button" size="large" />
             <el-button type="danger" :icon="WarnTriangleFilled" circle plain @click="headReject(scope.row.id)"
               class="table_operation_button" size="large" />
+            <el-button type="danger" :icon="View" circle plain @click="headView(scope.row.preview)"
+              class="table_operation_button" size="large" />
           </el-button-group>
         </template>
       </el-table-column>
@@ -434,6 +446,11 @@ const headReject = async (id:number) => {
           </el-button>
         </el-form-item>
       </el-form>
+    </el-drawer>
+    <!-- 查看资讯内容抽屉 -->
+    <el-drawer v-model="isDrawerHtml" title="资讯内容" direction="rtl" size="90%">
+      <div v-if="html" v-html="html"></div>
+      <div v-else>暂无内容信息</div>
     </el-drawer>
   </pageComponent>
 </template>

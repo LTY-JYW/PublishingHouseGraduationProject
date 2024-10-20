@@ -2,14 +2,16 @@
 import { ref } from 'vue'
 // 导入API
 import { userGetListAPI, userEnableAPI, userUpDissableAPI } from '@/api/user'
-import { auditIsOkAuthorAPI,auditIsNoAuthorAPI } from '@/api/audit'
+import { auditIsOkAuthorAPI, auditIsNoAuthorAPI } from '@/api/audit'
+import { uploadsFileWordAPI, getHtmlAPI, uploadsFileAPI } from '@/api/uploads'
+
 // 导入API类型
 import type { UserListType } from '@/api/user'
 import type { PageType } from '@/api/results'
 // 导入默认头像地址
 import { URLAVATAR } from '@/utils/default'
 // 导入el图标
-import { Search, WarnTriangleFilled, SuccessFilled } from '@element-plus/icons-vue'
+import { Search, WarnTriangleFilled, SuccessFilled,View } from '@element-plus/icons-vue'
 // 导入el组件
 import { ElMessageBox } from 'element-plus'
 // 导入pinia
@@ -125,7 +127,7 @@ const headEnable = async (id: number) => {
   if (isAdmin.value) {
     await userEnableAPI({ id })
     await getList()
-  }else{
+  } else {
     await auditIsOkAuthorAPI(id)
     await getList()
   }
@@ -135,21 +137,34 @@ const headEnable = async (id: number) => {
 const headDissable = async (id: number) => {
   if (isAdmin.value) {
     ElMessageBox.confirm('你确定要禁用该用户吗？', '确认对话框', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  }).then(async () => {
-    // 用户点击确定后的操作
-    await userUpDissableAPI({ id })
-    await getList()
-  }).catch(() => {
-    // 用户点击取消后的操作
-  });
-  }else{
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }).then(async () => {
+      // 用户点击确定后的操作
+      await userUpDissableAPI({ id })
+      await getList()
+    }).catch(() => {
+      // 用户点击取消后的操作
+    });
+  } else {
     await auditIsNoAuthorAPI(id)
     await getList()
   }
 
+}
+
+// 查看内容事件函数
+// 存储查看内容的HTML变量
+const html = ref('')
+// 控制查看内容抽屉显示隐藏变量
+const isDrawerHtml = ref(false)
+const headView = async (main: string) => {
+  console.log(main);
+  
+  isDrawerHtml.value = true
+  const { data } = await getHtmlAPI(main)
+  html.value = data.data.html
 }
 </script>
 <template>
@@ -220,6 +235,8 @@ const headDissable = async (id: number) => {
               class="table_operation_button" size="large" />
             <el-button type="danger" :icon="WarnTriangleFilled" circle plain @click="headDissable(scope.row.id)"
               class="table_operation_button" size="large" />
+              <el-button type="danger" :icon="View" circle plain @click="headView(scope.row.reviewMaterials)"
+              class="table_operation_button" size="large" />
           </el-button-group>
         </template>
       </el-table-column>
@@ -231,6 +248,11 @@ const headDissable = async (id: number) => {
         :page-sizes="[5, 10, 15, 20]" :background="true" layout="jumper, total, sizes, prev, pager, next" :total="total"
         @change="onChange" />
     </div>
+    <!-- 查看资讯内容抽屉 -->
+    <el-drawer v-model="isDrawerHtml" title="资讯内容" direction="rtl" size="90%">
+      <div v-if="html" v-html="html"></div>
+      <div v-else>暂无内容信息</div>
+    </el-drawer>
   </pageComponent>
 </template>
     

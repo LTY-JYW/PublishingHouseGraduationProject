@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 // 导入API
 import { informationGetListAPI, informationDeleteAPI, informationAddAPI } from '@/api/information'
-import { uploadsFileWordAPI, getHtmlAPI,uploadsFileAPI } from '@/api/uploads'
+import { uploadsFileWordAPI, getHtmlAPI, uploadsFileAPI } from '@/api/uploads'
 import { auditIsOkInformationAPI, auditIsNoInformationAPI } from '@/api/audit'
 // 导入API类型
 import type { InformationType } from '@/api/information'
@@ -287,7 +287,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         formData.append('file', file.value);
         formData.append('flag', 'word');
         formDataImg.append('flag', "information")
-        formDataImg.append('file',fileImg.value)
+        formDataImg.append('file', fileImg.value)
         // 调用上传接口
         const resFile = await uploadsFileWordAPI(formData)
         const resFileImg = await uploadsFileAPI(formDataImg)
@@ -395,6 +395,9 @@ const headReject = async (id: number) => {
               class="table_operation_button" size="large" />
             <el-button type="danger" :icon="WarnTriangleFilled" circle plain @click="headReject(scope.row.id)"
               class="table_operation_button" size="large" />
+            <el-button type="danger" :icon="View" circle plain @click="headView(scope.row.main)"
+              class="table_operation_button" size="large" />
+
           </el-button-group>
         </template>
       </el-table-column>
@@ -416,8 +419,8 @@ const headReject = async (id: number) => {
         <!-- 上传区域cover -->
         <el-form-item prop="cover" label="封面" label-position="top">
           <el-upload class="upload-demo" drag ref="uploadRefImg" :headers="headers" :auto-upload="false"
-            :before-upload="beforeUploadImg" :on-change="onUploadChangeImg" multiple v-model:file-list="fileListImg" :limit="1"
-            :on-exceed="handleExceedImg">
+            :before-upload="beforeUploadImg" :on-change="onUploadChangeImg" multiple v-model:file-list="fileListImg"
+            :limit="1" :on-exceed="handleExceedImg">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">
               拖拽或者 <em>点击上传</em>
@@ -454,7 +457,7 @@ const headReject = async (id: number) => {
       </el-form>
     </el-drawer>
     <!-- 查看资讯内容抽屉 -->
-    <el-drawer v-model="isDrawerHtml" title="资讯内容" direction="rtl" size="50%">
+    <el-drawer v-model="isDrawerHtml" title="资讯内容" direction="rtl" size="90%">
       <div v-if="html" v-html="html"></div>
       <div v-else>暂无内容信息</div>
     </el-drawer>

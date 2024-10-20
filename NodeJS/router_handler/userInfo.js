@@ -162,6 +162,7 @@ exports.overySel = async (req, res) => {
                     users.aid,
                     users.flyer,
                     users.time,
+                    users.reviewMaterials,
 		            audit.nickname AS aValue,
                     SUM(books.popularity) as heat
                     FROM 
@@ -200,6 +201,7 @@ exports.overySelNoPage = async (req, res) => {
     users.aid,
     users.flyer, 
     users.time,
+    users.reviewMaterials,
     SUM(books.popularity) as heat,
     audit.nickname AS aValue
 FROM 

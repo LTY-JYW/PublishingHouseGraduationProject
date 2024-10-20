@@ -18,7 +18,7 @@ export type UserLoginType = {
 // 用户登录API
 export const userLoginAPI = (data: RegisteredData) => requeset.post<ResType<UserLoginType>>('/api/login', data)
 
-// 获取用户列表提交类型
+// 获取用户列表返回类型
 export type UserListType = {
     id: number
     username: string
@@ -34,6 +34,7 @@ export type UserListType = {
     flyer: string
     aValue: null
     time:string
+    reviewMaterials:string
 }[]
 
 // 获取用户列表API

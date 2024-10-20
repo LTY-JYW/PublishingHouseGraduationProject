@@ -122,6 +122,6 @@ app.use((err, req, res, next) => {
 });
 
 // 启动服务器
-app.listen(80, () => {
+app.listen(3589, () => {
     console.log('app server run at http://127.0.0.1');
 })

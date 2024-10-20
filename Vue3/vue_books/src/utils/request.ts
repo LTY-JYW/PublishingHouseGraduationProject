@@ -30,11 +30,16 @@ instance.interceptors.response.use(
     // TODO 3. 处理业务失败
     // TODO 4. 摘取核心响应数据
     //请求成功
+    console.log(res.data);
+    
     if (res.data.code === 0) {
       if ('data' in res.data) {
         if ('value' in res.data.data || res.config.method == 'get') {
+          console.log('aaaaa');
+          
           return res
         }
+        
         ElMessage.success(res.data.message)
         return res
       } else {
@@ -42,6 +47,13 @@ instance.interceptors.response.use(
         return res
       }
     }
+
+    if (res.data.code === 3){
+      ElMessage.error(res.data.message)
+      return res
+
+    }
+
     if (res.status !== 200) {
       ElMessage.error(
         res.data.message || '服务器响应异常'
@@ -71,10 +83,6 @@ instance.interceptors.response.use(
           return true
         }
       })
-      // ElMessage.error('请登录！')
-      // console.log(router.);
-
-      // router.push('/login')
     }
     ElMessage.error(err.message || '服务器响应异常')
     return Promise.reject(err)

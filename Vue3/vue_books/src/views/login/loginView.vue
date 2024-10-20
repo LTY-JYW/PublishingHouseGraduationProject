@@ -10,6 +10,8 @@ import { ElMessage } from 'element-plus'
 import { userRegisterAPI, userLoginAPI } from '@/api/user'
 import { adminLoginAPI } from '@/api/admin'
 import { auditLoginAPI } from '@/api/audit'
+// 导入公共函数
+import {forgetThePassword} from '@/utils/funtion'
 
 // 导入路由
 import router from '@/router/index'
@@ -244,7 +246,7 @@ const submitLogin = async (formEl: FormInstance | undefined) => {
         <el-form-item class="flex">
           <div class="flex">
             <el-checkbox v-model="isRemember">记住我</el-checkbox>
-            <el-link type="primary" :underline="false">忘记密码？</el-link>
+            <el-link type="primary" :underline="false" @click="forgetThePassword">忘记密码？</el-link>
           </div>
         </el-form-item>
         <el-form-item>

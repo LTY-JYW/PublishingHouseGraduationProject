@@ -43,7 +43,7 @@ exports.updataUserInfoService = async (req, res) => {
     const results = await db.executeQuery(sql, { nickname, email, briefly, avatar, id, phoneNumber })
     return res.result('更新成功！', 0)
 }
-//更新用户密码
+//忘记密码
 exports.updataUserPWDService = async (req, res) => {
         if(isUser(req,res)){
         return res.result('该接口限用户调用')
@@ -68,6 +68,32 @@ exports.updataUserPWDService = async (req, res) => {
     const resultUp = await db.executeQuery(sqlUpdate, { password: newpassword, id: req.auth.id })
     return res.result('密码更新成功', 0)
 }
+//更新用户密码
+exports.forgetThePassword = async (req, res) => {
+    if(isUser(req,res)){
+    return res.result('该接口限用户调用')
+}
+const email = new Email();
+const {newPwd,verificationCode} = req.body
+const id = req.auth.id
+const a =  await email.isCodeExpired(verificationCode)
+if(a.code != 0){
+    return res.result(a.message)
+}
+//看该用户是否存在
+const sqlSelect = 'select * from users where id = :id'
+const results = await db.executeQuery(sqlSelect, { id })
+if (results.data.length !== 1) {
+    return res.result('用户不存在！')
+}
+
+const sqlUpdate = 'UPDATE users SET password = :password WHERE id = :id'
+const newpassword = bcryptjs.hashSync(newPwd, 10)
+const resultUp = await db.executeQuery(sqlUpdate, { password: newpassword, id })
+return res.result('密码更新成功', 0)
+}
+
+
 //更新用户头像
 exports.updateUserPicService = async (req, res) => {
         if(isUser(req,res)){

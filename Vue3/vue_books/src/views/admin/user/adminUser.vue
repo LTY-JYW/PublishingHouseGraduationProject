@@ -7,7 +7,7 @@ import { auditIsOkAuthorAPI,auditIsNoAuthorAPI } from '@/api/audit'
 import type { UserListType } from '@/api/user'
 import type { PageType } from '@/api/results'
 // 导入默认头像地址
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 // 导入el图标
 import { Search, WarnTriangleFilled, SuccessFilled } from '@element-plus/icons-vue'
 // 导入el组件
@@ -186,7 +186,7 @@ const headDissable = async (id: number) => {
         <template #default="scope">
           <div style="display: flex; align-items: center">
             <el-avatar :src='scope.row.avatar' v-if="scope.row.avatar" />
-            <el-avatar :src='URL' v-else />
+            <el-avatar :src='URLAVATAR' v-else />
           </div>
         </template>
       </el-table-column>

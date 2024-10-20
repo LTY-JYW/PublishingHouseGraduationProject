@@ -34,4 +34,6 @@ export const onOrder = (id:number) => {
 }
 
 // 忘记密码函数
-export const forgetThePassword = () => {}
+export const forgetThePassword = () => {
+    router.push(`/pwd`)
+}

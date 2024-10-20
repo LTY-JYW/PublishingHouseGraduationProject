@@ -132,7 +132,7 @@ const clearForm = () => {
             </div>
           </el-form-item>
         </el-form>
-        <a href="" @click="forgetThePassword">忘记密码？</a>
+        <a href="#" @click="forgetThePassword">忘记密码？</a>
   </pageComponent>
 </div>
 

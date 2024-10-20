@@ -114,8 +114,8 @@ await getUserList()
         <!-- 新书上架 -->
         <div class="newBooks">
             <div class="newBooks-font">新的图书</div>
-            <div style="display: flex;flex-wrap: wrap;">
-                <div class="newBooks-item mouse" v-for="item in booksList" :key="item.id" @click="onBooks(item.id)">
+            <div style="display: flex;flex-wrap: wrap;justify-content: space-between;">
+                <div class="newBooks-item mouse" v-for="item in booksList?.slice(0,15)" :key="item.id" @click="onBooks(item.id)">
                     <img :src="item.cover" alt="" @click="onBooks(item.id)">
                     <div class="newBooks-item-uValue">{{ item.uValue }}</div>
                     <div class="newBooks-item-name">{{ item.name }}</div>
@@ -331,6 +331,9 @@ body {
         .newBooks-item {
             margin: 20px;
             background: rgba(250, 250, 247, 0);
+            img{
+                width: 15vw;
+            }
 
             .newBooks-item-name {
                 margin-top: 5px;

@@ -87,6 +87,14 @@ export type UserPWDType = {
 // 用户更新密码API
 export const userUpPWDAPI = (data:UserPWDType) => requeset.put<ResType<undefined>>('/my/pwd',data)
 
+// 忘记密码提交类型
+export type UserForgetPwd = {
+    newPwd:string
+    verificationCode:string
+}
+// 用户忘记码API
+export const userForgetPWDAPI = (data:UserForgetPwd) => requeset.put<ResType<undefined>>('/my',data)
+
 // 用户跟新头像API
 export const userUpAvatarAPI = (avatar:string) => requeset.put<ResType<undefined>>('/my/avatar',avatar)
 

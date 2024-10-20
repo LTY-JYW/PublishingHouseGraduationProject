@@ -296,7 +296,8 @@ body {
     .preview {
         margin-top: 5vw;
         padding: 20px;
-
+        max-height: 50vw;
+        overflow: hidden;
         .preview-font {
             font-size: 40px;
         }
@@ -319,7 +320,7 @@ body {
 
         .books-list {
             width: 100vw;
-            display: flex;
+            // display: flex;
 
             .item {
                 padding: 5vw;
@@ -327,6 +328,10 @@ body {
                 margin: 10px;
                 background: rgb(240, 240, 235);
                 width: auto !important;
+                img{
+                    width: 15vw;
+                    height: 20vw;
+                }
 
                 .item-uValue {
                     font-size: 18px;

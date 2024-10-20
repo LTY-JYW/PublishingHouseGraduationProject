@@ -37,6 +37,13 @@ exports.update_userpwd_schema = {
         newPwd:joi.not(joi.ref('oldPwd')).concat(password),
     }
 }
+//更新用户密码验证规则
+exports.updateUserPicService_schema = {
+    body:{
+        newPwd:password,
+        verificationCode
+    }
+}
 //更新用户头像验证规则
 exports.updata_userPic_schema = {
     body:{

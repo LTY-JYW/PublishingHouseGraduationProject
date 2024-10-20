@@ -6,7 +6,7 @@ const email = require('../router_handler/email.js')
 
 
 //发布分类————post请求
-router.get('',email.email)
+router.post('',email.email)
 
 
 

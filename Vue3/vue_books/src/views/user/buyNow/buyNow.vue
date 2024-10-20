@@ -3,7 +3,7 @@ import { ref } from 'vue'
 // 导入API
 import { booksGetInfoAPI } from '@/api/books'
 // 导入API类型
-import type { BookInfoType } from '@/api/books'
+import type { BooksResListType } from '@/api/books'
 
 // 导入路由
 import { useRoute } from 'vue-router'
@@ -12,7 +12,7 @@ const route = useRoute()
 // 图书Id
 const bookId: number = Number(route.query.id)
 // 图书信息变量
-const tableData = ref<BookInfoType>()
+const tableData = ref<BooksResListType>()
 // 获取图书详细信息函数
 const getInfo = async () => {
     const { data: { data } } = await booksGetInfoAPI(bookId)
@@ -121,7 +121,7 @@ const onClear = async () => {
             height: 100px;
         }
 
-        ::v-deep .el-table th {
+        :v-deep(.el-table th){
             background: #F6F7F8;
         }
 

@@ -3,6 +3,7 @@ const db = require('../db/index')
 const bcryptjs = require('bcryptjs')
 // 导入公共函数
 const { isUser } = require('../utils/funtion')
+const Email = require('../utils/email')
 //获取用户基本信息模块
 exports.getUserInfo = async (req, res, id) => {
     const sqlGetUserInfo = 'select id,flyer,username,nickname,avatar,phoneNumber,email,briefly,disable,isAuthor,aid from users where id = :id'
@@ -20,7 +21,7 @@ exports.getUserInfoService = async (req, res) => {
 // 管理员获取用户信息
 exports.getUserInfoAdminService = async (req, res) => {
     const { id } = req.query
-    const sqlSel = 'select id,username,flyer,nickname,avatar,phoneNumber,,email,briefly,disable,isAuthor,aid from users where id = :id'
+    const sqlSel = 'select id,username,flyer,nickname,avatar,phoneNumber,email,briefly,disable,isAuthor,aid from users where id = :id'
     const resSel = await db.executeQuery(sqlSel,{id})
     if(resSel.data.length != 1){
         return res.result('没有这个用户！')
@@ -47,6 +48,12 @@ exports.updataUserPWDService = async (req, res) => {
         if(isUser(req,res)){
         return res.result('该接口限用户调用')
     }
+    // const email = new Email();
+    // const {newPwd,oldPwd,verificationCode} = req.body
+    // const a =  await email.isCodeExpired(verificationCode)
+    // if(a.code != 0){
+    //     return res.result(a.message)
+    // }
     //看该用户是否存在
     const sqlSelect = 'select * from users where id = :id'
     const results = await db.executeQuery(sqlSelect, { id: req.auth.id })

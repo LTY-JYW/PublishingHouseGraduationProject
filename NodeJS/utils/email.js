@@ -75,13 +75,13 @@ class Email {
   const sqlSel = 'SELECT * FROM verification_code WHERE verificationCode = :verificationCode';
   try {
     const resSel = await db.executeQuery(sqlSel, { verificationCode });
-    if (resSel.length === 0) {
+    if (resSel.data.length < 1) {
       return {
         code: 1,
         message: '未找到该验证码'
       };
     }
-    if (new Date(resSel[0].time) < new Date()) {
+    if (new Date(resSel.data[0].time) < new Date()) {
       const sqlDel = 'DELETE FROM verification_code WHERE verificationCode = :verificationCode';
       await db.executeQuery(sqlDel, { verificationCode });
       return {
@@ -92,7 +92,7 @@ class Email {
     return {
       code: 0,
       message: '验证码正常'
-    };
+    }
   } catch (dbError) {
     return {
       code: 3,

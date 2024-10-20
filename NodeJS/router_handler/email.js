@@ -14,7 +14,6 @@ exports.email = async (req, res) => {
     }
     const sqlSel = 'select verificationCode from verification_code'
     const resSel = await db.executeQuery(sqlSel)
-    console.log(resSel.data[0].verificationCode);
     for (; resSel.data[0].verificationCode === verificationCode;) {
         for (let i = 0; i < 6; i++) {
             verificationCode += characters.charAt(Math.floor(Math.random() * charactersLength));

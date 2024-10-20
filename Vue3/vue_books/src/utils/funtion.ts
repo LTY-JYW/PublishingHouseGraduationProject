@@ -32,3 +32,6 @@ export const onCategory = (id:number) => {
 export const onOrder = (id:number) => {
     router.push(`/userInfoLayout/userOrderInfo?id=${id}`)
 }
+
+// 忘记密码函数
+export const forgetThePassword = () => {}

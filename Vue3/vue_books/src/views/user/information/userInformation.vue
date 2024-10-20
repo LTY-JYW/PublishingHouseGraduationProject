@@ -103,12 +103,12 @@ const onInformation = (id:number) => {
   border-bottom: 1px solid #f1f1f1;
   margin-top: 20px;
 
-  ::v-deep label {
+  :v-deep(label){
     font-size: 20px;
     font-weight: bold;
   }
 
-  ::v-deep .el-input__wrapper {
+  :v-deep(.el-input__wrapper){
     border: 1px red solid;
   }
 }

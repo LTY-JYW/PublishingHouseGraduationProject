@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 // 导入API
-import { adminGetInfoApi, adminUpPwdAPI } from '@/api/admin'
-import { auditGetInfo,auditUpPwdAPI} from '@/api/audit'
+import { userUpPWDAPI } from '@/api/user'
+import { auditUpPwdAPI} from '@/api/audit'
 // 导入API类型
-import type { AdminGetInfoType } from '@/api/admin'
+import type { UserInfoType } from '@/api/user'
 // 导入el组件
 import { ElMessage } from 'element-plus'
 // 导入el类型
@@ -13,37 +13,11 @@ import type { FormRules, FormInstance } from 'element-plus'
 import { URLAVATAR } from '@/utils/default'
 // 导入pinia
 import { useUserStore } from '@/stores/user'
+// 导入公共函数
+import { forgetThePassword } from '@/utils/funtion'
 
 // 使用pinan
 const userStore = useUserStore()
-// 判断管理员和审核员变量
-const isAdmin = ref<boolean>()
-if (userStore.permissions === 0) {
-  isAdmin.value = true
-} else if (userStore.permissions === 1) {
-  isAdmin.value = false
-}
-
-// 管理员详细信息变量
-const adminInfoData = ref<AdminGetInfoType>([{
-  id: 1,
-  username: '',
-  nickname: '',
-  avatar: ''
-}])
-
-// 获取管理员详细信息函数
-const getAdminInfo = async () => {
-  if (isAdmin.value) {
-    const { data } = await adminGetInfoApi()
-    adminInfoData.value = data.data
-  } else {
-    const { data } = await auditGetInfo()
-    adminInfoData.value = data.data
-  }
-}
-// 调用函数获取管理员详细信息
-await getAdminInfo()
 
 // 表单变量
 const ruleFormRef = ref()
@@ -114,13 +88,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
     if (valid) {
-      if (isAdmin.value) {
-        await adminUpPwdAPI(formData.value)
-      }else{
-        await auditUpPwdAPI(formData.value)
-      }
-      await getAdminInfo()
-
+        await userUpPWDAPI(formData.value)
     } else {
       ElMessage.error('请填写完整表单数据')
     }
@@ -134,17 +102,13 @@ const clearForm = () => {
     resPwd: ''
   }
 }
+
+
 </script>
 <template>
+  <div class="box-pwd">
   <pageComponent title="修改密码">
-    <el-row justify="center" class="elRowS">
-      <el-col :span="3" :offset="0"><el-avatar class="avatar" :size="200" :src="adminInfoData[0].avatar?adminInfoData[0].avatar:URLAVATAR" /></el-col>
-    </el-row>
-    <el-row justify="center" class="elRowS">
-      <el-col :span="1">{{ adminInfoData[0].nickname }}</el-col>
-    </el-row>
-    <el-row justify="center" class="elRowS">
-      <el-col :span="6">
+
         <el-form size="large" autocomplete="off" :model="formData" :rules="formDataRules" ref="ruleFormRef">
           <!-- 表单数据区域 -->
           <el-form-item prop="oldPwd" label="原始密码">
@@ -168,25 +132,17 @@ const clearForm = () => {
             </div>
           </el-form-item>
         </el-form>
-      </el-col>
-    </el-row>
-
+        <a href="" @click="forgetThePassword">忘记密码？</a>
   </pageComponent>
+</div>
+
 </template>
     
 <style scoped>
-.el-row {
-  margin-top: 50px;
-}
-
-.el-button-admin-form {
-  margin: auto;
-  margin-top: 50px;
-  width: 100%;
-  justify-content: space-between;
-}
-
-.el-button--info {
-  float: right;
+.box-pwd {
+    width: 64vw;
+    height: 83vh;
+    .main {
+    }
 }
 </style>

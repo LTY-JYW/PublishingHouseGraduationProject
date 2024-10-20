@@ -11,6 +11,8 @@ const pages = joi.number().min(1).required()
 const number = joi.number().min(1).required()
 const topic = joi.string().required()
 const cover = joi.string().required()
+const preview = joi.string().required()
+
 const id = joi.number().min(1).required()
 
 const page = joi.number().min(1).required()
@@ -26,9 +28,8 @@ exports.addBooks = {
         edition,
         price,
         pages,
-        number,
-        topic,
         cover,
+        preview
     }
 }
 // 更新图书校验规则

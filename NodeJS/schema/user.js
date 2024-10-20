@@ -10,6 +10,7 @@ const briefly = joi.string().required()
 const avatar = joi.string().required()
 const page = joi.number().min(1).required()
 const itemsPerPage = joi.number().min(1).required()
+const verificationCode = joi.string().required()
 
 //登录注册验证规则
 exports.reg_login_schema = {
@@ -33,7 +34,7 @@ exports.updata_userInfo_schema = {
 exports.update_userpwd_schema = {
     body:{
         oldPwd:password,
-        newPwd:joi.not(joi.ref('oldPwd')).concat(password)
+        newPwd:joi.not(joi.ref('oldPwd')).concat(password),
     }
 }
 //更新用户头像验证规则

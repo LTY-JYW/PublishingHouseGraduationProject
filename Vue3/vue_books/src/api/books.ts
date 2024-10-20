@@ -100,25 +100,34 @@ export const booksGetInfoAPI = (id:number) => requeset.get<ResType<BooksResListT
 // }[]
 
 export type BooksUserType = {
-  id: number;
-  name: string;
-  profile: string;
-  time: string;
-  edition: number;
-  price: number;
-  pages: number;
-  number: number;
-  topic: string;
-  popularity: number;
-  cover: string;
-  disable: number;
-  isdelete: number;
-  cValue: string;
-  uValue: string;
-  aValue: string;
+    id: number
+    cid: number
+    uid: number
+    aid: number
+    name: string
+    profile: string
+    time: string
+    edition: number
+    price: number
+    pages: number
+    number: number
+    topic: string
+    popularity: number
+    preview: string
+    cover: string
+    disable: number
+    isdelete: number
+    cValue: string
+    cProfile: string
+    uValue: string
+    uBriefly: string
+    uAvatar: string
+    aValue: string
 }[]
-
+// 获取作者图书API
 export const booksGetUserBooksAPI = (id:number) => requeset.get<ResType<ResListTpye<BooksUserType>>>('/api/books/users',{params:{id}})
+// 获取作者图书无需idAPI
+export const booksGetUserBooksNoAPI = () => requeset.get<ResType<ResListTpye<BooksUserType>>>('/my/books/usersNO')
 
 // 获取分类图书提交类型
 export type BooksCategoryType = {
@@ -136,3 +145,17 @@ export type SearchBooksType = {
 }
 // 搜素图书API
 export const booksSearchAPI = (params:SearchBooksType) => requeset.get<ResType<ResListTpye<BooksResListType>>>('/api/books/search',{params})
+
+
+// 添加图书提交类型
+export type BookAddType = {
+    cid:number|undefined
+    name:string
+    profile:string
+    edition:number|undefined
+    price:number|undefined
+    pages:number|undefined
+    cover:string
+    preview:string
+}
+export const booksAddAPI = (data:BookAddType | undefined) => requeset.post<ResType<undefined>>('/my/books/',data)

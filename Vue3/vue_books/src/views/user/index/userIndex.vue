@@ -92,7 +92,8 @@ await getUserList()
 
 </script>
 <template>
-    <div class="box">        <!-- 跑马灯 -->
+    <div class="box">
+        <!-- 跑马灯 -->
         <el-carousel indicator-position="none" height="auto">
             <el-carousel-item v-for="item in userList?.slice(0, 4)" :key="item.id" style="height: 50vw" @click="onAuthor(item.id)">
                 <img :src="item.flyer" alt="" @click="onBooks(item.id)">
@@ -110,37 +111,6 @@ await getUserList()
                 </div>
             </div>
         </div>
-        asdasdasdasdadasda
-        <!-- 资讯 -->
-        <!-- <div class="box-information">
-            <ul class="box-information-time">
-                <span class="box-information--font">最新资讯</span>
-                <li v-for="item in informationTime" :key="item.id" @click="onInformation(item.id)">{{ item.title }}</li>
-            </ul>
-            <ul class="box-information-count">
-                <span class="box-information--font">最热资讯</span>
-                <li v-for="item in informationCount" :key="item.id" @click="onInformation(item.id)">{{ item.title }}</li>
-            </ul>
-        </div> -->
-        <!-- 重点图书 -->
-        <!-- <div class="box-keyBooks">
-            <div class="box-keyBooks-nav">
-                <span>重点图书</span>
-                <div class="box-keyBooks-nav-main">
-                    <div v-for="item in KeyList?.slice(0, 5)" :key="item.id" @mouseover="onMouseoverNav(item.id, 1)">{{
-                        item.name }}</div>
-                </div>
-            </div>
-            <div class="box-keyBooks-main">
-                <div v-for="item in KeyBookList?.slice(0, 4)" :key="item.id">
-                    <img :src="item.cover" alt="" @click="clickBook(item.id)">
-                    <div class="box-keyBooks-main-info">
-                        <span>{{ item.name }}</span>
-                        <div>{{ item.uValue }}</div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <!-- 新书上架 -->
         <div class="newBooks">
             <div class="newBooks-font">新的图书</div>
@@ -219,8 +189,6 @@ body {
 
 .box {
     .el-carousel {
-        width: 100vw;
-        height: 100vh;
         position: relative;
 
         img {
@@ -329,7 +297,7 @@ body {
             overflow: hidden;
             padding: 20px;
             background: rgb(240, 240, 235);
-            margin: 25px;
+            margin: 20px;
             margin-bottom: 50px;
             text-align: center;
 

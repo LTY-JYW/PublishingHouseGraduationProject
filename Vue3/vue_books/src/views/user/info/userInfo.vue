@@ -58,6 +58,14 @@ await getInfo()
                         <el-icon><FullScreen /></el-icon>
                         <span>收货地址</span>
                     </el-menu-item>
+                    <el-menu-item index="/userInfoLayout/userInfoBook" v-if="userInfo![0].isAuthor == 1">
+                        <el-icon><FullScreen /></el-icon>
+                        <span>图书管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/userInfoLayout/userInfoPwd">
+                        <el-icon><FullScreen /></el-icon>
+                        <span>修改密码</span>
+                    </el-menu-item>
 
                 </el-menu>
             </div>

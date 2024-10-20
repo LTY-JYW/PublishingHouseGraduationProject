@@ -28,7 +28,7 @@ exports.addBooks = async (req, res) => {
         return res.result('已有该书籍名称')
     }
 
-    const sqlBooksAdd = 'INSERT INTO books (cid,uid,name,profile,time,edition,price,pages,number,topic,popularity,cover,disable,isdelete,preview) VALUES (:cid,:uid,:name,:profile,:time,:edition,:price,:pages,:number,:topic,:popularity,:cover,2,0,:preview)'
+    const sqlBooksAdd = 'INSERT INTO books (cid,uid,name,profile,time,edition,price,pages,popularity,cover,disable,isdelete,preview) VALUES (:cid,:uid,:name,:profile,:time,:edition,:price,:pages,:popularity,:cover,2,0,:preview)'
     const resBooksAdd = await db.executeQuery(sqlBooksAdd, {
         cid: formDate.cid,
         uid,
@@ -38,8 +38,6 @@ exports.addBooks = async (req, res) => {
         edition: formDate.edition,
         price: formDate.price,
         pages: formDate.pages,
-        number: formDate.number,
-        topic: formDate.topic,
         popularity: 0,
         cover: formDate.cover,
         preview:formDate.preview
@@ -401,6 +399,9 @@ exports.selUsersBooks = async (req,res) => {
     }
     const sql = `SELECT 
                     books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
                     books.name,
                     books.profile,
                     books.time,
@@ -410,12 +411,71 @@ exports.selUsersBooks = async (req,res) => {
                     books.number,
                     books.topic,
                     books.popularity,
+                    books.preview,
                     books.cover,
                     books.disable,
                     books.isdelete,
                     category2.name AS cValue,
+                    category2.profile AS cProfile,
 		            users.nickname AS uValue,
-		            audit.nickname AS aValue
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
+                    FROM books
+                    LEFT JOIN 
+                        category2 ON books.cid = category2.id
+                    LEFT JOIN 
+                        users ON books.uid = users.id
+                    LEFT JOIN 
+                        audit ON books.aid = audit.id
+                    WHERE books.uid = :id and books.isdelete = 0
+                    `
+    const resSql = await db.executeQuery(sql,{id})
+    const sqlCount = 'SELECT COUNT(*) AS count FROM books where uid = :id'
+    const resCount = await db.executeQuery(sqlCount,{id})
+
+    return res.result('获取作者图书成功！',0,{
+        value:resSql.data,
+        count:resCount.data
+    })
+}
+
+// 查询作者所有图书无需传
+exports.selUsersBooksUsers = async (req,res) => {
+    const { id } = req.auth
+    const sqlSelUser = `SELECT id
+                    FROM users
+                    WHERE id = :id AND isAuthor = 1`
+    const resSelUser = await db.executeQuery(sqlSelUser,{id})
+    if(resSelUser.data.length != 1){
+        return res.result('未找到该作者')
+    }
+    const sql = `SELECT 
+                    books.id,
+                    books.cid,
+                    books.uid,
+                    books.aid,
+                    books.name,
+                    books.profile,
+                    books.time,
+                    books.edition,
+                    books.price,
+                    books.pages,
+                    books.number,
+                    books.topic,
+                    books.popularity,
+                    books.preview,
+                    books.cover,
+                    books.disable,
+                    books.isdelete,
+                    category2.name AS cValue,
+                    category2.profile AS cProfile,
+		            users.nickname AS uValue,
+		            users.briefly AS uBriefly,
+		            users.avatar AS uAvatar,
+		            audit.nickname AS aValue,
+                    users.briefly AS uBriefly
                     FROM books
                     LEFT JOIN 
                         category2 ON books.cid = category2.id

@@ -295,7 +295,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             }
 
             .el-form-item {
-                padding: 40px;
+                padding: 10px;
                 padding-right: 0px;
                 padding-left: 20px;
                 text-align: center;
@@ -303,14 +303,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                 border: 1px solid black;
                 background: rgb(250, 250, 250);
                 margin: 0;
-                width: 250px;
+                width: 240px;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
 
                 :deep(.el-form-item__label) {
                     text-align: center;
                     align-items: center;
-                    font-size: 50px;
+                    font-size: 30px;
                     width: 120px;
                     height: 120px;
                     padding: 10px;
@@ -320,7 +320,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                     text-align: center;
                     align-items: center;
                     margin-left: 50px;
-                    font-size: 30px;
+                    font-size: 20px;
                     min-width: 250px;
                     word-wrap: break-word;
                     overflow-wrap: break-word;

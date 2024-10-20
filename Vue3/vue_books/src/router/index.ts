@@ -76,7 +76,7 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'userIndex',
+          name: 'userIndexs',
           component: () => import('@/views/user/index/userIndex.vue')
         },
         {
@@ -131,7 +131,7 @@ const router = createRouter({
             },
             {
               path: 'userAuthor',
-              name: 'userAuthor',
+              name: 'userAuthorInfo',
               component: () => import('@/views/user/info/applicationAuthor.vue')
             },
             {
@@ -153,6 +153,16 @@ const router = createRouter({
               path: 'address',
               name: 'useraddress',
               component: () => import('@/views/user/info/address/userAddress.vue')
+            },
+            {
+              path: 'userInfoBook',
+              name: 'userInfoBook',
+              component: () => import('@/views/user/info/books/userBooks.vue')
+            },
+            {
+              path: 'userInfoPwd',
+              name: 'userInfoPwd',
+              component: () => import('@/views/user/info/pwd/userPwd.vue')
             },
           ]
         },

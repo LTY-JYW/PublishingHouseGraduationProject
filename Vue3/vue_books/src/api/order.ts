@@ -4,7 +4,7 @@ import requeset from '@/utils/request'
 import type { ResType, PageType, ResListTpye } from "./results";
 
 // 添加订单API
-export const orderAddAPI = (id: number) => requeset.post<ResType<undefined>>('/my/order', id)
+export const orderAddAPI = (bid: number,count:number) => requeset.post<ResType<undefined>>('/my/order', {bid,count})
 
 // 删除订单API
 export const orderDelAPI = (id: number) => requeset.delete<ResType<undefined>>('/my/order', { params: { id } })
@@ -27,7 +27,7 @@ export type OrderSelType = {
     phoneNumber:number
 }[]
 // 查询订单API
-export const orderSelAPI = (params: PageType) => requeset.get<ResType<OrderSelType>>('/my/order', { params })
+export const orderSelAPI = (params: PageType) => requeset.get<ResType<ResListTpye<OrderSelType>>>('/my/order', { params })
 
 // 查询订单详细信息地址返回类型
 export type OrderAddressType = {

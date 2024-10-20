@@ -77,7 +77,8 @@ exports.addressSel = async (req, res) => {
                     address.uid,
                     address.address,
                     address.default,
-                    users.nickname AS uValue
+                    users.nickname AS uValue,
+                    users.phoneNumber AS phoneNumber
                     FROM 
                         address
                     LEFT JOIN 

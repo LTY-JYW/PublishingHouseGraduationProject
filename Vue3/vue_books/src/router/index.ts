@@ -149,6 +149,11 @@ const router = createRouter({
               name: 'userCart',
               component: () => import('@/views/user/info/cart/userCart.vue')
             },
+            {
+              path: 'address',
+              name: 'useraddress',
+              component: () => import('@/views/user/info/address/userAddress.vue')
+            },
           ]
         },
       ]

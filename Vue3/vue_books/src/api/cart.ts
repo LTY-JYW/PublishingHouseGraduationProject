@@ -26,6 +26,6 @@ export type CartListType = {
   count: number
   name: string
   cover: string
-  }
+  }[]
 // 查询购物车API
 export const cartGetListAPI = (params:PageType) => requeset.get<ResType<ResListTpye<CartListType>>>('/my/cart',{params})

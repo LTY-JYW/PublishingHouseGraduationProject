@@ -2,6 +2,7 @@
 const joi = require('joi')
 const bid = joi.number().min(1).required()
 const uid = joi.number().min(1).required()
+const count = joi.number().min(1).required()
 
 
 const page = joi.number().min(1).required()
@@ -10,6 +11,7 @@ const itemsPerPage = joi.number().min(1).required()
 exports.order_add_schema = {
     body: {
         bid, 
+        count
     }
 }
 

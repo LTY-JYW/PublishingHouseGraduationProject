@@ -92,9 +92,7 @@ await getUserList()
 
 </script>
 <template>
-    <div class="box">
-    aaaaaaa
-        <!-- 跑马灯 -->
+    <div class="box">        <!-- 跑马灯 -->
         <el-carousel indicator-position="none" height="auto">
             <el-carousel-item v-for="item in userList?.slice(0, 4)" :key="item.id" style="height: 50vw" @click="onAuthor(item.id)">
                 <img :src="item.flyer" alt="" @click="onBooks(item.id)">
@@ -221,6 +219,8 @@ body {
 
 .box {
     .el-carousel {
+        width: 100vw;
+        height: 100vh;
         position: relative;
 
         img {

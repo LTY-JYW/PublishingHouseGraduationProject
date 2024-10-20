@@ -54,6 +54,10 @@ await getInfo()
                         <el-icon><FullScreen /></el-icon>
                         <span>查看购物车</span>
                     </el-menu-item>
+                    <el-menu-item index="/userInfoLayout/address">
+                        <el-icon><FullScreen /></el-icon>
+                        <span>收货地址</span>
+                    </el-menu-item>
 
                 </el-menu>
             </div>

@@ -29,12 +29,12 @@ const orderList = ref<OrderSelType>()
 // 获取订单列表函数
 const getList = async () => {
     const { data: { data } } = await orderSelAPI(page.value)
-    if (data.length < 1) {
+    if (data.value.length < 1) {
         orderList.value = undefined
         loading.value = false
         return
     }
-    orderList.value = data
+    orderList.value = data.value
     loading.value = false
 }
 await getList()

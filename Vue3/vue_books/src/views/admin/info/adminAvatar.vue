@@ -11,7 +11,7 @@ import { genFileId, ElMessage } from 'element-plus'
 // 导入el类型
 import type { UploadInstance, UploadProps, UploadFile, UploadRawFile } from 'element-plus'
 // 导入默认头像
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 // 导入pinia
 import { useUserStore } from '@/stores/user'
 
@@ -141,7 +141,7 @@ const clearForm = async () => {
         <el-upload class="avatar-uploader" :headers="headers" :show-file-list="false" :before-upload="beforeUpload"
           :on-change="onUploadChange" :on-exceed="handleExceed" :auto-upload="false" :limit="1" ref="uploadRef"
           v-loading="isLoadingUpload">
-          <el-avatar class="avatar" :size="200" :src="imageUrl ? imageUrl : adminInfoData[0].avatar?adminInfoData[0].avatar:URL" />
+          <el-avatar class="avatar" :size="200" :src="imageUrl ? imageUrl : adminInfoData[0].avatar?adminInfoData[0].avatar:URLAVATAR" />
         </el-upload>
         <div class="el-button-admin-form">
           <el-button class="button" type="primary" auto-insert-space @click="submitForm()">

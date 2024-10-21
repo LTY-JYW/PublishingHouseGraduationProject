@@ -154,15 +154,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 .box-author {
     width: 64vw;
     height: 83vh;
+
     .main {
         .avatar-uploader {
             border: 1px dashed black;
             padding: 50px;
             margin: auto;
             width: 5.3vw;
+            margin-top: 20px;
         }
 
-        margin-top: 20px;
 
         :deep(.el-form-item__label) {
             font-size: 50px;

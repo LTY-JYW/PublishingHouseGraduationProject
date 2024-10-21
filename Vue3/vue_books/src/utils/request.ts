@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import router from '@/router'
 
 const baseURL =
-  'http://127.0.0.1'
+  'http://124.221.18.87:5589'
 const userStore = useUserStore()
 
 const instance = axios.create({

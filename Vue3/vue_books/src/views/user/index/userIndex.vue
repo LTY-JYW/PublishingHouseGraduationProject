@@ -37,14 +37,14 @@ const getInformationList = async () => {
 }
 await getInformationList()
 
-const wordToHtml = async (array: InformationType | undefined) => {
-    for (const item of array!) {
-        const { data: { data } } = await getHtmlAPI(item.main);
-        item.main = data.html
-    }
-}
+// const wordToHtml = async (array: InformationType | undefined) => {
+//     for (const item of array!) {
+//         const { data: { data } } = await getHtmlAPI(item.main);
+//         item.main = data.html
+//     }
+// }
 
-await wordToHtml(informationList.value)
+// await wordToHtml(informationList.value)
 
 // 图书信息变量
 const booksList = ref<BooksResListType>()
@@ -146,7 +146,7 @@ await getUserList()
                 <div class="news-item mouse" v-for="item in informationList" :key="item.id" @click="onInformation(item.id)">
                     <img class="news-item-img" :src="item.cover" alt="">
                     <div class="news-item-title">{{ item.title }}</div>
-                    <div class="news-item-main" v-html="item.main"></div>
+                    <!-- <div class="news-item-main" v-html="item.main"></div> -->
                 </div>
             </div>
         </div>

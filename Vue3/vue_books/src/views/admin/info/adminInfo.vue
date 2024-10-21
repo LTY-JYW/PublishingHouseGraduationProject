@@ -12,7 +12,7 @@ import type { FormRules, FormInstance } from 'element-plus'
 // 导入pinia
 import { useUserStore } from '@/stores/user'
 // 导入默认头像
-import { URL } from '@/utils/defaultAvatar'
+import { URLAVATAR } from '@/utils/default'
 
 // 使用pinan
 const userStore = useUserStore()
@@ -91,7 +91,7 @@ const clearForm = () => {
   <pageComponent title="修改资料">
     <el-row justify="center" class="elRowS">
       <el-col :span="3" :offset="0"><el-avatar class="avatar" :size="200"
-          :src="adminInfoData[0].avatar || URL" /></el-col>
+          :src="adminInfoData[0].avatar || URLAVATAR" /></el-col>
     </el-row>
     <el-row justify="center" class="elRowS">
       <el-col :span="1">{{ adminInfoData[0].nickname }}</el-col>
